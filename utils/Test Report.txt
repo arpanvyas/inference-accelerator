@@ -1,0 +1,28 @@
+Modules to be tested:
+
+Inference Accelerator
+	
+
+	PE Array
+
+		PE
+			
+			Convolver: Testing this, input to both a stream of image values, some fixed filter, checking output and comparing results with python script
+
+
+
+
+
+
+			Adder Tree
+
+			Non Linearity
+
+			Pooling
+
+
+
+	Memory Buffer
+
+
+	Controller

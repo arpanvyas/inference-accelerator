@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<generated_project xmlns="http://www.xilinx.com/XMLSchema" xmlns:xil_pn="http://www.xilinx.com/XMLSchema">
+
+  <!--                                                          -->
+
+  <!--             For tool use only. Do not edit.              -->
+
+  <!--                                                          -->
+
+  <!-- ProjectNavigator created generated project file.         -->
+
+  <!-- For use in tracking generated file and other information -->
+
+  <!-- allowing preservation of process status.                 -->
+
+  <!--                                                          -->
+
+  <!-- Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved. -->
+
+  <version xmlns="http://www.xilinx.com/XMLSchema">11.1</version>
+
+  <sourceproject xmlns="http://www.xilinx.com/XMLSchema" xil_pn:fileType="FILE_XISE" xil_pn:name="InferenceAccelerator.xise"/>
+
+  <files xmlns="http://www.xilinx.com/XMLSchema">
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="PE_array_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="adder_tree_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="convolver_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="inference_accelerator_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="mac_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="memory_bank_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="memory_buffer_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="non_linearity_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="pooling_guide.ncd" xil_pn:origination="imported"/>
+    <file xil_pn:fileType="FILE_NCD" xil_pn:name="shift_register3_guide.ncd" xil_pn:origination="imported"/>
+  </files>
+
+  <transforms xmlns="http://www.xilinx.com/XMLSchema">
+    <transform xil_pn:end_ts="1533065380" xil_pn:name="TRAN_copyInitialToAbstractSimulation" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+    <transform xil_pn:end_ts="1533065380" xil_pn:in_ck="8010690356670794789" xil_pn:name="TRAN_copyAbstractToPostAbstractSimulation" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="../verilog source/PE.v"/>
+      <outfile xil_pn:name="../verilog source/PE_array.v"/>
+      <outfile xil_pn:name="../verilog source/adder_tree.v"/>
+      <outfile xil_pn:name="../verilog source/contr.v"/>
+      <outfile xil_pn:name="../verilog source/controller.v"/>
+      <outfile xil_pn:name="../verilog source/conv_wrap.v"/>
+      <outfile xil_pn:name="../verilog source/convolver.v"/>
+      <outfile xil_pn:name="../verilog source/external_memory.v"/>
+      <outfile xil_pn:name="../verilog source/fifo_memory.v"/>
+      <outfile xil_pn:name="../verilog source/filter_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/header.vh"/>
+      <outfile xil_pn:name="../verilog source/host_system.v"/>
+      <outfile xil_pn:name="../verilog source/inference_accelerator.v"/>
+      <outfile xil_pn:name="../verilog source/line_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/line_buffer_pool.v"/>
+      <outfile xil_pn:name="../verilog source/line_buffer_tb.v"/>
+      <outfile xil_pn:name="../verilog source/line_fifo.v"/>
+      <outfile xil_pn:name="../verilog source/mac.v"/>
+      <outfile xil_pn:name="../verilog source/memory_bank.v"/>
+      <outfile xil_pn:name="../verilog source/memory_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/multiplier.v"/>
+      <outfile xil_pn:name="../verilog source/non_linearity.v"/>
+      <outfile xil_pn:name="../verilog source/pooling.v"/>
+      <outfile xil_pn:name="../verilog source/scrap.v"/>
+      <outfile xil_pn:name="../verilog source/shift_register2.v"/>
+      <outfile xil_pn:name="../verilog source/shift_register3.v"/>
+      <outfile xil_pn:name="../verilog source/shift_register9.v"/>
+      <outfile xil_pn:name="../verilog source/tb1.v"/>
+      <outfile xil_pn:name="../verilog source/tb_PE.v"/>
+      <outfile xil_pn:name="../verilog source/tb_convolver.v"/>
+      <outfile xil_pn:name="../verilog source/tb_convolver1.v"/>
+      <outfile xil_pn:name="../verilog source/tb_line_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/user_tasks.vh"/>
+    </transform>
+    <transform xil_pn:end_ts="1533065380" xil_pn:name="TRAN_xawsToSimhdl" xil_pn:prop_ck="1144010345374334154" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+    <transform xil_pn:end_ts="1533065380" xil_pn:name="TRAN_schematicsToHdlSim" xil_pn:prop_ck="3945638920993285594" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+    <transform xil_pn:end_ts="1533065380" xil_pn:name="TRAN_regenerateCoresSim" xil_pn:prop_ck="4895396753661553315" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+    <transform xil_pn:end_ts="1533065380" xil_pn:in_ck="8010690356670794789" xil_pn:name="TRAN_copyPostAbstractToPreSimulation" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="SuccessfullyRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+      <outfile xil_pn:name="../verilog source/PE.v"/>
+      <outfile xil_pn:name="../verilog source/PE_array.v"/>
+      <outfile xil_pn:name="../verilog source/adder_tree.v"/>
+      <outfile xil_pn:name="../verilog source/contr.v"/>
+      <outfile xil_pn:name="../verilog source/controller.v"/>
+      <outfile xil_pn:name="../verilog source/conv_wrap.v"/>
+      <outfile xil_pn:name="../verilog source/convolver.v"/>
+      <outfile xil_pn:name="../verilog source/external_memory.v"/>
+      <outfile xil_pn:name="../verilog source/fifo_memory.v"/>
+      <outfile xil_pn:name="../verilog source/filter_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/header.vh"/>
+      <outfile xil_pn:name="../verilog source/host_system.v"/>
+      <outfile xil_pn:name="../verilog source/inference_accelerator.v"/>
+      <outfile xil_pn:name="../verilog source/line_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/line_buffer_pool.v"/>
+      <outfile xil_pn:name="../verilog source/line_buffer_tb.v"/>
+      <outfile xil_pn:name="../verilog source/line_fifo.v"/>
+      <outfile xil_pn:name="../verilog source/mac.v"/>
+      <outfile xil_pn:name="../verilog source/memory_bank.v"/>
+      <outfile xil_pn:name="../verilog source/memory_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/multiplier.v"/>
+      <outfile xil_pn:name="../verilog source/non_linearity.v"/>
+      <outfile xil_pn:name="../verilog source/pooling.v"/>
+      <outfile xil_pn:name="../verilog source/scrap.v"/>
+      <outfile xil_pn:name="../verilog source/shift_register2.v"/>
+      <outfile xil_pn:name="../verilog source/shift_register3.v"/>
+      <outfile xil_pn:name="../verilog source/shift_register9.v"/>
+      <outfile xil_pn:name="../verilog source/tb1.v"/>
+      <outfile xil_pn:name="../verilog source/tb_PE.v"/>
+      <outfile xil_pn:name="../verilog source/tb_convolver.v"/>
+      <outfile xil_pn:name="../verilog source/tb_convolver1.v"/>
+      <outfile xil_pn:name="../verilog source/tb_line_buffer.v"/>
+      <outfile xil_pn:name="../verilog source/user_tasks.vh"/>
+    </transform>
+    <transform xil_pn:end_ts="1533065382" xil_pn:in_ck="8010690356670794789" xil_pn:name="TRAN_ISimulateBehavioralModelRunFuse" xil_pn:prop_ck="-4291816011892705796" xil_pn:start_ts="1533065380">
+      <status xil_pn:value="FailedRun"/>
+      <status xil_pn:value="ReadyToRun"/>
+    </transform>
+  </transforms>
+
+</generated_project>

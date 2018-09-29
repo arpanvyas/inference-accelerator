@@ -1,0 +1,36 @@
+Running: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/fuse -intstyle ise -incremental -lib unisims_ver -lib unimacro_ver -lib xilinxcorelib_ver -lib secureip -o /home/arpan/Desktop/HDL Model/InferenceAccelerator/inference_accelerator_isim_beh.exe -prj /home/arpan/Desktop/HDL Model/InferenceAccelerator/inference_accelerator_beh.prj work.inference_accelerator work.glbl 
+ISim P.20131013 (signature 0xfbc00daa)
+Number of CPUs detected in this system: 4
+Turning on mult-threading, number of parallel sub-compilation jobs: 8 
+Determining compilation order of HDL files
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/fifo_memory.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/shift_register9.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/shift_register3.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/shift_register2.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/line_fifo.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/mac.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/line_buffer_pool.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/line_buffer.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/filter_buffer.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/pooling.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/non_linearity.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/convolver.v" into library work
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/adder_tree.v" into library work
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/adder_tree.v" Line 19: Block identifier is required on this block
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE.v" into library work
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE.v" Line 25: Block identifier is required on this block
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE.v" Line 28: Block identifier is required on this block
+WARNING:HDLCompiler:751 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE.v" Line 29: Redeclaration of ansi port adder_enable is not allowed
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE.v" Line 35: Block identifier is required on this block
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/memory_bank.v" into library work
+WARNING:HDLCompiler:751 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/memory_bank.v" Line 13: Redeclaration of ansi port data_out is not allowed
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE_array.v" into library work
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE_array.v" Line 25: Block identifier is required on this block
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/PE_array.v" Line 28: Block identifier is required on this block
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/memory_buffer.v" into library work
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/memory_buffer.v" Line 28: Block identifier is required on this block
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/memory_buffer.v" Line 29: Block identifier is required on this block
+WARNING:HDLCompiler:248 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/memory_buffer.v" Line 96: Block identifier is required on this block
+Analyzing Verilog file "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/controller.v" into library work
+ERROR:HDLCompiler:806 - "/home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/controller.v" Line 26: Syntax error near ";".
+Verilog file /home/arpan/Desktop/HDL Model/InferenceAccelerator/../verilog source/controller.v ignored due to errors
