@@ -49,10 +49,10 @@ module tb_convolver1;
 		input_filter = 0;
 		mac_enable = 0;
 
-		file_im_in = $fopen("../python test files/1input_image.bin","r");
-		file_flt = $fopen("../python test files/1input_filter.bin","r");
-		file_im_out = $fopen("../python test files/1output_image_ver.bin","w");
-		file_im_in_ou = $fopen("../python test files/1input_image_ver.bin","w");
+		file_im_in = $fopen("../../python/1input_image.bin","r");
+		file_flt = $fopen("../../python/1input_filter.bin","r");
+		file_im_out = $fopen("../../python/1output_image_ver.bin","w");
+		file_im_in_ou = $fopen("../../python/1input_image_ver.bin","w");
 		i1 = 0;
 
 		repeat(10) @(posedge clk);

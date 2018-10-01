@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 `include "header.vh"
 
 module tb_convolver;
@@ -47,10 +46,10 @@ module tb_convolver;
 		input_filter = 0;
 		mac_enable = 0;
 
-		file_im_in = $fopen("../python test files/input_image.bin","r");
-		file_flt = $fopen("../python test files/input_filter.bin","r");
-		file_im_out = $fopen("../python test files/output_image_ver.bin","w");
-		file_im_in_ou = $fopen("../python test files/input_image_ver.bin","w");
+		file_im_in = $fopen("../../python/input_image.bin","r");
+		file_flt = $fopen("../../python/input_filter.bin","r");
+		file_im_out = $fopen("../../python/output_image_ver.bin","w");
+		file_im_in_ou = $fopen("../../python/input_image_ver.bin","w");
 		i1 = 0;
 		im_in_h = 30;
 		im_in_w = 30;

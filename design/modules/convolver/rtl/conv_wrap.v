@@ -10,8 +10,8 @@ module conv_wrap(
 	input	[`N_PE-1:0]			input_channels,
 	input	[`WID_FILTER-1:0]	input_filter,	
 	input							mac_enable,
-	output						output_valid,
-	output [`N_PE-1:0]		output_mac1
+	output						output_valid
+//	output [`N_PE-1:0]		output_mac1
 
     );
 
@@ -43,7 +43,7 @@ endgenerate
 always@(*) begin
 	for(i1=0; i1<`N_PE; i1=i1+1)
 	begin
-	output_mac1[i1] <= &output_mac[i1];
+//	output_mac1[i1] <= &output_mac[i1];
 	input_channels1[i1] <= input_channels[i1];
 	end
 
