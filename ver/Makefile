@@ -23,49 +23,77 @@ export MODULE
 
 
 IRUN_OPTS += -access +rw -vlog_ext .v,.vh 
+IRUN_RTLOPTS += $(IRUN_OPTS) -elaborate
+IRUN_TBOPTS += $(IRUN_OPTS) -elaborate
 IRUN_GUIOPTS += $(IRUN_OPTS) -gui 
-IRUN_SNAPOPTS += $(IRUN_OPTS) -elaborate
+
+#LIBRARY NAMES
+IRUN_OPTS += -nclibdirpath $$PROJECT_VER_DIR/SNAPSHOTS -nclibdirname INCA_accel 
+
+#SOURCE FILES
+IRUN_RTLOPTS += $(RTL_FILES) $(HEADER_FILES) -incdir $(INCLUDE_DIRS)
+IRUN_TBOPTS += $(TB_FILES) -incdir $(INCLUDE_DIRS)
+#HEADER FILES
+HEADER_FILES += $$PROJECT_RTL_DIR/modules/top/header/header.vh
+INCLUDE_DIRS += $$PROJECT_RTL_DIR/modules/top/header
 
 #LOG FILES
 IRUN_OPTS += -logfile $$PROJECT_VER_DIR/LOGS/irun.log
-IRUN_GUIOPTS += -log_ncsim $$PROJECT_VER_DIR/LOGS/$(TC)_$(SEED).log -k $$PROJECT_VER_DIR/LOGS/$(TC)_$(SEED).key
-IRUN_SNAPOPTS += -log_ncelab $$PROJECT_VER_DIR/LOGS/$(MODULE)_ncelab.log -log_ncvlog $$PROJECT_VER_DIR/LOGS/$(MODULE)_ncvlog.log
+IRUN_RTLOPTS += -log_ncelab $$PROJECT_VER_DIR/LOGS/$(MODULE)_rtl_ncelab.log -log_ncvlog $$PROJECT_VER_DIR/LOGS/$(MODULE)_rtl_ncvlog.log
+IRUN_TBOPTS += -log_ncelab $$PROJECT_VER_DIR/LOGS/$(MODULE)_tb_ncelab.log -log_ncvlog $$PROJECT_VER_DIR/LOGS/$(MODULE)_tb_ncvlog.log
+IRUN_GUIOPTS += -log_ncsim $$PROJECT_VER_DIR/LOGS/$(TC)_$(SEED)_$(MODULE).log -k $$PROJECT_VER_DIR/LOGS/$(TC)_$(SEED)_$(MODULE).key
 
 #SEEDS
-IRUN_GUIOPTS += -snseed $(SEED) -svseed $(SEED)
-
-#WORKDIR
-##IRUN_OPTS += -work $$PROJECT_VER_DIR/SNAPSHOTS
-IRUN_OPTS += -nclibdirpath $$PROJECT_VER_DIR/SNAPSHOTS -incdir $(RTL_DIR)
-
-#SOURCE FILES
-IRUN_SNAPOPTS += $(RTL_FILES) $(TB_FILES) $(HEADER_FILES)
-
+IRUN_GUIOPTS += -seed $(SEED)
 #TCL FILES
 IRUN_GUIOPTS += -input $$PROJECT_VER_DIR/TCL/force.do
 
+###########################################################
 #FOR COMPILING DIFFERENT MODULES
+###########################################################
 ifeq ($(MODULE), conv)
-RTL_DIR=$$PROJECT_RTL_DIR/modules/convolver/rtl
-RTL_FILES += $(RTL_DIR)/*
+
+#SOURCE
+RTL_FILES += $$PROJECT_RTL_DIR/modules/convolver/rtl/*
 TB_FILES += $$PROJECT_VER_DIR/HDL/tb_convolver.v
-HEADER_FILES += $$PROJECT_RTL_DIR/modules/top/header/header.vh
-IRUN_SNAPOPTS += -snapshot convsnap
-IRUN_GUIOPTS += -r convsnap -input $$PROJECT_VER_DIR/TCL/force_conv.do
+
+#WORKDIR and SNAPSHOTS
+IRUN_TBOPTS += -snapshot convsnap
+IRUN_GUIOPTS += -r convsnap
+
+#ADDITIONAL FORCS
+IRUN_GUIOPTS += -input $$PROJECT_VER_DIR/TCL/force_conv.do
+
 else ifeq ($(MODULE),top)
-include $$PROJECT_VER_DIR/MAKEFILES/Makefile.top
+
+RTL_FILES += $$PROJECT_RTL_DIR/modules/*/rtl/*
+IRUN_TBOPTS += -snapshot topsnap
+IRUN_GUIOPTS += -r topsnap
+
 else ifeq ($(MODULE), pe)
-include $$PROJECT_VER_DIR/MAKEFILES/Makefile.pe_array
+
+RTL_FILES += $$PROJECT_RTL_DIR/modules/pe_array/rtl/*
+IRUN_TBOPTS += -snapshot pesnap
+IRUN_GUIOPTS += -r pesnap
+
 else ifeq ($(MODULE), mem)
-include $$PROJECT_VER_DIR/MAKEFILES/Makefile.memory_bank
+
+RTL_FILES += $$PROJECT_RTL_DIR/modules/memory_bank/rtl/*
+IRUN_TBOPTS += -snapshot memsnap
+IRUN_GUIOPTS += -r memsnap
+
 endif
+
+###########################################################
+#TARGETS
+###########################################################
 
 clean:
 	rm -rf $$PROJECT_VER_DIR/SNAPSHOTS/*
-
 rtl:
-	irun $(IRUN_SNAPOPTS)
-	
-runtest:
+	irun $(IRUN_RTLOPTS)
+tb:
+	irun $(IRUN_TBOPTS) 
+run:
 	irun $(IRUN_GUIOPTS)	
 
