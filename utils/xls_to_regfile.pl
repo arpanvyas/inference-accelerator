@@ -21,6 +21,16 @@ sub num2veri {
 }
 
 
+sub comma_end {
+
+    @arg1 = @_;
+
+    my $last = pop @arg1;
+    $last =~ s/^(.*),/$1/;
+    push @arg1, $last;
+    return @arg1;
+}
+
 
 #Constants
 my $r_name = 2;
@@ -100,27 +110,31 @@ push @inout,pad("clk,"), pad("rst,");
 #Read Verilog Case Statement
 
 
-push @veristart,pad("//REGISTER DECLARATIONS",0);
+push @veristart,pad("//DECLARATIONS",0);
+push @veristart,pad("wire\twr_en;",0);
+push @veristart,pad("wire\trd_en;",0);
 foreach my $reg_addr (sort keys %$db) {
     my $reg = $db->{$reg_addr};
     my $reg_name = $reg->{"name"};
-    push @veristart, pad("reg\t[15:0]\t$reg_name;");
+    push @veristart, pad("reg\t[15:0]\t$reg_name;",0);
 }
 push @veristart,"\n";
 
 push @veristart, pad("//READ REGISTER",0);
-push @veristart, pad('always@(*)',0);
-push @veristart, pad('begin',0);
-push @veristart, pad('case (addr)');
+push @veristart, pad('always@(posedge clk, posedge rst)',0);
+push @veristart, pad('begin',0), pad('if(rst) begin',1), pad('read_data <= 16\'h0;',2);
+push @veristart, pad('end else begin');
+push @veristart, pad('if(wr_en) begin',2);
+push @veristart, pad('case (addr)',3);
 foreach my $reg_addr (sort keys %$db) {
     my $reg = $db->{$reg_addr};
     my $reg_name = $reg->{"name"};
     my $reg_addr = num2veri($reg->{"address"},16);
-    push @veristart, pad("$reg_addr : read_data = $reg_name;",2);
+    push @veristart, pad("$reg_addr : read_data <= $reg_name;",4);
 }
-push @veristart, pad("default : read_data = 16'h0;",2);
-push @veristart, pad("endcase");
-push @veristart, pad('end',0);
+push @veristart, pad("default : read_data = 16'h0;",4);
+push @veristart, pad("endcase",3);
+push @veristart, pad('end',2), pad('end',1), pad('end',0);
 
 
 foreach my $reg_addr (sort keys %$db) {
@@ -129,9 +143,29 @@ foreach my $reg_addr (sort keys %$db) {
     
     my @verideclr;
     my @verirw;
+    my @verirw_1;
+    my @verirw_2;
+    my @verirw_3;
+    my @verirw_a;#in reset
+    my @verirw_b;#after reset
+
     my @veriro;
+    my @veriro_1;
+    my @veriro_2;
+    my @veriro_3;
+    my @veriro_4;
+
     my @veriwoc;
+    my @veriwoc_1;
+    my @veriwoc_2;
+    my @veriwoc_3;
+    my @veriwoc_4;
+
     my @veriroc;
+    my @veriroc_1;
+    my @veriroc_2;
+    my @veriroc_3;
+    my @veriroc_4;
 
     my @veriassign;
     my @veriassign_a1;
@@ -191,58 +225,118 @@ foreach my $reg_addr (sort keys %$db) {
         if( $accesstype eq "RW" ) {
             unshift  @veriassign_a2 , "$regname"."[$addit:$startbit],";
             unshift  @veriassign_a1 , "$fieldname".",";
-       
+
+            unshift  @verirw_1, "$regname"."[$addit:$startbit],";
+            unshift  @verirw_2, "$fieldsize"."'h$default".",";
+            unshift  @verirw_3, "write_data"."[$addit:$startbit],";
+
         } else {
             if($accesstype eq "WOC") {
                 unshift @veriassign_b2, num2veri($default,$fieldsize),",";
                 unshift @veriassign_b1 , "$regname"."[$addit:$startbit],";
+                push @veriwoc_1, pad("$fieldname"."_wr <= "."$fieldsize"."'h$default;",2);
+                push @veriwoc_2, pad("$fieldname"."_wr <= $regname"."[$addit:$startbit];",3);
+                push @veriwoc_2, pad("$fieldname"."_wr_en <= 1;",3);
 
             } else {
                 unshift @veriassign_b2 , "$fieldname,";
                 unshift @veriassign_b1 , "$regname"."[$addit:$startbit],";
+
+                if( $accesstype eq "ROC" ) {
+                    push @veriroc_1, pad("$fieldname <= "."$fieldsize"."'h$default;",2);
+                    push @veriroc_2, pad("$fieldname <= "."$fieldsize"."'h$default;",3);
+                    push @veriroc_3, pad("if($fieldname"."_wr_en) begin",3);
+                    push @veriroc_3, pad("$fieldname <= $fieldname"."_wr;",4);
+                    push @veriroc_3, pad("end",3);
+                    
+                    
+                }
             }
         }
 
     }
 
     #REMOVE COMMAS FROM THE END
-    my $last = pop @veriassign_a1;
-    $last =~ s/^(.*),/$1/;
-    push @veriassign_a1, $last;
+    @veriassign_a1 = comma_end(@veriassign_a1);
+    @veriassign_a2 = comma_end(@veriassign_a2);
+    @veriassign_b1 = comma_end(@veriassign_b1);
+    @veriassign_b2 = comma_end(@veriassign_b2);
+    
+    @verirw_1 = comma_end(@verirw_1);
+    @verirw_2 = comma_end(@verirw_2);
+    @verirw_3 = comma_end(@verirw_3);
 
-    my $last = pop @veriassign_a2;
-    $last =~ s/^(.*),/$1/;
-    push @veriassign_a2, $last;
-
-    my $last = pop @veriassign_b1;
-    $last =~ s/^(.*),/$1/;
-    push @veriassign_b1, $last;
-
-    my $last = pop @veriassign_b2;
-    $last =~ s/^(.*),/$1/;
-    push @veriassign_b2, $last;
-
+    my @verirw_a1 = @veriassign_a2;
     #PUT ASSIGNS, EQUALS AND SEMICOLONS
     if( @veriassign_a1[0] ne "" ) {
         unshift @veriassign_a1, "assign\t{";
         push @veriassign_a1, " }\t=\t";
         unshift @veriassign_a2, "{ ";
-        push @veriassign_a2, " };\n";
+        push @veriassign_a2, " };//A\n";
     }
 
     if( @veriassign_b1[0] ne "" ) {
         unshift @veriassign_b1, "assign\t{";
         push @veriassign_b1, " }\t=\t";
         unshift @veriassign_b2, "{ ";
-        push @veriassign_b2, " };\n";
+        push @veriassign_b2, " };//B\n";
     }
+
+    #print @verirw_1,"\n";
+    #print @verirw_2,"\n";
+    #print @verirw_3,"\n";
+    if ( @verirw_1[0] ne "" ) {
+        push  @verirw_a, "{ ",@verirw_1," } <= { ", @verirw_2, " };\n";
+        push  @verirw_b, "{ ",@verirw_1," } <= { ", @verirw_3, " };\n";
+        push @verirw, pad("always@(posedge clk, posedge rst) begin",0);
+        push @verirw, pad("if (rst) begin",1);
+        push @verirw, "\t\t",@verirw_a,pad("end else begin",1);
+        push @verirw, "\t\t",@verirw_b,pad("end",1),pad("end",0);
+        #print @verirw;
+    }
+    
+    if( @veriwoc_1[0] ne "" ) {
+        push @veriwoc, pad("always@(posedge clk, posedge rst) begin",0);
+        push @veriwoc, pad("if (rst) begin",1);
+        push @veriwoc, @veriwoc_1;
+        push @veriwoc, pad("end else begin",1);
+        push @veriwoc, pad("if (wr_en && addr == ".num2veri($address,16).") begin",2);
+        push @veriwoc, @veriwoc_2;
+        push @veriwoc, pad("end",2), pad("end",1),pad("end",0);
+    }
+
+    if (@veriroc_1[0] ne "" ) {
+        push @veriroc, pad("always@(posedge clk, posedge rst) begin",0);
+        push @veriroc, pad("if (rst) begin",1);
+        push @veriroc, @veriroc_1;
+        push @veriroc, pad("end else begin",1);
+        push @veriroc, pad("if (rd_en && addr == ".num2veri($address,16).") begin",2);
+        push @veriroc, @veriroc_2;
+        push @veriroc, pad("end else ",2);
+        push @veriroc, @veriroc_3;
+        push @veriroc, pad("end",2), pad("end",1),pad("end",0);
+
+    }
+    #print @veriroc;
+
+
+
 
     push @veriassign, @veriassign_a1,@veriassign_a2,@veriassign_b1,@veriassign_b2;
 
 
 
 
-    push @vericode, @verideclr, @veriassign, @verirw, @veriro, @veriwoc, @veriroc;
+    #RW fields
+
+
+
+    push @vericode, @verideclr, @veriassign, @verirw, @veriro, @veriwoc, @veriroc,"\n\n\n\n\n";
+    #push @vericode, @verideclr, @verirw, @veriro, @veriwoc, @veriroc,"\n\n\n\n\n";
+    #push @vericode, @verideclr, @veriassign, @veriro, @veriwoc, @veriroc,"\n\n\n\n\n";
+    #push @vericode, @verideclr, @veriassign, @verirw, @veriwoc, @veriroc,"\n\n\n\n\n";
+    #push @vericode, @verideclr, @veriassign, @verirw, @veriro, @veriroc,"\n\n\n\n\n";
+    #push @vericode, @verideclr, @veriassign, @verirw, @veriro, @veriwoc, "\n\n\n\n\n";
 
     }
     
@@ -262,5 +356,7 @@ print @inout;
 print @veristart;
 print @vericode;
 print @veriend;
+
+
 
 print "\n";
