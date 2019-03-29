@@ -6,7 +6,8 @@ use Spreadsheet::Read;
 
 
 if($#ARGV != 1) {
-die "Invalid Arguments";
+die "Invalid Arguments
+Usage: ./xls_to_regfile.pl <XLS_FILE> <SHEET_NUMBER>\n";
 }
 
 my $xls_file = $ARGV[0];
@@ -54,6 +55,9 @@ my $def = 8;
 my $descr = 9;
 my $rmrk = 10;
 
+my $addr_len = 14;
+my $addr_l = $addr_len - 1;
+
  
 # OO API
 
@@ -62,6 +66,8 @@ my $sheet = $book->sheet ($sheet_num);
 my $sheet_label = $sheet->{"label"};
 $sheet_label =~ s/(.*)/lc($1)/ge;
 $sheet_label =~ s/ /_/;
+$sheet_label_uc = $sheet_label;
+$sheet_label_uc =~ s/(.*)/uc($1)/ge;
 my $module_name = "regfile_"."$sheet_label";
 
 my $maxrow = $book->[$sheet_num]{"maxrow"};
@@ -117,12 +123,14 @@ my @veristart;
 my @vericode;
 my @veriend;
 
+my $read_data = "read_data_"."$sheet_label_uc";
+
 push @inout, "module $module_name (","\n";
-push @inout,pad("input\twire\t\tclk,"), pad("input\twire\t\trst,");
-push @inout, pad("input\twire\t\twr_en,"),pad("input\twire\t\trd_en,");
-push @inout, pad("input\twire\t[15:0]\taddr,");
-push @inout, pad("input\twire\t[15:0]\twrite_data,");
-push @inout, pad("output\treg\t[15:0]\tread_data,");
+push @inout,pad("input\tlogic\t\tclk,"), pad("input\tlogic\t\trst,");
+push @inout, pad("input\tlogic\t\twr_en,"),pad("input\tlogic\t\trd_en,");
+push @inout, pad("input\tlogic\t[$addr_l:0]\taddr,");
+push @inout, pad("input\tlogic\t[15:0]\twrite_data,");
+push @inout, pad("output\tlogic\t[15:0]\t$read_data,");
 
 
 
@@ -133,25 +141,39 @@ push @veristart,pad("//DECLARATIONS",0);
 foreach my $reg_addr (sort keys %$db) {
     my $reg = $db->{$reg_addr};
     my $reg_name = $reg->{"name"};
-    push @veristart, pad("reg\t[15:0]\t$reg_name;",0);
+    push @veristart, pad("logic\t[15:0]\t$reg_name;",0);
 }
 push @veristart,"\n";
 
 push @veristart, pad("//READ REGISTER",0);
-push @veristart, pad('always@(posedge clk, posedge rst)',0);
-push @veristart, pad('begin',0), pad('if(rst) begin',1), pad('read_data <= 16\'h0;',2);
-push @veristart, pad('end else begin');
-push @veristart, pad('if(rd_en) begin',2);
-push @veristart, pad('case (addr)',3);
+push @veristart, pad('always@(*)',0);
+push @veristart, pad('begin',0);
+push @veristart, pad('case (addr)',1);
 foreach my $reg_addr (sort keys %$db) {
     my $reg = $db->{$reg_addr};
     my $reg_name = $reg->{"name"};
-    my $reg_addr = num2veri($reg->{"address"},16);
-    push @veristart, pad("$reg_addr : read_data <= $reg_name;",4);
+    my $reg_addr = num2veri($reg->{"address"},$addr_len);
+    push @veristart, pad("$reg_addr : $read_data = $reg_name;",2);
 }
-push @veristart, pad("default : read_data <= 16'h0;",4);
-push @veristart, pad("endcase",3);
-push @veristart, pad('end',2), pad('end',1), pad('end',0),"\n\n";
+push @veristart, pad("default : $read_data = 16'h0;",2);
+push @veristart, pad("endcase",1);
+push @veristart, pad('end',0),"\n\n";
+
+#push @veristart, pad("//READ REGISTER",0);
+#push @veristart, pad('always@(posedge clk, posedge rst)',0);
+#push @veristart, pad('begin',0), pad('if(rst) begin',1), pad("$read_data <= #1 16'h0;",2);
+#push @veristart, pad('end else begin');
+#push @veristart, pad('if(rd_en) begin',2);
+#push @veristart, pad('case (addr)',3);
+#foreach my $reg_addr (sort keys %$db) {
+#    my $reg = $db->{$reg_addr};
+#    my $reg_name = $reg->{"name"};
+#    my $reg_addr = num2veri($reg->{"address"},$addr_len);
+#    push @veristart, pad("$reg_addr : $read_data <= #1 $reg_name;",4);
+#}
+#push @veristart, pad("default : $read_data <= #1 16'h0;",4);
+#push @veristart, pad("endcase",3);
+#push @veristart, pad('end',2), pad('end',1), pad('end',0),"\n\n";
 
 
 foreach my $reg_addr (sort keys %$db) {
@@ -207,30 +229,30 @@ foreach my $reg_addr (sort keys %$db) {
         #print "$reg_name, $startbit, $fieldname, $accesstype, $fieldsize, $default\n";
         if( $accesstype eq "RW" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("output\treg\t[$fieldsiz:0]\t$fieldname,");
+                push @inout, pad("output\tlogic\t[$fieldsiz:0]\t$fieldname,");
             } else {
-                push @inout, pad("output\treg\t\t$fieldname,");
+                push @inout, pad("output\tlogic\t\t$fieldname,");
             }
         } elsif ( $accesstype eq "RO" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("input\twire\t[$fieldsiz:0]\t$fieldname,");
+                push @inout, pad("input\tlogic\t[$fieldsiz:0]\t$fieldname,");
             } else {
-                push @inout, pad("input\twire\t\t$fieldname,");
+                push @inout, pad("input\tlogic\t\t$fieldname,");
             }
         } elsif ( $accesstype eq "ROC" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("input\twire\t\t[$fieldsiz:0]\t$fieldname"."_wr,");
+                push @inout, pad("input\tlogic\t\t[$fieldsiz:0]\t$fieldname"."_wr,");
             } else {
-                push @inout, pad("input\twire\t\t$fieldname"."_wr,");
+                push @inout, pad("input\tlogic\t\t$fieldname"."_wr,");
             }   
-            push @inout, pad("input\twire\t\t$fieldname"."_wr_en,");
+            push @inout, pad("input\tlogic\t\t$fieldname"."_wr_en,");
         } elsif ( $accesstype eq "WOC" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("output\treg\t[$fieldsiz:0]\t$fieldname"."_wr,");
+                push @inout, pad("output\tlogic\t[$fieldsiz:0]\t$fieldname"."_wr,");
             } else {
-                push @inout, pad("output\treg\t\t\t$fieldname"."_wr,");
+                push @inout, pad("output\tlogic\t\t\t$fieldname"."_wr,");
             }   
-            push @inout, pad("output\treg\t\t\t$fieldname"."_wr_en,");
+            push @inout, pad("output\tlogic\t\t\t$fieldname"."_wr_en,");
         } else {
 
             die "ACCESSTYPE not valid for $fieldname";
@@ -251,23 +273,23 @@ foreach my $reg_addr (sort keys %$db) {
             if($accesstype eq "WOC") {
                 unshift @veriassign_b2, num2veri($default,$fieldsize),",";
                 unshift @veriassign_b1 , "$regname"."[$addit:$startbit],";
-                push @veriwoc_1, pad("$fieldname"."_wr <= "."$fieldsize"."'h$default;",2);
-                push @veriwoc_2, pad("$fieldname"."_wr <= write_data"."[$addit:$startbit];",3);
-                push @veriwoc_2, pad("$fieldname"."_wr_en <= 1;",3);
+                push @veriwoc_1, pad("$fieldname"."_wr <= #1 "."$fieldsize"."'h$default;",2);
+                push @veriwoc_2, pad("$fieldname"."_wr <= #1 write_data"."[$addit:$startbit];",3);
+                push @veriwoc_2, pad("$fieldname"."_wr_en <= #1 1;",3);
 
             } else {
                 unshift @veriassign_b2 , "$fieldname,";
                 unshift @veriassign_b1 , "$regname"."[$addit:$startbit],";
 
                 if( $accesstype eq "ROC" ) {
-                    push @veriroc_1, pad("$fieldname <= "."$fieldsize"."'h$default;",2);
-                    push @veriroc_2, pad("$fieldname <= "."$fieldsize"."'h$default;",3);
+                    push @veriroc_1, pad("$fieldname <= #1 "."$fieldsize"."'h$default;",2);
+                    push @veriroc_2, pad("$fieldname <= #1 "."$fieldsize"."'h$default;",3);
                     push @veriroc_3, pad("if($fieldname"."_wr_en) begin",3);
-                    push @veriroc_3, pad("$fieldname <= $fieldname"."_wr;",4);
+                    push @veriroc_3, pad("$fieldname <= #1 $fieldname"."_wr;",4);
                     push @veriroc_3, pad("end",3);
                     
                     
-                push @verideclr, pad("reg\t[$fieldsiz:0]\t$fieldname;",0);
+                push @verideclr, pad("logic\t[$fieldsiz:0]\t$fieldname;",0);
                 }
             }
         }
@@ -305,13 +327,16 @@ foreach my $reg_addr (sort keys %$db) {
     #print @verirw_2,"\n";
     #print @verirw_3,"\n";
     if ( @verirw_1[0] ne "" ) {
-        push  @verirw_a, "{ ",@verirw_1," } <= { ", @verirw_2, " };\n";
-        push  @verirw_b, "{ ",@verirw_1," } <= { ", @verirw_3, " };\n";
+        push  @verirw_a, "{ ",@verirw_1," } <= #1 { ", @verirw_2, " };\n";
+        push  @verirw_b, "{ ",@verirw_1," } <= #1 { ", @verirw_3, " };\n";
         push @verirw, pad("//RW fields",0);
         push @verirw, pad("always@(posedge clk, posedge rst) begin",0);
         push @verirw, pad("if (rst) begin",1);
         push @verirw, "\t\t",@verirw_a,pad("end else begin",1);
-        push @verirw, "\t\t",@verirw_b,pad("end",1),pad("end",0);
+        push @verirw, pad("if (wr_en && addr == ".num2veri($reg_addr,$addr_len).") begin",2);
+        push @verirw, "\t\t\t",@verirw_b;
+        push @verirw, pad("end",2);
+        push @verirw,pad("end",1),pad("end",0);
         #print @verirw;
     }
     
@@ -321,7 +346,7 @@ foreach my $reg_addr (sort keys %$db) {
         push @veriwoc, pad("if (rst) begin",1);
         push @veriwoc, @veriwoc_1;
         push @veriwoc, pad("end else begin",1);
-        push @veriwoc, pad("if (wr_en && addr == ".num2veri($address,16).") begin",2);
+        push @veriwoc, pad("if (wr_en && addr == ".num2veri($reg_addr,$addr_len).") begin",2);
         push @veriwoc, @veriwoc_2;
         push @veriwoc, pad("end",2), pad("end",1),pad("end",0);
     }
@@ -332,7 +357,7 @@ foreach my $reg_addr (sort keys %$db) {
         push @veriroc, pad("if (rst) begin",1);
         push @veriroc, @veriroc_1;
         push @veriroc, pad("end else begin",1);
-        push @veriroc, pad("if (rd_en && addr == ".num2veri($address,16).") begin",2);
+        push @veriroc, pad("if (rd_en && addr == ".num2veri($reg_addr,$addr_len).") begin",2);
         push @veriroc, @veriroc_2;
         push @veriroc, pad("end else begin",2);
         push @veriroc, @veriroc_3;
