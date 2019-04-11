@@ -161,7 +161,7 @@ assign tx_data_en = (counter_p == 16 && rx_rw_mode == 0) ? 1 : 0;
 
 
 //RD_EN and WR_EN to pass to regintf
-logic [1:0] rd_en_count;
+logic [3:0] rd_en_count;
 
 always@(posedge SCLK, posedge rst)
 begin
@@ -172,17 +172,17 @@ begin
         if(counter_p == 15 && rx_rw_mode == 2'b00) begin
             rd_en_count <= #1 1;
             rd_en_stretch <= #1 1;
-        end else if (rd_en_count == 1) begin
-            rd_en_count <= #1 2;
+        end else if (rd_en_count > 0 && rd_en_count < 7) begin
+            rd_en_count <= #1 rd_en_count + 1;
             rd_en_stretch <= #1 1;
-        end else if (rd_en_count == 2) begin
+        end else if (rd_en_count == 7) begin
             rd_en_count <= #1 0;
             rd_en_stretch <= #1 0;
         end
     end
 end
 
-logic [1:0] wr_en_count;
+logic [3:0] wr_en_count;
 
 always@(posedge SCLK, posedge rst)
 begin
@@ -193,10 +193,10 @@ begin
         if(counter_p == 31 && rx_rw_mode == 2'b01) begin
             wr_en_count <= #1 1;
             wr_en_stretch <= #1 1;
-        end else if (wr_en_count == 1) begin
-            wr_en_count <= #1 2;
+        end else if (wr_en_count > 0 && wr_en_count < 7) begin
+            wr_en_count <= #1 wr_en_count + 1;
             wr_en_stretch <= #1 1;
-        end else if (wr_en_count == 2) begin
+        end else if (wr_en_count == 7) begin
             wr_en_count <= #1 0;
             wr_en_stretch <= #1 0;
         end

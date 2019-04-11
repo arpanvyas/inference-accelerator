@@ -121,13 +121,13 @@ initial begin
             #40;
             #3;
 
-            transaction(2'b00,14'h0001, 16'habcd,0,0);
-            transaction(2'b01,14'h0001, 16'h8fff,0,0);
-            transaction(2'b00,14'h0001, 16'h0121,0,0);
-            transaction(2'b01,14'h0001, 16'h0897,0,0);
-            transaction(2'b00,14'h0001, 16'h0999,0,0);
-            transaction(2'b01,14'h0001, 16'h0999,0,0);
-            transaction(2'b00,14'h0001, 16'h0999,0,0);
+            transaction(2'b00,14'h0001, 16'habcd,1,1);
+            transaction(2'b01,14'h0001, 16'h8fff,1,1);
+            transaction(2'b00,14'h0001, 16'h0121,1,1);
+            transaction(2'b01,14'h0001, 16'h0897,1,1);
+            transaction(2'b00,14'h0001, 16'h0999,1,1);
+            transaction(2'b01,14'h0001, 16'h0999,1,1);
+            transaction(2'b00,14'h0001, 16'h0999,1,1);
 
             #20;
             #100;

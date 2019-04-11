@@ -1,0 +1,142 @@
+//NOTE THAT
+//TX means Slave transfers == Read Operation 
+//RX means Slave receives  == Write Operation
+
+
+module spi_slave(
+
+    //interface with host
+    input               clk,    
+    input               rst,
+    input               tx_data_en,
+    input        [15:0] tx_data,
+    output logic [1:0]  rw_mode,
+    output logic        rw_mode_en,
+    output logic [31:0] rx_data,
+    output logic        rx_data_en,
+    output logic [13:0] addr,
+    output logic        addr_en,
+
+    //interface with slave
+    input       SCLK,
+    input       MOSI,
+    output logic  MISO,
+    input       SS
+);
+
+
+logic [5:0] counter;
+logic [15:0] tx_data_buffer;
+logic [31:0] rx_data_buffer;
+logic [1:0]  mode_buffer;
+logic [13:0] addr;
+logic addr_en;
+logic [1:0] rw_mode;
+logic [15:0] data_wr;
+logic data_wr_en;
+logic [15:0] data_rd;
+logic [15:0] data_rd_send;
+logic data_rd_en;
+
+always@(posedge SCLK,posedge rst)
+begin
+    if(rst) begin
+
+    end else begin
+        if(tx_data_en) begin
+            data_rd_send <= tx_data;//data_rd is mem[addr]
+
+        end
+    end
+
+end
+
+
+always@(posedge SCLK, posedge rst)
+begin
+    if(rst) begin
+        counter <= 0;
+        tx_data_buffer <= 0;
+        rx_data_buffer <= 0;
+        rx_data <= 0;
+        rx_data_en <= 0;
+        SS <= 1;
+        MISO <= 0;
+
+    end else begin
+        
+        addr_en <= 0;
+        rw_mode_en <= 0;
+        rx_data_en <= 0;
+
+        if(!SS) begin
+
+            if(counter == 0) begin
+                rx_data_buffer[18] <= MOSI;
+                rx_data_buffer[31:19] <= rx_data_buffer[30:18];
+                counter <= counter + 1;
+
+            end else if (counter >= 1 && counter <= 13) begin
+                rx_data_buffer <= MOSI;
+                rx_data_buffer[31:19] <= rx_data_buffer[30:18];
+                counter <= counter+1;
+
+            end else if (counter == 14 ) begin
+                addr[13:0] <= rx_data_buffer[31:18]; 
+                addr_en <= 1;
+                rx_data_buffer[16] <= MOSI;
+                rx_data_buffer[17] <= rx_data_buffer[16];
+                counter <= counter + 1;
+
+            end else if (counter == 15 ) begin 
+                rx_data_buffer[16] <= MOSI;
+                rx_data_buffer[17] <= rx_data_buffer[16];
+                counter <= counter + 1;
+                rw_mode <= {rx_data_buffer[16],MOSI};
+                rw_mode_en <= 1;
+            
+            end else if (counter >= 16 && counter <= 31 ) begin
+                if(rw_mode == 2'b00) begin
+                    MISO <= data_rd_send[15];
+                data_rd_send[15:1] <= data_rd_send[14:0];
+                    
+                end else begin //write mode
+                    rx_data_buffer[0] <= MOSI;
+                    rx_data_buffer[15:1] <= rx_data_buffer[14:0];
+                end
+
+                counter <= counter + 1;
+            
+            end else if (counter == 32) begin
+                if(rw_mode == 2'b00) begin
+
+                end else begin //write mode
+                    rx_data <= rx_data_buffer[15:0];
+                    rx_data_en <= 1;
+                end
+
+                counter <= 0;
+                 
+            end
+
+        end else begin
+            counter <= 0;
+            rx_data_buffer <= 0;
+            rw_mode <= 0;
+
+        end
+
+
+    end
+
+
+end
+
+logic gate_sclk;
+assign gate_clk = (counter>1 && counter<=33) ? 1 : 0;
+
+assign SCLK = gate_clk && clk;
+
+
+endmodule
+
