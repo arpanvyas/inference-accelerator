@@ -38,7 +38,7 @@ class mem_param:
     
     #Byte addressable RAM
     ram_memory_start    = 0x00000000
-    ram_memory_end      = 0x003fffff
+    ram_memory_end      = 0x007fffff
     ram_allocation      = ram_memory_end - ram_memory_start + 1
     model_allocation    = ram_allocation/2
     input_allocation    = ram_allocation/8

@@ -10,21 +10,9 @@ from keras.models import model_from_json
 from mem_param import mem_param as mem
 import math
 import binary as b1
-
-
-
+import cv2
 from mem_param import mem_param as mem
 
-main_directory = '/home/vonfaust/data/accelerator/keras/'
-file = 'mnist_cnn_model_int8.h5'
-path = main_directory + file
-model = load_model(path)
-
-weights = model.get_weights()
-conf = model.get_config()
-
-
-mem_map = [] # [ ['0x000100','length_in_bytes','layer#_type_filt.filt#_ch.ch#_img.img#ch'], [], [] ]
 
 def dump_conv(dumpfile,mem_map,mem_start,this_layer):
 
@@ -116,9 +104,95 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
     return mem_ptr
     
 
-#dumpfile = open("test","w")
+def dump_inp_img(dumpfile,this_inp):
 
-#c1 = conf['layers'][0]['config']
+    shape = this_inp.shape
+    input_hei = shape[0]
+    input_wid = shape[1]
 
-#dump_conv(dumpfile,mem_map,0x0,c1,0,weights[0],weights[1])
-#print(*mem_map,sep = "\n")
+    mem_idx = 0
+
+    for h in range(0,input_hei):
+        for w in range(0,input_wid):
+            dat = this_inp[h][w]
+            bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+            dumpfile.write(bina+'\n')
+            mem_idx += mem.word_per_byte
+
+    return mem_idx
+    
+def model_to_ram(all_layers,mem_model_dump,mem_map_dump):
+    
+    mem_map_model = []
+    mem_ptr = mem.ram_model_start
+    
+    mem_model_dump_file = open(mem_model_dump,"w")
+    for this_layer in all_layers:
+        if(this_layer['type'] == "Conv2D"):
+            mem_ptr = dump_conv(mem_model_dump_file,mem_map_model,mem_ptr,this_layer)
+        elif(this_layer['type'] == "Dense"):
+            mem_ptr = dump_dense(mem_model_dump_file,mem_map_model,mem_ptr,this_layer)
+
+
+    mem_map_model_file = open(mem_map_dump,"w")
+    for item in mem_map_model:
+        mem_map_model_file.write("%s\n" % item)
+
+
+    mem_model_dump_file.close()
+    mem_map_model_file.close()
+
+    model_mem_size = mem_ptr - mem.ram_model_start 
+    print("model mem size: ",str(model_mem_size))
+    print("model allocated size: ",str(mem.model_allocation))
+    if(model_mem_size > mem.model_allocation):
+        print("Model memory consumption more than allocated")
+
+    return mem_map_model
+
+
+def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
+    ilf = open(input_list_file)
+    input_list = ilf.read().splitlines()
+
+    mem_map_input = []
+
+
+    dumpfile = open(mem_inp_dump,"w")
+
+    mem_ptr = mem.ram_input_start
+
+    input_num = 0
+
+    for item in input_list:
+        img = cv2.imread(item,0)
+        img = img.astype(float)
+        img /= 255
+        
+        mem_idx = dump_inp_img(dumpfile,img)
+
+
+        memstr = 'input'+str(input_num)
+
+        mem_map_input.append([mem_ptr,mem_idx,memstr])
+        mem_ptr += mem_idx
+        input_num += 1
+
+
+    mem_map_input_file = open(mem_map_dump,"w")
+    for item in mem_map_input:
+        mem_map_input_file.write("%s\n" % item)
+
+
+    ilf.close()
+    mem_map_input_file.close()
+    dumpfile.close()
+    
+
+    input_mem_size = mem_ptr - mem.ram_input_start
+    print("input mem size: ",str(input_mem_size))
+    print("input allocated size: ",str(mem.input_allocation))
+    if(input_mem_size > mem.input_allocation):
+        print("Input memory consumption more than allocated")
+
+    return mem_map_input
