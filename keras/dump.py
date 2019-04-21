@@ -142,11 +142,12 @@ def model_to_ram(all_layers,mem_model_dump,mem_map_dump):
     mem_model_dump_file.close()
     mem_map_model_file.close()
 
+    print("--------------------------------------------------------------")
     model_mem_size = mem_ptr - mem.ram_model_start 
-    print("model mem size: ",str(model_mem_size))
-    print("model allocated size: ",str(mem.model_allocation))
+    print("Model Memory Size: ",str(model_mem_size))
+    print("Model Allocated Memory size: ",str(mem.model_allocation))
     if(model_mem_size > mem.model_allocation):
-        print("Model memory consumption more than allocated")
+        print("Model memory consumption more than allocated.")
 
     return mem_map_model
 
@@ -190,9 +191,181 @@ def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
     
 
     input_mem_size = mem_ptr - mem.ram_input_start
-    print("input mem size: ",str(input_mem_size))
-    print("input allocated size: ",str(mem.input_allocation))
+    print("--------------------------------------------------------------")
+    print("Input Memory Size: ",str(input_mem_size))
+    print("Input Allocated Memory Size: ",str(mem.input_allocation))
     if(input_mem_size > mem.input_allocation):
-        print("Input memory consumption more than allocated")
+        print("Input memory consumption more than allocated.")
 
     return mem_map_input
+
+
+def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
+    #find memlocn of input_index
+    flag = 0
+    for i in range(0,len(input_map)):
+        if(input_map[i][2] == "input"+str(input_index)):
+            mem_input = input_map[i][0]
+            mem_input_size = input_map[i][1]
+            flag = 1
+            break
+
+    if(flag == 0):
+        print("Input Index: "+str(input_index)+" not found in input map.")
+        return
+    else:
+        a = 0
+        #print(mem_input)
+        #print(mem_input_size)
+        #print(i)
+        #return
+
+
+    interm_map = []
+    interm_map.append([mem_input, mem_input_size, 'input_layer0'])
+
+    interm_mem_start    = mem.ram_buffer_start
+    mem_ptr             = interm_mem_start
+
+    l_idx = 1
+    last_map = []
+
+    for layer in all_layers[1:]:
+        #print(layer['type'])
+
+        if(layer['type'] == "Conv2D"):
+            shape   = layer['shape']
+            ch      = shape[3]
+            hei     = shape[1]
+            wid     = shape[2]
+
+            #print('conv',hei,wid,hei*wid,hei*wid*2)
+            
+            for c in range(0,ch):
+                mem_idx = 0
+                mem_idx += hei*wid*mem.word_per_byte
+                interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+                mem_ptr += mem_idx
+            
+        elif(layer['type'] == "Dense"):
+            shape   = layer['shape']
+            nod_inp = shape[0]
+            nod_otp = shape[1]
+        
+            last_layer_type = all_layers[l_idx-1]['type']
+
+            if(last_layer_type == "Flatten"):
+                mem_ptr -= mem_idx_flat
+                
+            elif(last_layer_type == "Dense"): 
+                a = 0
+
+            else:
+                print("No Flatten or Dense before Dense not supported.")
+                return 0
+            
+            for nod in range(0,nod_inp):
+                mem_idx = mem.word_per_byte
+                interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_nod"+str(nod)])
+                mem_ptr += mem_idx
+
+
+            #print('dense',hei,wid,hei*wid,hei*wid*2)
+
+
+        elif(layer['type'] == "MaxPooling2D"):
+            shape   = layer['shape']
+            ch      = shape[3]
+            hei     = shape[1]
+            wid     = shape[2]
+
+            #print('maxpool',hei,wid,hei*wid,hei*wid*2)
+            
+            for c in range(0,ch):
+                mem_idx = 0
+                mem_idx += hei*wid*mem.word_per_byte
+                interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+                mem_ptr += mem_idx
+
+        elif(layer['type'] == "Flatten"):
+            shape   = layer['shape']
+            ch      = shape[3]
+            hei     = shape[1]
+            wid     = shape[2]
+
+            #print('flatten',hei,wid,hei*wid,hei*wid*2)
+            
+            mem_flat_start  = mem_ptr
+            mem_idx_flat    = 0
+            
+
+            for c in range(0,ch):
+                mem_idx = 0
+                mem_idx += hei*wid*mem.word_per_byte
+                interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+                mem_ptr += mem_idx
+                mem_idx_flat += mem_idx
+
+            
+
+        else:
+            print("Layer "+layer['type']+" not supported.")
+
+        l_idx += 1
+
+    #print(*interm_map,sep = "\n")
+
+    interm_map_dump_file = open(interm_map_dump,"w")
+    for item in interm_map:
+        interm_map_dump_file.write("%s\n" % item)
+
+    interm_map_dump_file.close()
+
+
+    interp_mem_size = mem_ptr - mem.ram_buffer_start
+    print("--------------------------------------------------------------")
+    print("Interp Memory Size: ",str(interp_mem_size))
+    print("Interp Allocated Memory Size: ",str(mem.buffer_allocation))
+    if(interp_mem_size > mem.buffer_allocation):
+        print("Interp memory consumption more than allocated.")
+
+    return interm_map
+    
+
+def output_to_ram(all_layers,output_map_dump,input_index):
+    last_layer_idx = len(all_layers) - 1
+    last_layer     = all_layers[last_layer_idx]
+
+
+    if(last_layer['type'] == "Dense"):
+        a = 0
+    else:
+        print("Layer except Dense not supported as last.")
+        return
+    
+    output_map       = []
+    output_mem_start = mem.ram_output_start
+    output_size      = mem.word_per_byte
+
+    mem_ptr          = output_mem_start + input_index*output_size
+    mem_idx          = output_size
+    output_map.append([mem_ptr,mem_idx,'final_output_input'+str(input_index)])
+
+    #print(*output_map, sep = "\n")
+
+    output_map_dump_file = open(output_map_dump,"w")
+
+    for item in output_map:
+        output_map_dump_file.write("%s\n" % item)
+
+    output_map_dump_file.close()
+
+    output_mem_size = mem_ptr - mem.ram_output_start
+    print("--------------------------------------------------------------")
+    print("Output Memory Size: ",str(output_mem_size))
+    print("Output Allocated Memory Size: ",str(mem.output_allocation))
+    if(output_mem_size > mem.output_allocation):
+        print("Output memory consumption more than allocated.")
+
+    return output_map
+    

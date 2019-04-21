@@ -55,6 +55,7 @@ def regmap(filename):
                 regfile[sheetnum][regaddrint] = {}
                 regfile[sheetnum][regaddrint]['name'] = regname
                 regfile[sheetnum][regaddrint]['addr'] = regaddr
+                regfile[sheetnum][regaddrint]['fields'] = {}
                 #print(r,regname)
                 while(r < rowmax and sheet[r,i_regname] == regname):
                     startbit = sheet[r,i_startbit]
@@ -62,7 +63,6 @@ def regmap(filename):
                     access = sheet[r,i_access]
                     fieldsize = sheet[r,i_fldsize]
                     defaultvalue = sheet[r,i_defval]
-                    regfile[sheetnum][regaddrint]['fields'] = {}
                     regfile[sheetnum][regaddrint]['fields'][startbit] = {}
                     regfile[sheetnum][regaddrint]['fields'][startbit]['name'] = fieldname
                     regfile[sheetnum][regaddrint]['fields'][startbit]['access'] = access
@@ -108,6 +108,29 @@ def fieldaddr(regfile,fieldname_requested):
         sheetnum += 1
     #print("Fieldname:",fieldname_requested," not found.")
     return 0
+
+def regaddr(regfile,regname_requested):
+
+    sheetnum = 0
+    for k1 in regfile: #k1 = sheetnum
+        #print(k1)
+        for k2 in k1.keys(): #k2 = regaddrint
+            regname = k1[k2]['name']
+            regaddrint = k2
+            regaddr = k1[k2]['addr']
+            if(regname == regname_requested):
+                regpack = {'regname':regname, 'regaddr':regaddr, 'regaddrint': regaddrint}
+                regpack['sheetnum'] = sheetnum
+                return regpack
+
+        sheetnum += 1
+    #print("Fieldname:",fieldname_requested," not found.")
+    return 0
+
+
+
+
+
 
 #Structure
 #   regfile: list with sheet as index

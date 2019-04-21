@@ -37,6 +37,7 @@ class mem_param:
     
     
     #Byte addressable RAM
+    ram_address_bits    = 32
     ram_memory_start    = 0x00000000
     ram_memory_end      = 0x007fffff
     ram_allocation      = ram_memory_end - ram_memory_start + 1
@@ -60,6 +61,15 @@ class mem_param:
 
     #scaling factor
     scale = 16
+
+
+
+
+    #Register File Parameters
+    addr_size = 14
+    type_size = 2
+    data_size = 16
+
 
 
 if __name__ == "__main__":

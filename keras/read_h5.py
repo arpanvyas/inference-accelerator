@@ -278,14 +278,21 @@ if __name__ == "__main__":
     a = 0
     #print(this_layer_all[0])
 
-    #for l in this_layer_all:
-    #    empty = {}
-    #    for k in l.keys():
-    #        if(k == 'weight' or k == 'bias'):
-    #            continue
-    #        else:
-    #            empty[k]=l[k]
-    #    print(empty)
+    main_directory  = '/home/vonfaust/data/accelerator/keras/'
+    h5_path = main_directory+'mnist_cnn_model_int8.h5'
+
+    this_layer_all = read_h5(h5_path)    
+
+
+
+    for l in this_layer_all:
+        empty = {}
+        for k in l.keys():
+            if(k == 'weight' or k == 'bias'):
+                continue
+            else:
+                empty[k]=l[k]
+        print(empty)
 
 
 

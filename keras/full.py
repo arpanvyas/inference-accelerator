@@ -39,19 +39,33 @@ input_list_file = 'input_list.txt'
 # III.  Create Memory Dumps and Maps for Model and Inputs
 ##########################################################################
 
-#i.  Dump Model
+#i.  Dump Model : Same for one Model
 mem_model_dump  =   hw_dir+'model.dat'
 model_map_dump  =   hw_dir+'model.map'
+
 model_map       =   dump.model_to_ram(all_layers,mem_model_dump,model_map_dump)
 
-#ii. Dump Input 
+#ii. Dump Input : Same for one set of inputs
 input_file_list =   hw_dir+'input_list.txt'
 mem_inp_dump    =   hw_dir+'input.dat'
 inp_map_dump    =   hw_dir+'input.map'
 
 input_map       =   dump.img_to_ram(input_file_list,mem_inp_dump,inp_map_dump)
 
+#iii.Dump map for intermediate : Same for one input
+interm_map_dump =   hw_dir+'interm.map'
+input_index     =   5
 
+interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,input_index)
+
+#iv. Dump map for output : Same for one input, may be combined for multiple inputs
+output_map_dump =   hw_dir+'output.map'
+input_index     =   5
+
+output_map      =   dump.output_to_ram(all_layers,output_map_dump,input_index)
+
+
+print("--------------------------------------------------------------")
 
 ##########################################################################
 #IV.    Create program to be loaded
