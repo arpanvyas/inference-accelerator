@@ -13,6 +13,7 @@ import dump as dump
 import read_h5 as rdh5
 import reg_map as reg
 import program as prog
+import assembler as asm
 
 
 main_directory  = '/home/vonfaust/data/accelerator/keras/'
@@ -89,7 +90,16 @@ regfile = reg.regmap("../utils/register_set.ods")
 model_idx_start = mem.ram_model_start
 interm_idx_start = mem.ram_buffer_start
 
-instr = prog.prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,regfile)
+
+#IV.i Create Assembly Instruction
+assembly_dump = hw_dir+"program.asm"
+assembly = prog.prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,regfile, assembly_dump)
+
+#IV.ii Create Machine Instructions
+#   Can put some optimizations here
+
+machine_dump = hw_dir+"program.mac"
+machine = asm.assembler(assembly,regfile, machine_dump)
 
 
-print(instr)
+
