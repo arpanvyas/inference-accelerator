@@ -17,7 +17,7 @@ from mem_param import mem_param as mem
 def dump_conv(dumpfile,mem_map,mem_start,this_layer):
 
     progparam = []
-   
+
     layer_num = this_layer['number']
     wt = this_layer['weight']
     use_bias = this_layer['use_bias']
@@ -37,18 +37,18 @@ def dump_conv(dumpfile,mem_map,mem_start,this_layer):
 
     for filt in range(0,filters):
         mem_idx0 = 0
-	for ch in range(0,channels):
+        for ch in range(0,channels):
             mem_idx = 0
             for row in range(0,kernel_h):
-                    for col in range(0,kernel_w):
-                        dat = wt[row][col][ch][filt]*mem.scale
-                        bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
-                        dumpfile.write(bina+'\n')
-                        mem_idx += mem.word_per_byte
+                for col in range(0,kernel_w):
+                    dat = wt[row][col][ch][filt]*mem.scale
+                    bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+                    dumpfile.write(bina+'\n')
+                    mem_idx += mem.word_per_byte
             memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_ch'+str(ch)+'_coeff'
             mem_map.append([mem_ptr,mem_idx,memstr])
             mem_ptr +=mem_idx
-            
+
 
 
         if(use_bias):
@@ -56,17 +56,17 @@ def dump_conv(dumpfile,mem_map,mem_start,this_layer):
             bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
             dumpfile.write(bina+'\n')
             mem_idx0 += mem.word_per_byte
-            memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_ch'+str(ch)+'_bias'
+            memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_bias'
             mem_map.append([mem_ptr,mem_idx0,memstr])
             mem_ptr += mem_idx0
 
     return mem_ptr
-    
-       
+
+
 def dump_dense(dumpfile,mem_map,mem_start,this_layer):
 
     progparam = []
-   
+
     layer_num = this_layer['number']
     wt = this_layer['weight']
     use_bias = this_layer['use_bias']
@@ -102,7 +102,7 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
             mem_ptr +=mem_idx0
 
     return mem_ptr
-    
+
 
 def dump_inp_img(dumpfile,this_inp):
 
@@ -120,12 +120,12 @@ def dump_inp_img(dumpfile,this_inp):
             mem_idx += mem.word_per_byte
 
     return mem_idx
-    
+
 def model_to_ram(all_layers,mem_model_dump,mem_map_dump):
-    
+
     mem_map_model = []
     mem_ptr = mem.ram_model_start
-    
+
     mem_model_dump_file = open(mem_model_dump,"w")
     for this_layer in all_layers:
         if(this_layer['type'] == "Conv2D"):
@@ -169,7 +169,7 @@ def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
         img = cv2.imread(item,0)
         img = img.astype(float)
         img /= 255
-        
+
         mem_idx = dump_inp_img(dumpfile,img)
 
 
@@ -188,7 +188,7 @@ def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
     ilf.close()
     mem_map_input_file.close()
     dumpfile.close()
-    
+
 
     input_mem_size = mem_ptr - mem.ram_input_start
     print("--------------------------------------------------------------")
@@ -200,17 +200,25 @@ def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
     return mem_map_input
 
 
-def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
+def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
     #find memlocn of input_index
-    flag = 0
+    flag_ip = 0
     for i in range(0,len(input_map)):
         if(input_map[i][2] == "input"+str(input_index)):
             mem_input = input_map[i][0]
             mem_input_size = input_map[i][1]
-            flag = 1
+            flag_ip = 1
             break
 
-    if(flag == 0):
+    #find memlocn of output_index
+    flag_op = 0
+    for i in range(0,len(output_map)):
+        if("final_output_input"+str(input_index) in output_map[i][2]):
+            mem_output = output_map[i][0]
+            flag_op = 1
+            break
+
+    if(flag_ip == 0):
         print("Input Index: "+str(input_index)+" not found in input map.")
         return
     else:
@@ -220,9 +228,25 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
         #print(i)
         #return
 
+    if(flag_op == 0):
+        print("Output Index: "+str(input_index)+" not found in output map.")
+        return
+
 
     interm_map = []
-    interm_map.append([mem_input, mem_input_size, 'input_layer0'])
+
+    first_layer = all_layers[0]
+    if(first_layer['type'] == "Conv2D"):
+        ch_first    = first_layer['shape'][3]
+        size_first  = first_layer['shape'][1]*first_layer['shape'][2]
+        mem_ptr     = mem_input
+        for c in range(0,ch_first):
+            mem_idx     = size_first*mem.word_per_byte
+            interm_map.append([mem_ptr, mem_idx, 'input_layer0_ch'+str(c)])
+            mem_ptr    += mem_idx
+    else:
+        print("Conv2D as not first layer not supported.")
+        return
 
     interm_mem_start    = mem.ram_buffer_start
     mem_ptr             = interm_mem_start
@@ -240,30 +264,30 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
             wid     = shape[2]
 
             #print('conv',hei,wid,hei*wid,hei*wid*2)
-            
+
             for c in range(0,ch):
                 mem_idx = 0
                 mem_idx += hei*wid*mem.word_per_byte
                 interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
                 mem_ptr += mem_idx
-            
+
         elif(layer['type'] == "Dense"):
             shape   = layer['shape']
             nod_inp = shape[0]
             nod_otp = shape[1]
-        
+
             last_layer_type = all_layers[l_idx-1]['type']
 
             if(last_layer_type == "Flatten"):
                 mem_ptr -= mem_idx_flat
-                
+
             elif(last_layer_type == "Dense"): 
                 a = 0
 
             else:
                 print("No Flatten or Dense before Dense not supported.")
                 return 0
-            
+
             for nod in range(0,nod_inp):
                 mem_idx = mem.word_per_byte
                 interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_nod"+str(nod)])
@@ -280,7 +304,7 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
             wid     = shape[2]
 
             #print('maxpool',hei,wid,hei*wid,hei*wid*2)
-            
+
             for c in range(0,ch):
                 mem_idx = 0
                 mem_idx += hei*wid*mem.word_per_byte
@@ -294,10 +318,10 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
             wid     = shape[2]
 
             #print('flatten',hei,wid,hei*wid,hei*wid*2)
-            
+
             mem_flat_start  = mem_ptr
             mem_idx_flat    = 0
-            
+
 
             for c in range(0,ch):
                 mem_idx = 0
@@ -306,12 +330,31 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
                 mem_ptr += mem_idx
                 mem_idx_flat += mem_idx
 
-            
+
 
         else:
             print("Layer "+layer['type']+" not supported.")
 
         l_idx += 1
+
+
+    num_layers = len(all_layers)
+    last_layer = all_layers[num_layers - 1]
+    if(last_layer['type'] == "Dense"):
+        opnu_last   = last_layer['shape'][1]
+        size_first  = 1
+        mem_ptr_out     = mem_output
+        for c in range(0,opnu_last):
+            mem_idx     = size_first*mem.word_per_byte
+            interm_map.append([mem_ptr_out, mem_idx, 'output_layer'+str(num_layers-1)+'_nod'+str(c)])
+            mem_ptr_out    += mem_idx
+    else:
+        print("Dense as not last layer not supported.")
+        return
+
+
+
+
 
     #print(*interm_map,sep = "\n")
 
@@ -329,29 +372,37 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,input_index):
     if(interp_mem_size > mem.buffer_allocation):
         print("Interp memory consumption more than allocated.")
 
+
+
+
     return interm_map
-    
+
 
 def output_to_ram(all_layers,output_map_dump,input_index):
     last_layer_idx = len(all_layers) - 1
     last_layer     = all_layers[last_layer_idx]
 
+    output_map       = []
+    output_mem_start = mem.ram_output_start
 
     if(last_layer['type'] == "Dense"):
         a = 0
+        outp_nodes = last_layer['shape'][1]
+        mem_ptr          = output_mem_start
+        mem_idx          = mem.word_per_byte
+
+        for nod in range(0,outp_nodes):
+            output_map.append([mem_ptr,mem_idx,'final_output_input'+str(input_index)+'_node'+str(nod)])
+            mem_ptr = mem_ptr+mem_idx
+
     else:
         print("Layer except Dense not supported as last.")
         return
-    
-    output_map       = []
-    output_mem_start = mem.ram_output_start
-    output_size      = mem.word_per_byte
 
-    mem_ptr          = output_mem_start + input_index*output_size
-    mem_idx          = output_size
-    output_map.append([mem_ptr,mem_idx,'final_output_input'+str(input_index)])
 
-    #print(*output_map, sep = "\n")
+
+
+
 
     output_map_dump_file = open(output_map_dump,"w")
 
@@ -368,4 +419,4 @@ def output_to_ram(all_layers,output_map_dump,input_index):
         print("Output memory consumption more than allocated.")
 
     return output_map
-    
+

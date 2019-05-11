@@ -156,7 +156,7 @@ def read_h5(h5_path):
             next_layer['hei'] = (hei - k_hei + 2*pad_hei)/stride_hei + 1
             next_layer['wid'] = (wid - k_wid + 2*pad_wid)/stride_wid + 1
             next_layer['shape'] = [0,next_layer['hei'],next_layer['wid'], next_layer['channels']]
-
+            
                
             if(this_layer['use_bias']):
                 wt_num += 2
@@ -191,7 +191,7 @@ def read_h5(h5_path):
 
             next_layer = {}
             next_layer['shape'] = this_layer['output_nodes']
-            
+
         
             if(this_layer['use_bias']):
                 wt_num += 2
@@ -222,6 +222,7 @@ def read_h5(h5_path):
             next_layer['hei'] = this_layer['shape'][1]/this_layer['stride_shape'][0]
             next_layer['wid'] = this_layer['shape'][2]/this_layer['stride_shape'][1]
             next_layer['shape'] = [0,next_layer['hei'],next_layer['wid'],next_layer['channels']]
+
             
         elif(layer_type == "Flatten"):
             if(flag == 0):
@@ -244,9 +245,13 @@ def read_h5(h5_path):
             
             next_layer = {}
             next_layer['shape'] = this_layer['output_elements']
+
         
         next_layer['type'] = layer_type
         next_layer['prev_number'] = layer_num
+        
+        this_layer['next_shape'] = next_layer['shape']
+
 
         this_layer_all.append(this_layer)
         next_layer_all.append(next_layer)

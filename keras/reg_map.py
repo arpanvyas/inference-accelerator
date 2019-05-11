@@ -79,33 +79,49 @@ def regmap(filename):
     return regfile
 
 
-def fieldaddr(regfile,fieldname_requested):
+def fieldaddr(regfile,sheetname,fieldname_requested):
 
-    sheetnum = 0
-    for k1 in regfile: #k1 = sheetnum
-        #print(k1)
-        for k2 in k1.keys(): #k2 = regaddrint
-            regname = k1[k2]['name']
-            regaddrint = k2
-            regaddr = k1[k2]['addr']
-            for k3 in k1[k2]['fields'].keys(): #k3 = startbit
-                startbit = k3
-                for k4 in k1[k2]['fields'][k3]:
-                    fld = k1[k2]['fields'][k3]
-                    fieldname = fld['name']
-                    defval = fld['defval']
-                    access = fld['access']
-                    fldsize = fld['fieldsize']
-                    if(fieldname == fieldname_requested):
-                        fieldpack = {'regname': regname, 'regaddr':regaddr, 'regaddrint': regaddrint}
-                        fieldpack['fieldname'] = fieldname
-                        fieldpack['startbit'] = startbit
-                        fieldpack['defval'] = defval
-                        fieldpack['access'] = access
-                        fieldpack['length'] = fldsize
-                        fieldpack['sheetnum'] = sheetnum
-                        return fieldpack
-        sheetnum += 1
+    if(sheetname == "general"):
+        sheetnum = 0
+    elif(sheetname == "conv"):
+        sheetnum = 1
+    elif(sheetname == "pool"):
+        sheetnum = 2
+    elif(sheetname == "nl"):
+        sheetnum = 3
+    elif(sheetname == "dense" or sheetname == "fc"):
+        sheetnum = 4
+    else:
+        print("Sheetname :"+ str(sheetname)+" not found.")
+        return
+
+  
+
+
+    k1 = regfile[sheetnum]
+    #print(k1)
+    for k2 in k1.keys(): #k2 = regaddrint
+        regname = k1[k2]['name']
+        regaddrint = k2
+        regaddr = k1[k2]['addr']
+        for k3 in k1[k2]['fields'].keys(): #k3 = startbit
+            startbit = k3
+            for k4 in k1[k2]['fields'][k3]:
+                fld = k1[k2]['fields'][k3]
+                fieldname = fld['name']
+                defval = fld['defval']
+                access = fld['access']
+                fldsize = fld['fieldsize']
+                if(fieldname == fieldname_requested):
+                    fieldpack = {'regname': regname, 'regaddr':regaddr, 'regaddrint': regaddrint}
+                    fieldpack['fieldname'] = fieldname
+                    fieldpack['startbit'] = startbit
+                    fieldpack['defval'] = defval
+                    fieldpack['access'] = access
+                    fieldpack['length'] = fldsize
+                    fieldpack['sheetnum'] = sheetnum
+                    return fieldpack
+    sheetnum += 1
     #print("Fieldname:",fieldname_requested," not found.")
     return 0
 
@@ -153,7 +169,7 @@ if __name__ == "__main__":
             a = 0
 
     fldreq = "mem_save_buffer_addr"
-    fld = fieldaddr(regfile,fldreq)
+    fld = fieldaddr(regfile,"general",fldreq)
     if(fld == 0):
         print("Fieldname: ",fldreq," not found.")
     else:

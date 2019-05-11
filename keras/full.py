@@ -12,6 +12,7 @@ import binary as b1
 import dump as dump
 import read_h5 as rdh5
 import reg_map as reg
+import program as prog
 
 
 main_directory  = '/home/vonfaust/data/accelerator/keras/'
@@ -52,17 +53,19 @@ inp_map_dump    =   hw_dir+'input.map'
 
 input_map       =   dump.img_to_ram(input_file_list,mem_inp_dump,inp_map_dump)
 
-#iii.Dump map for intermediate : Same for one input
-interm_map_dump =   hw_dir+'interm.map'
-input_index     =   5
-
-interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,input_index)
-
-#iv. Dump map for output : Same for one input, may be combined for multiple inputs
+#iii. Dump map for output : Same for one input, may be combined for multiple inputs
 output_map_dump =   hw_dir+'output.map'
 input_index     =   5
 
 output_map      =   dump.output_to_ram(all_layers,output_map_dump,input_index)
+
+#iv.Dump map for intermediate : Same for one input
+interm_map_dump =   hw_dir+'interm.map'
+input_index     =   5
+
+interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index)
+
+
 
 
 print("--------------------------------------------------------------")
@@ -81,3 +84,12 @@ print("--------------------------------------------------------------")
 #
 ##########################################################################
 
+regfile = reg.regmap("../utils/register_set.ods")
+
+model_idx_start = mem.ram_model_start
+interm_idx_start = mem.ram_buffer_start
+
+instr = prog.prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,regfile)
+
+
+print(instr)
