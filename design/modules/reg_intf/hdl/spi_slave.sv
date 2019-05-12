@@ -10,7 +10,7 @@ module spi_slave(
 
     //REG INTF
     input           [15:0]  tx_data,
-//    input                   tx_data_en,
+    //input                   tx_data_en,
     output  logic   [13:0]  rx_addr,
     output  logic           rx_addr_en,
     output  logic   [1:0]   rx_rw_mode,

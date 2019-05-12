@@ -185,7 +185,7 @@ def ram_to_buffer_instr(ram_start, ram_number,buffer_block, buffer_addr,regfile)
     regdict = {'name': 'REG_0006','fields':{'mem_load_buffer_addr':buffer_addr16}, 'sheetname' : "general"}
     instr.append(write_reg_cmd(regfile,regdict))
 
-    regdict = {'name' : 'REG_0013', 'fields' : {'start_loading_buffer':1}, 'sheetname' : "general" }
+    regdict = {'name' : 'REG_0080', 'fields' : {'start_loading_buffer':1}, 'sheetname' : "general" }
     instr.append(write_reg_cmd(regfile,regdict))
 
     return instr
@@ -220,16 +220,16 @@ def buffer_to_ram_instr(ram_start, ram_number,buffer_block, buffer_addr,regfile)
     regdict['fields'] = {'mem_save_words_upper': ram_num_upperD} 
     instr.append(write_reg_cmd(regfile,regdict))
 
-    regdict = {'name':'REG_0010', 'fields':{}, 'sheetname' : "general"}
+    regdict = {'name':'REG_000a', 'fields':{}, 'sheetname' : "general"}
     regdict['fields'] = {'mem_save_words_lower' : ram_num_lowerD} 
     instr.append(write_reg_cmd(regfile,regdict))
 
     buffer_addr16 = buffer_block*pow(2,8)+buffer_addr
 
-    regdict = {'name': 'REG_0011','fields':{'mem_save_buffer_addr':buffer_addr16}, 'sheetname' : "general"}
+    regdict = {'name': 'REG_000b','fields':{'mem_save_buffer_addr':buffer_addr16}, 'sheetname' : "general"}
     instr.append(write_reg_cmd(regfile,regdict))
 
-    regdict = {'name' : 'REG_0013', 'fields' : {'start_saving_buffer':1}, 'sheetname' : "general" }
+    regdict = {'name' : 'REG_0080', 'fields' : {'start_saving_buffer':1}, 'sheetname' : "general" }
     instr.append(write_reg_cmd(regfile,regdict))
 
     return instr
@@ -358,7 +358,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
 
     #iii.d. Issue start
-    regdict = {'name':'REG_0013','fields':{'start':1}, 'sheetname' : "general"}
+    regdict = {'name':'REG_0080','fields':{'start':1}, 'sheetname' : "general"}
     instr.append(write_reg_cmd(regfile,regdict))
 
     #iv. Save Output
@@ -463,7 +463,7 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
 
 
     #iii.d. Issue start
-    regdict = {'name':'REG_0013','fields':{'start':1}, 'sheetname' : "general"}
+    regdict = {'name':'REG_0080','fields':{'start':1}, 'sheetname' : "general"}
     instr.append(write_reg_cmd(regfile,regdict))
 
     #iv. Save Output
@@ -585,7 +585,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
 
 
     #iii.c Issue Start
-    regdict = {'name':'REG_0013','fields':{'start':1}, 'sheetname' : "general"}
+    regdict = {'name':'REG_0080','fields':{'start':1}, 'sheetname' : "general"}
     instr.append(write_reg_cmd(regfile,regdict))
 
     #iv Save Output
@@ -671,7 +671,7 @@ if __name__ == "__main__":
 
 
     #wr_dict = { 'name': 'REG_0001' , 'fields' : {'store_to': 1, 'layer_type' : 7}}
-    wr_dict = { 'name': 'REG_0013'}
+    wr_dict = { 'name': 'REG_0080'}
     wr_dict['fields'] = {}
     wr_dict['fields']['start'] = 1
     wr_dict['fields']['abrupt_end'] = 1

@@ -13,7 +13,7 @@ def assembler(assembly,regfile,machine_dump):
             data    = valid_write.group(2)
             regpack = reg.regaddr(regfile,regname)
             #print(regname, data)
-            instr_this = "01"+b1.int2bin(regpack['regaddrint'],0,16)+b1.int2bin(int(data,16),0,16)
+            instr_this = "01"+b1.int2bin(regpack['regaddrint'],0,14)+b1.int2bin(int(data,16),0,16)
             #print(instr_this)
             machine.append(instr_this)
         elif valid_read:
@@ -21,7 +21,7 @@ def assembler(assembly,regfile,machine_dump):
             data    = valid_write.group(2)
             regpack = reg.regaddr(regfile,regname)
             #print(regname, data)
-            instr_this = "10"+b1.int2bin(regpack['regaddrint'],0,16)+b1.int2bin(int(data,16),0,16)
+            instr_this = "10"+b1.int2bin(regpack['regaddrint'],0,14)+b1.int2bin(int(data,16),0,16)
             #print(instr_this)
             machine.append(instr_this)
         else:

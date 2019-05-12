@@ -1,6 +1,7 @@
 
 RTL_FILES = ../hdl/reg_intf.sv \
 			../hdl/spi_slave.sv \
+			../hdl/reg_intf_mux.sv \
 			../hdl/regfile_conv.sv \
 			../hdl/regfile_fc.sv \
 			../hdl/regfile_general_config.sv \

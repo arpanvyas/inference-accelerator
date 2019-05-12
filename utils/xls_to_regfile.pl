@@ -284,8 +284,11 @@ foreach my $reg_addr (sort keys %$db) {
                 unshift @veriassign_b2, num2veri($default,$fieldsize),",";
                 unshift @veriassign_b1 , "$regname"."[$addit:$startbit],";
                 push @veriwoc_1, pad("$fieldname"."_wr <= #1 "."$fieldsize"."'h$default;",2);
+                push @veriwoc_1, pad("$fieldname"."_wr_en <= #1 0;",2);
                 push @veriwoc_2, pad("$fieldname"."_wr <= #1 write_data"."[$addit:$startbit];",3);
                 push @veriwoc_2, pad("$fieldname"."_wr_en <= #1 1;",3);
+                push @veriwoc_3, pad("$fieldname"."_wr <= #1 "."$fieldsize"."'h$default;",2);
+                push @veriwoc_3, pad("$fieldname"."_wr_en <= #1 0;",2);
 
             } else {
                 unshift @veriassign_b2 , "$fieldname,";
@@ -358,6 +361,8 @@ foreach my $reg_addr (sort keys %$db) {
         push @veriwoc, pad("end else begin",1);
         push @veriwoc, pad("if (wr_en && addr == ".num2veri($reg_addr,$addr_len).") begin",2);
         push @veriwoc, @veriwoc_2;
+        push @veriwoc, pad("end else begin",2);
+        push @veriwoc, @veriwoc_3;
         push @veriwoc, pad("end",2), pad("end",1),pad("end",0);
     }
 
