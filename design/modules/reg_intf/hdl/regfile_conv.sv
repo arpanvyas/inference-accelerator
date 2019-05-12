@@ -26,9 +26,10 @@ module regfile_conv (
 	input	logic	[15:0]	CONV_0006__filter_ch,
 
 	//CONV_0007
-	output	logic	[15:0]	CONV_0007__filter_out_ch,
+	output	logic	[15:0]	CONV_0007__filter_num,
 
 	//CONV_0008
+	output	logic	[7:0]	CONV_0008__stride_horiz,
 	output	logic	[7:0]	CONV_0008__stride_vert,
 
 	//CONV_0009
@@ -197,7 +198,7 @@ assign	{CONV_0006[15:0] }	=	{ CONV_0006__filter_ch };
 
 
 //REGISTER CONV_0007
-assign	{CONV_0007__filter_out_ch }	=	{ CONV_0007[15:0] };
+assign	{CONV_0007__filter_num }	=	{ CONV_0007[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -214,14 +215,14 @@ end
 
 
 //REGISTER CONV_0008
-assign	{CONV_0008__stride_vert }	=	{ CONV_0008[7:0] };
+assign	{CONV_0008__stride_vert,CONV_0008__stride_horiz }	=	{ CONV_0008[15:8],CONV_0008[7:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
-		{ CONV_0008[7:0] } <= #1 { 8'h0 };
+		{ CONV_0008[15:8],CONV_0008[7:0] } <= #1 { 8'h0,8'h0 };
 	end else begin
 		if (wr_en && addr == 14'h108) begin
-			{ CONV_0008[7:0] } <= #1 { write_data[7:0] };
+			{ CONV_0008[15:8],CONV_0008[7:0] } <= #1 { write_data[15:8],write_data[7:0] };
 		end
 	end
 end

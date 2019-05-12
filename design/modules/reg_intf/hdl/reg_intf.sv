@@ -151,30 +151,45 @@ begin
         default : tx_data = 16'h0; 
     endcase
 end
-
 //INSTANTIATING regfile_general_config_inst
 
 logic	[3:0]		REG_0001__store_to;
 logic	[11:0]		REG_0001__layer_type;
-logic   [15:0]  REG_0002__mem_load_start_upper;
+logic	[15:0]		REG_0002__mem_load_start_upper;
 logic	[15:0]		REG_0003__mem_load_start_lower;
-logic	[15:0]		REG_0004__mem_save_start_upper;
-logic	[15:0]		REG_0005__mem_save_start_lower;
-logic	[15:0]		REG_0006__status;
-logic			REG_0007__flush_buff2_to_ext_mem_wr;
-logic			REG_0007__flush_buff2_to_ext_mem_wr_en;
-logic			REG_0007__abrupt_end_wr;
-logic			REG_0007__abrupt_end_wr_en;
-logic			REG_0007__reset_wr;
-logic			REG_0007__reset_wr_en;
-logic			REG_0007__digital_reset_wr;
-logic			REG_0007__digital_reset_wr_en;
-logic			REG_0007__flush_buff1_to_ext_mem_wr;
-logic			REG_0007__flush_buff1_to_ext_mem_wr_en;
-logic			REG_0007__load_buff1_from_ext_mem_wr;
-logic			REG_0007__load_buff1_from_ext_mem_wr_en;
-logic			REG_0007__load_buff2_from_ext_mem_wr;
-logic			REG_0007__load_buff2_from_ext_mem_wr_en;
+logic	[15:0]		REG_0004__mem_load_words_upper;
+logic	[15:0]		REG_0005__mem_load_words_lower;
+logic	[15:0]		REG_0006__mem_load_buffer_addr;
+logic	[15:0]		REG_0007__mem_save_start_upper;
+logic	[15:0]		REG_0008__mem_save_start_lower;
+logic	[15:0]		REG_0009__mem_save_words_upper;
+logic	[15:0]		REG_0010__mem_save_words_lower;
+logic	[15:0]		REG_0011__mem_save_buffer_addr;
+logic	[15:0]		REG_0012__status;
+logic			REG_0013__start_wr;
+logic			REG_0013__start_wr_en;
+logic			REG_0013__abrupt_end_wr;
+logic			REG_0013__abrupt_end_wr_en;
+logic			REG_0013__reset_wr;
+logic			REG_0013__reset_wr_en;
+logic			REG_0013__digital_reset_wr;
+logic			REG_0013__digital_reset_wr_en;
+logic			REG_0013__flush_buff1_to_ext_mem_wr;
+logic			REG_0013__flush_buff1_to_ext_mem_wr_en;
+logic			REG_0013__flush_buff2_to_ext_mem_wr;
+logic			REG_0013__flush_buff2_to_ext_mem_wr_en;
+logic			REG_0013__load_buff1_from_ext_mem_wr;
+logic			REG_0013__load_buff1_from_ext_mem_wr_en;
+logic			REG_0013__load_buff2_from_ext_mem_wr;
+logic			REG_0013__load_buff2_from_ext_mem_wr_en;
+logic			REG_0013__start_loading_buffer_wr;
+logic			REG_0013__start_loading_buffer_wr_en;
+logic			REG_0013__start_saving_buffer_wr;
+logic			REG_0013__start_saving_buffer_wr_en;
+logic			REG_0014__buffer_loaded_wr;
+logic			REG_0014__buffer_loaded_wr_en;
+logic			REG_0014__buffer_saved_wr;
+logic			REG_0014__buffer_saved_wr_en;
 
 regfile_general_config regfile_general_config_inst (
 	.clk(clk),
@@ -186,25 +201,41 @@ regfile_general_config regfile_general_config_inst (
 	.read_data_GENERAL_CONFIG(read_data_GENERAL_CONFIG),
 	.REG_0001__store_to(REG_0001__store_to),
 	.REG_0001__layer_type(REG_0001__layer_type),
-    .REG_0002__mem_load_start_upper(REG_0002__mem_load_start_upper),
+	.REG_0002__mem_load_start_upper(REG_0002__mem_load_start_upper),
 	.REG_0003__mem_load_start_lower(REG_0003__mem_load_start_lower),
-	.REG_0004__mem_save_start_upper(REG_0004__mem_save_start_upper),
-	.REG_0005__mem_save_start_lower(REG_0005__mem_save_start_lower),
-	.REG_0006__status(REG_0006__status),
-	.REG_0007__flush_buff2_to_ext_mem_wr(REG_0007__flush_buff2_to_ext_mem_wr),
-	.REG_0007__flush_buff2_to_ext_mem_wr_en(REG_0007__flush_buff2_to_ext_mem_wr_en),
-	.REG_0007__abrupt_end_wr(REG_0007__abrupt_end_wr),
-	.REG_0007__abrupt_end_wr_en(REG_0007__abrupt_end_wr_en),
-	.REG_0007__reset_wr(REG_0007__reset_wr),
-	.REG_0007__reset_wr_en(REG_0007__reset_wr_en),
-	.REG_0007__digital_reset_wr(REG_0007__digital_reset_wr),
-	.REG_0007__digital_reset_wr_en(REG_0007__digital_reset_wr_en),
-	.REG_0007__flush_buff1_to_ext_mem_wr(REG_0007__flush_buff1_to_ext_mem_wr),
-	.REG_0007__flush_buff1_to_ext_mem_wr_en(REG_0007__flush_buff1_to_ext_mem_wr_en),
-	.REG_0007__load_buff1_from_ext_mem_wr(REG_0007__load_buff1_from_ext_mem_wr),
-	.REG_0007__load_buff1_from_ext_mem_wr_en(REG_0007__load_buff1_from_ext_mem_wr_en),
-	.REG_0007__load_buff2_from_ext_mem_wr(REG_0007__load_buff2_from_ext_mem_wr),
-	.REG_0007__load_buff2_from_ext_mem_wr_en(REG_0007__load_buff2_from_ext_mem_wr_en)
+	.REG_0004__mem_load_words_upper(REG_0004__mem_load_words_upper),
+	.REG_0005__mem_load_words_lower(REG_0005__mem_load_words_lower),
+	.REG_0006__mem_load_buffer_addr(REG_0006__mem_load_buffer_addr),
+	.REG_0007__mem_save_start_upper(REG_0007__mem_save_start_upper),
+	.REG_0008__mem_save_start_lower(REG_0008__mem_save_start_lower),
+	.REG_0009__mem_save_words_upper(REG_0009__mem_save_words_upper),
+	.REG_0010__mem_save_words_lower(REG_0010__mem_save_words_lower),
+	.REG_0011__mem_save_buffer_addr(REG_0011__mem_save_buffer_addr),
+	.REG_0012__status(REG_0012__status),
+	.REG_0013__start_wr(REG_0013__start_wr),
+	.REG_0013__start_wr_en(REG_0013__start_wr_en),
+	.REG_0013__abrupt_end_wr(REG_0013__abrupt_end_wr),
+	.REG_0013__abrupt_end_wr_en(REG_0013__abrupt_end_wr_en),
+	.REG_0013__reset_wr(REG_0013__reset_wr),
+	.REG_0013__reset_wr_en(REG_0013__reset_wr_en),
+	.REG_0013__digital_reset_wr(REG_0013__digital_reset_wr),
+	.REG_0013__digital_reset_wr_en(REG_0013__digital_reset_wr_en),
+	.REG_0013__flush_buff1_to_ext_mem_wr(REG_0013__flush_buff1_to_ext_mem_wr),
+	.REG_0013__flush_buff1_to_ext_mem_wr_en(REG_0013__flush_buff1_to_ext_mem_wr_en),
+	.REG_0013__flush_buff2_to_ext_mem_wr(REG_0013__flush_buff2_to_ext_mem_wr),
+	.REG_0013__flush_buff2_to_ext_mem_wr_en(REG_0013__flush_buff2_to_ext_mem_wr_en),
+	.REG_0013__load_buff1_from_ext_mem_wr(REG_0013__load_buff1_from_ext_mem_wr),
+	.REG_0013__load_buff1_from_ext_mem_wr_en(REG_0013__load_buff1_from_ext_mem_wr_en),
+	.REG_0013__load_buff2_from_ext_mem_wr(REG_0013__load_buff2_from_ext_mem_wr),
+	.REG_0013__load_buff2_from_ext_mem_wr_en(REG_0013__load_buff2_from_ext_mem_wr_en),
+	.REG_0013__start_loading_buffer_wr(REG_0013__start_loading_buffer_wr),
+	.REG_0013__start_loading_buffer_wr_en(REG_0013__start_loading_buffer_wr_en),
+	.REG_0013__start_saving_buffer_wr(REG_0013__start_saving_buffer_wr),
+	.REG_0013__start_saving_buffer_wr_en(REG_0013__start_saving_buffer_wr_en),
+	.REG_0014__buffer_loaded_wr(REG_0014__buffer_loaded_wr),
+	.REG_0014__buffer_loaded_wr_en(REG_0014__buffer_loaded_wr_en),
+	.REG_0014__buffer_saved_wr(REG_0014__buffer_saved_wr),
+	.REG_0014__buffer_saved_wr_en(REG_0014__buffer_saved_wr_en)
 );
 
 //INSTANTIATING regfile_conv_inst
@@ -215,7 +246,8 @@ logic	[15:0]		CONV_0003__data_ch;
 logic	[15:0]		CONV_0004__filter_wid;
 logic	[15:0]		CONV_0005__filter_hei;
 logic	[15:0]		CONV_0006__filter_ch;
-logic	[15:0]		CONV_0007__filter_out_ch;
+logic	[15:0]		CONV_0007__filter_num;
+logic	[7:0]		CONV_0008__stride_horiz;
 logic	[7:0]		CONV_0008__stride_vert;
 logic	[15:0]		CONV_0009__data_load_msb;
 logic	[15:0]		CONV_0010__data_load_lsb;
@@ -241,7 +273,8 @@ regfile_conv regfile_conv_inst (
 	.CONV_0004__filter_wid(CONV_0004__filter_wid),
 	.CONV_0005__filter_hei(CONV_0005__filter_hei),
 	.CONV_0006__filter_ch(CONV_0006__filter_ch),
-	.CONV_0007__filter_out_ch(CONV_0007__filter_out_ch),
+	.CONV_0007__filter_num(CONV_0007__filter_num),
+	.CONV_0008__stride_horiz(CONV_0008__stride_horiz),
 	.CONV_0008__stride_vert(CONV_0008__stride_vert),
 	.CONV_0009__data_load_msb(CONV_0009__data_load_msb),
 	.CONV_0010__data_load_lsb(CONV_0010__data_load_lsb),
@@ -252,6 +285,39 @@ regfile_conv regfile_conv_inst (
 	.CONV_0015__data_status_cin(CONV_0015__data_status_cin),
 	.CONV_0016__data_status_cout(CONV_0016__data_status_cout),
 	.CONV_0017__status(CONV_0017__status)
+);
+
+//INSTANTIATING regfile_nl_inst
+
+logic	[15:0]		NL_0001__data_wid;
+logic	[15:0]		NL_0002__data_hei;
+logic	[15:0]		NL_0003__data_ch;
+logic	[15:0]		NL_0004__nl_type;
+logic	[15:0]		NL_0005__output_wid;
+logic	[15:0]		NL_0006__output_hei;
+logic	[15:0]		NL_0007__output_ch;
+logic	[15:0]		NL_0008__input_data_format;
+logic	[15:0]		NL_0009__input_data_length;
+logic	[15:0]		NL_0010__output_data_length;
+
+regfile_nl regfile_nl_inst (
+	.clk(clk),
+	.rst(rst),
+	.wr_en(wr_en),
+	.rd_en(rd_en),
+	.addr(addr),
+	.write_data(write_data),
+	.read_data_NL(read_data_NL),
+	.NL_0001__data_wid(NL_0001__data_wid),
+	.NL_0002__data_hei(NL_0002__data_hei),
+	.NL_0003__data_ch(NL_0003__data_ch),
+	.NL_0004__nl_type(NL_0004__nl_type),
+	.NL_0005__output_wid(NL_0005__output_wid),
+	.NL_0006__output_hei(NL_0006__output_hei),
+	.NL_0007__output_ch(NL_0007__output_ch),
+	.NL_0008__input_data_format(NL_0008__input_data_format),
+	.NL_0009__input_data_length(NL_0009__input_data_length),
+	.NL_0010__output_data_length(NL_0010__output_data_length)
 );
 
 //INSTANTIATING regfile_pool_inst
@@ -289,39 +355,6 @@ regfile_pool regfile_pool_inst (
 	.POOL_0011__output_ch(POOL_0011__output_ch)
 );
 
-//INSTANTIATING regfile_nl_inst
-
-logic	[15:0]		NL_0001__data_wid;
-logic	[15:0]		NL_0002__data_hei;
-logic	[15:0]		NL_0003__data_ch;
-logic	[15:0]		NL_0004__nl_type;
-logic	[15:0]		NL_0005__output_wid;
-logic	[15:0]		NL_0006__output_hei;
-logic	[15:0]		NL_0007__output_ch;
-logic	[15:0]		NL_0008__input_data_format;
-logic	[15:0]		NL_0009__input_data_length;
-logic	[15:0]		NL_0010__output_data_length;
-
-regfile_nl regfile_nl_inst (
-	.clk(clk),
-	.rst(rst),
-	.wr_en(wr_en),
-	.rd_en(rd_en),
-	.addr(addr),
-	.write_data(write_data),
-	.read_data_NL(read_data_NL),
-	.NL_0001__data_wid(NL_0001__data_wid),
-	.NL_0002__data_hei(NL_0002__data_hei),
-	.NL_0003__data_ch(NL_0003__data_ch),
-	.NL_0004__nl_type(NL_0004__nl_type),
-	.NL_0005__output_wid(NL_0005__output_wid),
-	.NL_0006__output_hei(NL_0006__output_hei),
-	.NL_0007__output_ch(NL_0007__output_ch),
-	.NL_0008__input_data_format(NL_0008__input_data_format),
-	.NL_0009__input_data_length(NL_0009__input_data_length),
-	.NL_0010__output_data_length(NL_0010__output_data_length)
-);
-
 //INSTANTIATING regfile_fc_inst
 
 logic	[15:0]		FC_0001__input_data_type;
@@ -356,6 +389,5 @@ regfile_fc regfile_fc_inst (
 	.FC_0010__wid_weight_matrix(FC_0010__wid_weight_matrix),
 	.FC_0011__hei_weight_matrix(FC_0011__hei_weight_matrix)
 );
-
 
 endmodule

@@ -1,18 +1,28 @@
 #!/usr/bin/perl
+
+
+##################################################################################################
+#Usage: ./xls_to_regfile.pl <XLS_FILE> <SHEET_NUMBER1> <SHEET_NUMBER2> ... \n";
+##################################################################################################
+
 #use strict;
 #use warnings;
 use Spreadsheet::Read;
 
 
 
-if($#ARGV != 1) {
-die "Invalid Arguments
-Usage: ./xls_to_regfile.pl <XLS_FILE> <SHEET_NUMBER>\n";
-}
 
 my $xls_file = $ARGV[0];
-my $sheet_num = $ARGV[1];
 
+
+for(my $idx_sheet = 1; $idx_sheet <= $#ARGV; $idx_sheet = $idx_sheet + 1) {  
+
+
+my $sheet_num = $ARGV[$idx_sheet];
+
+if($sheet_num !~ /^\d+$/) {
+    die "Argument: ".$sheet_num." at index: ". $idx_sheet." is not a number";
+}
 
 
 #some useful functions
@@ -412,4 +422,4 @@ open (FILE, "> $filename") || die "problem opening $filename\n";
 print FILE @final;
 close (FILE);
 
-
+} #for each argument
