@@ -6,40 +6,8 @@ module regfile_pool (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_POOL,
-
-	//POOL_0001
-	output	logic	[15:0]	POOL_0001__data_wid,
-
-	//POOL_0002
-	output	logic	[15:0]	POOL_0002__data_hei,
-
-	//POOL_0003
-	output	logic	[15:0]	POOL_0003__data_ch,
-
-	//POOL_0004
-	output	logic	[15:0]	POOL_0004__pool_type,
-
-	//POOL_0005
-	output	logic	[15:0]	POOL_0005__pool_horiz,
-
-	//POOL_0006
-	output	logic	[15:0]	POOL_0006__pool_vert,
-
-	//POOL_0007
-	output	logic	[15:0]	POOL_0007__pool_horiz_stride,
-
-	//POOL_0008
-	output	logic	[15:0]	POOL_0008__pool_vert_stride,
-
-	//POOL_0009
-	input	logic	[15:0]	POOL_0009__output_wid,
-
-	//POOL_0010
-	input	logic	[15:0]	POOL_0010__output_hei,
-
-	//POOL_0011
-	input	logic	[15:0]	POOL_0011__output_ch
-	);
+	regfile_interface	regfile
+);
 
 //DECLARATIONS
 logic	[15:0]	POOL_0001;
@@ -75,7 +43,7 @@ end
 
 
 //REGISTER POOL_0001
-assign	{POOL_0001__data_wid }	=	{ POOL_0001[15:0] };
+assign	{regfile.pool__data_wid }	=	{ POOL_0001[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -92,7 +60,7 @@ end
 
 
 //REGISTER POOL_0002
-assign	{POOL_0002__data_hei }	=	{ POOL_0002[15:0] };
+assign	{regfile.pool__data_hei }	=	{ POOL_0002[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -109,7 +77,7 @@ end
 
 
 //REGISTER POOL_0003
-assign	{POOL_0003__data_ch }	=	{ POOL_0003[15:0] };
+assign	{regfile.pool__data_ch }	=	{ POOL_0003[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -126,7 +94,7 @@ end
 
 
 //REGISTER POOL_0004
-assign	{POOL_0004__pool_type }	=	{ POOL_0004[15:0] };
+assign	{regfile.pool__pool_type }	=	{ POOL_0004[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -143,7 +111,7 @@ end
 
 
 //REGISTER POOL_0005
-assign	{POOL_0005__pool_horiz }	=	{ POOL_0005[15:0] };
+assign	{regfile.pool__pool_horiz }	=	{ POOL_0005[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -160,7 +128,7 @@ end
 
 
 //REGISTER POOL_0006
-assign	{POOL_0006__pool_vert }	=	{ POOL_0006[15:0] };
+assign	{regfile.pool__pool_vert }	=	{ POOL_0006[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -177,7 +145,7 @@ end
 
 
 //REGISTER POOL_0007
-assign	{POOL_0007__pool_horiz_stride }	=	{ POOL_0007[15:0] };
+assign	{regfile.pool__pool_horiz_stride }	=	{ POOL_0007[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -194,7 +162,7 @@ end
 
 
 //REGISTER POOL_0008
-assign	{POOL_0008__pool_vert_stride }	=	{ POOL_0008[15:0] };
+assign	{regfile.pool__pool_vert_stride }	=	{ POOL_0008[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -211,21 +179,21 @@ end
 
 
 //REGISTER POOL_0009
-assign	{POOL_0009[15:0] }	=	{ POOL_0009__output_wid };
+assign	{POOL_0009[15:0] }	=	{ regfile.pool__output_wid };
 
 
 
 
 
 //REGISTER POOL_0010
-assign	{POOL_0010[15:0] }	=	{ POOL_0010__output_hei };
+assign	{POOL_0010[15:0] }	=	{ regfile.pool__output_hei };
 
 
 
 
 
 //REGISTER POOL_0011
-assign	{POOL_0011[15:0] }	=	{ POOL_0011__output_ch };
+assign	{POOL_0011[15:0] }	=	{ regfile.pool__output_ch };
 
 
 

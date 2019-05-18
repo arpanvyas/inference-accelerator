@@ -12,7 +12,8 @@ module program_driver (
     //From to Controller
     input logic done_executing,
     input logic [31:0] pc_max,
-    input logic run_program
+    input logic run_program,
+    output logic execute_2
 
 );
 

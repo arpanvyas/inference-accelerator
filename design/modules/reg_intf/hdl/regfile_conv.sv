@@ -6,59 +6,8 @@ module regfile_conv (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_CONV,
-
-	//CONV_0001
-	output	logic	[15:0]	CONV_0001__data_wid,
-
-	//CONV_0002
-	output	logic	[15:0]	CONV_0002__data_hei,
-
-	//CONV_0003
-	output	logic	[15:0]	CONV_0003__data_ch,
-
-	//CONV_0004
-	output	logic	[15:0]	CONV_0004__filter_wid,
-
-	//CONV_0005
-	output	logic	[15:0]	CONV_0005__filter_hei,
-
-	//CONV_0006
-	input	logic	[15:0]	CONV_0006__filter_ch,
-
-	//CONV_0007
-	output	logic	[15:0]	CONV_0007__filter_num,
-
-	//CONV_0008
-	output	logic	[7:0]	CONV_0008__stride_horiz,
-	output	logic	[7:0]	CONV_0008__stride_vert,
-
-	//CONV_0009
-	output	logic	[15:0]	CONV_0009__data_load_msb,
-
-	//CONV_0010
-	output	logic	[15:0]	CONV_0010__data_load_lsb,
-
-	//CONV_0011
-	output	logic	[15:0]	CONV_0011__filter_load_msb,
-
-	//CONV_0012
-	output	logic	[15:0]	CONV_0012__filter_load_lsb,
-
-	//CONV_0013
-	output	logic	[15:0]	CONV_0013__output_save_msb,
-
-	//CONV_0014
-	output	logic	[15:0]	CONV_0014__output_save_lsb,
-
-	//CONV_0015
-	input	logic	[15:0]	CONV_0015__data_status_cin,
-
-	//CONV_0016
-	input	logic	[15:0]	CONV_0016__data_status_cout,
-
-	//CONV_0017
-	input	logic	[3:0]	CONV_0017__status
-	);
+	regfile_interface	regfile
+);
 
 //DECLARATIONS
 logic	[15:0]	CONV_0001;
@@ -106,7 +55,7 @@ end
 
 
 //REGISTER CONV_0001
-assign	{CONV_0001__data_wid }	=	{ CONV_0001[15:0] };
+assign	{regfile.conv__data_wid }	=	{ CONV_0001[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -123,7 +72,7 @@ end
 
 
 //REGISTER CONV_0002
-assign	{CONV_0002__data_hei }	=	{ CONV_0002[15:0] };
+assign	{regfile.conv__data_hei }	=	{ CONV_0002[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -140,7 +89,7 @@ end
 
 
 //REGISTER CONV_0003
-assign	{CONV_0003__data_ch }	=	{ CONV_0003[15:0] };
+assign	{regfile.conv__data_ch }	=	{ CONV_0003[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -157,7 +106,7 @@ end
 
 
 //REGISTER CONV_0004
-assign	{CONV_0004__filter_wid }	=	{ CONV_0004[15:0] };
+assign	{regfile.conv__filter_wid }	=	{ CONV_0004[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -174,7 +123,7 @@ end
 
 
 //REGISTER CONV_0005
-assign	{CONV_0005__filter_hei }	=	{ CONV_0005[15:0] };
+assign	{regfile.conv__filter_hei }	=	{ CONV_0005[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -191,14 +140,14 @@ end
 
 
 //REGISTER CONV_0006
-assign	{CONV_0006[15:0] }	=	{ CONV_0006__filter_ch };
+assign	{CONV_0006[15:0] }	=	{ regfile.conv__filter_ch };
 
 
 
 
 
 //REGISTER CONV_0007
-assign	{CONV_0007__filter_num }	=	{ CONV_0007[15:0] };
+assign	{regfile.conv__filter_num }	=	{ CONV_0007[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -215,7 +164,7 @@ end
 
 
 //REGISTER CONV_0008
-assign	{CONV_0008__stride_vert,CONV_0008__stride_horiz }	=	{ CONV_0008[15:8],CONV_0008[7:0] };
+assign	{regfile.conv__stride_vert,regfile.conv__stride_horiz }	=	{ CONV_0008[15:8],CONV_0008[7:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -232,7 +181,7 @@ end
 
 
 //REGISTER CONV_0009
-assign	{CONV_0009__data_load_msb }	=	{ CONV_0009[15:0] };
+assign	{regfile.conv__data_load_msb }	=	{ CONV_0009[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -249,7 +198,7 @@ end
 
 
 //REGISTER CONV_0010
-assign	{CONV_0010__data_load_lsb }	=	{ CONV_0010[15:0] };
+assign	{regfile.conv__data_load_lsb }	=	{ CONV_0010[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -266,7 +215,7 @@ end
 
 
 //REGISTER CONV_0011
-assign	{CONV_0011__filter_load_msb }	=	{ CONV_0011[15:0] };
+assign	{regfile.conv__filter_load_msb }	=	{ CONV_0011[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -283,7 +232,7 @@ end
 
 
 //REGISTER CONV_0012
-assign	{CONV_0012__filter_load_lsb }	=	{ CONV_0012[15:0] };
+assign	{regfile.conv__filter_load_lsb }	=	{ CONV_0012[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -300,7 +249,7 @@ end
 
 
 //REGISTER CONV_0013
-assign	{CONV_0013__output_save_msb }	=	{ CONV_0013[15:0] };
+assign	{regfile.conv__output_save_msb }	=	{ CONV_0013[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -317,7 +266,7 @@ end
 
 
 //REGISTER CONV_0014
-assign	{CONV_0014__output_save_lsb }	=	{ CONV_0014[15:0] };
+assign	{regfile.conv__output_save_lsb }	=	{ CONV_0014[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -334,21 +283,21 @@ end
 
 
 //REGISTER CONV_0015
-assign	{CONV_0015[15:0] }	=	{ CONV_0015__data_status_cin };
+assign	{CONV_0015[15:0] }	=	{ regfile.conv__data_status_cin };
 
 
 
 
 
 //REGISTER CONV_0016
-assign	{CONV_0016[15:0] }	=	{ CONV_0016__data_status_cout };
+assign	{CONV_0016[15:0] }	=	{ regfile.conv__data_status_cout };
 
 
 
 
 
 //REGISTER CONV_0017
-assign	{CONV_0017[3:0] }	=	{ CONV_0017__status };
+assign	{CONV_0017[3:0] }	=	{ regfile.conv__status };
 
 
 

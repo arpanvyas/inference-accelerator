@@ -92,6 +92,9 @@ if __name__ == "__main__":
     print(hex(mem.ram_buffer_end))
 
     print(mem.ram_allocation)
+
+    print("HOOOO\n")
+
     print(mem.ram_model_start)
     print(mem.ram_model_end)
     print(mem.ram_input_start)

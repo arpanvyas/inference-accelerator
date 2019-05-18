@@ -9,22 +9,6 @@
 #use warnings;
 use Spreadsheet::Read;
 
-
-
-
-my $xls_file = $ARGV[0];
-
-
-for(my $idx_sheet = 1; $idx_sheet <= $#ARGV; $idx_sheet = $idx_sheet + 1) {  
-
-
-my $sheet_num = $ARGV[$idx_sheet];
-
-if($sheet_num !~ /^\d+$/) {
-    die "Argument: ".$sheet_num." at index: ". $idx_sheet." is not a number";
-}
-
-
 #some useful functions
 sub pad {
     my ($arg, $tabs, $crs) = @_;
@@ -52,6 +36,29 @@ sub comma_end {
     push @arg1, $last;
     return @arg1;
 }
+
+
+
+
+
+my $xls_file = $ARGV[0];
+
+my @interface;
+my $interface_class    = "interface_regfile";
+
+my $fileintf = $interface_class.".sv";
+my $interface_instance = "regfile";
+push @interface, pad("interface $interface_class;",0,2);
+
+for(my $idx_sheet = 1; $idx_sheet <= $#ARGV; $idx_sheet = $idx_sheet + 1) {  
+
+
+my $sheet_num = $ARGV[$idx_sheet];
+
+if($sheet_num !~ /^\d+$/) {
+    die "Argument: ".$sheet_num." at index: ". $idx_sheet." is not a number";
+}
+
 
 
 #Constants
@@ -117,7 +124,7 @@ while($row <= $maxrow) {
             $remark = $sheet->{cell}[$rmrk][$row];
             #print "$regname, $startbit, $fieldname, $accesstype, $fieldsize, $default\n";
             
-            $db->{$address}{"fields"}{$startbit} = {"fieldname" => "$regname"."__"."$fieldname", "startbit" => $startbit, "accesstype" => $accesstype, "fieldsize" => $fieldsize, "default" => $default, "description" => $description, "remark" => $remark};
+            $db->{$address}{"fields"}{$startbit} = {"fieldname" => "$interface_instance."."$sheet_label"."__"."$fieldname", "fieldname_intf" => "$sheet_label"."__"."$fieldname", "startbit" => $startbit, "accesstype" => $accesstype, "fieldsize" => $fieldsize, "default" => $default, "description" => $description, "remark" => $remark};
             $row++;
 
         }
@@ -141,6 +148,7 @@ push @inout, pad("input\tlogic\t\twr_en,"),pad("input\tlogic\t\trd_en,");
 push @inout, pad("input\tlogic\t[$addr_l:0]\taddr,");
 push @inout, pad("input\tlogic\t[15:0]\twrite_data,");
 push @inout, pad("output\tlogic\t[15:0]\t$read_data,");
+push @inout, pad("regfile_interface\tregfile,");
 
 
 
@@ -222,7 +230,7 @@ foreach my $reg_addr (sort keys %$db) {
     my @veriassign_b1;
     my @veriassign_b2;
 
-    push @inout, "\n\t//$regname\n";
+    push @interface, "\n\t//$regname\n";
     push @verideclr, pad("//REGISTER $regname",0);
 
     $reg_fields = $reg->{"fields"};
@@ -231,6 +239,7 @@ foreach my $reg_addr (sort keys %$db) {
         my $reg_field = $reg_fields->{$start_bit};
         $startbit = $reg_field->{"startbit"};
         $fieldname = $reg_field -> {"fieldname"};
+        $fieldname_intf = $reg_field -> {"fieldname_intf"};
         $accesstype = $reg_field -> {"accesstype"};
         $fieldsize = $reg_field -> {"fieldsize"};
         $fieldsiz = $fieldsize - 1;
@@ -239,30 +248,30 @@ foreach my $reg_addr (sort keys %$db) {
         #print "$reg_name, $startbit, $fieldname, $accesstype, $fieldsize, $default\n";
         if( $accesstype eq "RW" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("output\tlogic\t[$fieldsiz:0]\t$fieldname,");
+                push @interface, pad("logic\t[$fieldsiz:0]\t$fieldname_intf;");
             } else {
-                push @inout, pad("output\tlogic\t\t$fieldname,");
+                push @interface, pad("logic\t\t$fieldname_intf;");
             }
         } elsif ( $accesstype eq "RO" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("input\tlogic\t[$fieldsiz:0]\t$fieldname,");
+                push @interface, pad("logic\t[$fieldsiz:0]\t$fieldname_intf;");
             } else {
-                push @inout, pad("input\tlogic\t\t$fieldname,");
+                push @interface, pad("logic\t\t$fieldname_intf;");
             }
         } elsif ( $accesstype eq "ROC" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("input\tlogic\t\t[$fieldsiz:0]\t$fieldname"."_wr,");
+                push @interface, pad("logic\t\t[$fieldsiz:0]\t$fieldname_intf"."_wr;");
             } else {
-                push @inout, pad("input\tlogic\t\t$fieldname"."_wr,");
+                push @interface, pad("logic\t\t$fieldname_intf"."_wr;");
             }   
-            push @inout, pad("input\tlogic\t\t$fieldname"."_wr_en,");
+            push @interface, pad("logic\t\t$fieldname_intf"."_wr_en;");
         } elsif ( $accesstype eq "WOC" ) {
             if($fieldsiz  > 1) {
-                push @inout, pad("output\tlogic\t[$fieldsiz:0]\t$fieldname"."_wr,");
+                push @interface, pad("logic\t[$fieldsiz:0]\t$fieldname_intf"."_wr;");
             } else {
-                push @inout, pad("output\tlogic\t\t\t$fieldname"."_wr,");
+                push @interface, pad("logic\t\t\t$fieldname_intf"."_wr;");
             }   
-            push @inout, pad("output\tlogic\t\t\t$fieldname"."_wr_en,");
+            push @interface, pad("logic\t\t\t$fieldname_intf"."_wr_en;");
         } else {
 
             die "ACCESSTYPE not valid for $fieldname";
@@ -403,15 +412,16 @@ foreach my $reg_addr (sort keys %$db) {
     }
     
 
+#CLOSE MODULE
+push @veriend, pad("\n\nendmodule",0);
+
 
 #CLOSE INOUT
 my $last_one = pop @inout;
 $last_one =~ s/^(.*),$/$1/;
-push @inout,$last_one, "\t);\n\n";
-push @Inout, "\n\n";
+push @inout,$last_one;
+push @inout, ");\n\n";
 
-#CLOSE MODULE
-push @veriend, pad("\n\nendmodule",0);
 
 
 #print @inout;
@@ -428,3 +438,14 @@ print FILE @final;
 close (FILE);
 
 } #for each argument
+
+
+#CLOSE INTERFACE
+push @interface, "\n\nendinterface\n";
+
+
+open (FILE_INTF, "> $fileintf") || die "problem opening $fileintf\n";
+print FILE_INTF @interface;
+close (FILE_INTF);
+
+

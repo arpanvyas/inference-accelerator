@@ -4,9 +4,10 @@ RTL_FILES = ../hdl/reg_intf.sv \
 			../hdl/reg_intf_mux.sv \
 			../hdl/regfile_conv.sv \
 			../hdl/regfile_fc.sv \
-			../hdl/regfile_general_config.sv \
+			../hdl/regfile_general.sv \
 			../hdl/regfile_nl.sv \
 			../hdl/regfile_pool.sv \
+			../hdl/interface_regfile.sv \
 		    ../hdl/sync_2s.sv	
 
 TB_FILES = spi_tb.sv \

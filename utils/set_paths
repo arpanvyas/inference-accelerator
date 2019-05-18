@@ -5,3 +5,24 @@ export PROJECT_RTL_DIR=$PROJECT_DIR/design
 export PROJECT_UTILS_DIR=$PROJECT_DIR/utils
 
 echo "PROJECT_DIR: $PROJECT_DIR"
+
+alias cd.k='cd $PROJECT_DIR/keras'
+dir_k='$PROJECT_DIR/keras'
+alias cd.u='cd $PROJECT_DIR/utils'
+dir_u='$PROJECT_DIR/utils'
+alias cd.rtl='cd $PROJECT_DIR/design'
+dir_rtl='$PROJECT_DIR/design'
+alias cd.all_top='cd $PROJECT_DIR/design/modules/all_top/hdl'
+dir_all_top='$PROJECT_DIR/design/modules/all_top/hdl'
+alias cd.conv='cd $PROJECT_DIR/design/modules/convolver/hdl'
+dir_conv='$PROJECT_DIR/design/modules/convolver/hdl'
+alias cd.mem='cd $PROJECT_DIR/design/modules/memory_bank/hdl'
+dir_mem='$PROJECT_DIR/design/modules/memory_bank/hdl'
+alias cd.pe='cd $PROJECT_DIR/design/modules/pe_array/hdl'
+dir_pe='$PROJECT_DIR/design/modules/pe_array/hdl'
+alias cd.pool='cd $PROJECT_DIR/design/modules/pool_nl/hdl'
+dir_pool='$PROJECT_DIR/design/modules/pool_nl/hdl'
+alias cd.reg='cd $PROJECT_DIR/design/modules/reg_intf/hdl'
+dir_reg='$PROJECT_DIR/design/modules/reg_intf/hdl'
+alias cd.top='cd $PROJECT_DIR/design/modules/top/rtl'
+dir_top='$PROJECT_DIR/design/modules/top/rtl'

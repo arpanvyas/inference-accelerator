@@ -6,40 +6,8 @@ module regfile_fc (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_FC,
-
-	//FC_0001
-	output	logic	[15:0]	FC_0001__input_data_type,
-
-	//FC_0002
-	output	logic	[15:0]	FC_0002__data_wid,
-
-	//FC_0003
-	output	logic	[15:0]	FC_0003__data_hei,
-
-	//FC_0004
-	output	logic	[15:0]	FC_0004__data_ch,
-
-	//FC_0005
-	input	logic	[15:0]	FC_0005__output_wid,
-
-	//FC_0006
-	input	logic	[15:0]	FC_0006__output_hei,
-
-	//FC_0007
-	input	logic	[15:0]	FC_0007__output_ch,
-
-	//FC_0008
-	output	logic	[15:0]	FC_0008__input_data_length,
-
-	//FC_0009
-	output	logic	[15:0]	FC_0009__output_data_length,
-
-	//FC_0010
-	input	logic	[15:0]	FC_0010__wid_weight_matrix,
-
-	//FC_0011
-	input	logic	[15:0]	FC_0011__hei_weight_matrix
-	);
+	regfile_interface	regfile
+);
 
 //DECLARATIONS
 logic	[15:0]	FC_0001;
@@ -75,7 +43,7 @@ end
 
 
 //REGISTER FC_0001
-assign	{FC_0001__input_data_type }	=	{ FC_0001[15:0] };
+assign	{regfile.fc__input_data_type }	=	{ FC_0001[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -92,7 +60,7 @@ end
 
 
 //REGISTER FC_0002
-assign	{FC_0002__data_wid }	=	{ FC_0002[15:0] };
+assign	{regfile.fc__data_wid }	=	{ FC_0002[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -109,7 +77,7 @@ end
 
 
 //REGISTER FC_0003
-assign	{FC_0003__data_hei }	=	{ FC_0003[15:0] };
+assign	{regfile.fc__data_hei }	=	{ FC_0003[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -126,7 +94,7 @@ end
 
 
 //REGISTER FC_0004
-assign	{FC_0004__data_ch }	=	{ FC_0004[15:0] };
+assign	{regfile.fc__data_ch }	=	{ FC_0004[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -143,28 +111,28 @@ end
 
 
 //REGISTER FC_0005
-assign	{FC_0005[15:0] }	=	{ FC_0005__output_wid };
+assign	{FC_0005[15:0] }	=	{ regfile.fc__output_wid };
 
 
 
 
 
 //REGISTER FC_0006
-assign	{FC_0006[15:0] }	=	{ FC_0006__output_hei };
+assign	{FC_0006[15:0] }	=	{ regfile.fc__output_hei };
 
 
 
 
 
 //REGISTER FC_0007
-assign	{FC_0007[15:0] }	=	{ FC_0007__output_ch };
+assign	{FC_0007[15:0] }	=	{ regfile.fc__output_ch };
 
 
 
 
 
 //REGISTER FC_0008
-assign	{FC_0008__input_data_length }	=	{ FC_0008[15:0] };
+assign	{regfile.fc__input_data_length }	=	{ FC_0008[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -181,7 +149,7 @@ end
 
 
 //REGISTER FC_0009
-assign	{FC_0009__output_data_length }	=	{ FC_0009[15:0] };
+assign	{regfile.fc__output_data_length }	=	{ FC_0009[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -198,14 +166,14 @@ end
 
 
 //REGISTER FC_0010
-assign	{FC_0010[15:0] }	=	{ FC_0010__wid_weight_matrix };
+assign	{FC_0010[15:0] }	=	{ regfile.fc__wid_weight_matrix };
 
 
 
 
 
 //REGISTER FC_0011
-assign	{FC_0011[15:0] }	=	{ FC_0011__hei_weight_matrix };
+assign	{FC_0011[15:0] }	=	{ regfile.fc__hei_weight_matrix };
 
 
 

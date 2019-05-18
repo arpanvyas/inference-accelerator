@@ -26,7 +26,8 @@ reg_intf DUT (
     .SCLK(i_intf.SCLK),
     .SS(i_intf.SS),
     .MOSI(i_intf.MOSI),
-    .MISO(i_intf.MISO)
+    .MISO(i_intf.MISO),
+    .spi_or_driver(1'b1)
 );
 
 endmodule

@@ -6,37 +6,8 @@ module regfile_nl (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_NL,
-
-	//NL_0001
-	output	logic	[15:0]	NL_0001__data_wid,
-
-	//NL_0002
-	output	logic	[15:0]	NL_0002__data_hei,
-
-	//NL_0003
-	output	logic	[15:0]	NL_0003__data_ch,
-
-	//NL_0004
-	output	logic	[15:0]	NL_0004__nl_type,
-
-	//NL_0005
-	input	logic	[15:0]	NL_0005__output_wid,
-
-	//NL_0006
-	input	logic	[15:0]	NL_0006__output_hei,
-
-	//NL_0007
-	input	logic	[15:0]	NL_0007__output_ch,
-
-	//NL_0008
-	output	logic	[15:0]	NL_0008__input_data_format,
-
-	//NL_0009
-	output	logic	[15:0]	NL_0009__input_data_length,
-
-	//NL_0010
-	input	logic	[15:0]	NL_0010__output_data_length
-	);
+	regfile_interface	regfile
+);
 
 //DECLARATIONS
 logic	[15:0]	NL_0001;
@@ -70,7 +41,7 @@ end
 
 
 //REGISTER NL_0001
-assign	{NL_0001__data_wid }	=	{ NL_0001[15:0] };
+assign	{regfile.nl__data_wid }	=	{ NL_0001[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -87,7 +58,7 @@ end
 
 
 //REGISTER NL_0002
-assign	{NL_0002__data_hei }	=	{ NL_0002[15:0] };
+assign	{regfile.nl__data_hei }	=	{ NL_0002[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -104,7 +75,7 @@ end
 
 
 //REGISTER NL_0003
-assign	{NL_0003__data_ch }	=	{ NL_0003[15:0] };
+assign	{regfile.nl__data_ch }	=	{ NL_0003[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -121,7 +92,7 @@ end
 
 
 //REGISTER NL_0004
-assign	{NL_0004__nl_type }	=	{ NL_0004[15:0] };
+assign	{regfile.nl__nl_type }	=	{ NL_0004[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -138,28 +109,28 @@ end
 
 
 //REGISTER NL_0005
-assign	{NL_0005[15:0] }	=	{ NL_0005__output_wid };
+assign	{NL_0005[15:0] }	=	{ regfile.nl__output_wid };
 
 
 
 
 
 //REGISTER NL_0006
-assign	{NL_0006[15:0] }	=	{ NL_0006__output_hei };
+assign	{NL_0006[15:0] }	=	{ regfile.nl__output_hei };
 
 
 
 
 
 //REGISTER NL_0007
-assign	{NL_0007[15:0] }	=	{ NL_0007__output_ch };
+assign	{NL_0007[15:0] }	=	{ regfile.nl__output_ch };
 
 
 
 
 
 //REGISTER NL_0008
-assign	{NL_0008__input_data_format }	=	{ NL_0008[15:0] };
+assign	{regfile.nl__input_data_format }	=	{ NL_0008[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -176,7 +147,7 @@ end
 
 
 //REGISTER NL_0009
-assign	{NL_0009__input_data_length }	=	{ NL_0009[15:0] };
+assign	{regfile.nl__input_data_length }	=	{ NL_0009[15:0] };
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
@@ -193,7 +164,7 @@ end
 
 
 //REGISTER NL_0010
-assign	{NL_0010[15:0] }	=	{ NL_0010__output_data_length };
+assign	{NL_0010[15:0] }	=	{ regfile.nl__output_data_length };
 
 
 

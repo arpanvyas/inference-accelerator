@@ -66,7 +66,9 @@ input_index     =   5
 
 interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index)
 
-
+#v. Create RAM file from model and input dump
+#UNUSED ram_dump        =   hw_dir+'ram.dat'
+#UNUSED dump.ram_dump(mem_model_dump,mem_inp_dump,ram_dump)
 
 
 print("--------------------------------------------------------------")

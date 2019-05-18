@@ -420,3 +420,24 @@ def output_to_ram(all_layers,output_map_dump,input_index):
 
     return output_map
 
+
+def ram_dump(mem_model_dump,mem_inp_dump,ram_dump): #UNUSED
+
+
+    mem_model_dump_file = open(mem_model_dump,"r")
+    mem_model = mem_model_dump_file.readlines()
+
+    mem_inp_dump_file = open(mem_inp_dump,"r")
+    mem_inp = mem_inp_dump_file.readlines()
+
+
+    ram_dump_file = open(ram_dump,"w")
+
+    
+
+    ram_dump_file.close()
+
+    return 1
+
+
+    
