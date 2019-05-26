@@ -1,0 +1,1 @@
+../../top/rtl/external_memory.sv

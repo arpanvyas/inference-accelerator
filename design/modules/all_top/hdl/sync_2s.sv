@@ -1,0 +1,1 @@
+../../reg_intf/hdl/sync_2s.sv

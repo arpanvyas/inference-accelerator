@@ -1,0 +1,1 @@
+../../reg_intf/hdl/spi_slave.sv

@@ -1,0 +1,1 @@
+../../top/rtl/inference_accelerator.sv
