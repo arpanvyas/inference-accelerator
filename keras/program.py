@@ -297,7 +297,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             model_idx += 1
 
         if(use_bias):
-            buffer_addr = 33
+            buffer_addr = 32
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_bias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start   = model_map[model_idx][0]
@@ -551,7 +551,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
         model_idx += 1
 
         if(use_bias):
-            buffer_addr = 33
+            buffer_addr = 32
             str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_bias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start  = model_map[model_idx][0]
@@ -643,6 +643,7 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
             a = 0
             output_elements = layer['output_elements']
             layer_idx = layer['number']
+            instr_this = []
             while( "input_layer"+str(layer_idx) in interm_map[interm_idx_carry][2] ):
                 interm_idx_carry += 1
 

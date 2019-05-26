@@ -1,7 +1,8 @@
 class mem_param:
     word_size = 16
     frac_size = 8
-    word_per_byte = word_size/8
+    #word_per_byte = word_size/8
+    word_per_byte = 1 #means word addressed and not byre addressed
     
     max_inp_hei = 128
     max_inp_wid = 128

@@ -7,7 +7,7 @@
 `define DATA_WIDTH 16
 
 //external memory
-`define ADDR_EXT_RAM 16
+`define ADDR_EXT_RAM 23
 `define WID_EXT_RAM `DATA_WIDTH
 `define DATA_EXT_RAM 16
 
@@ -23,7 +23,7 @@
 
 
 //PE Array
-`define N_PE 32
+`define N_PE 33
 
 //PE
 `define WID_PE_BITS `DATA_WIDTH

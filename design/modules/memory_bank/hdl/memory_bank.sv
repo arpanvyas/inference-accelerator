@@ -1,25 +1,24 @@
 `include "header.vh"
 module memory_bank(
-	input clk,
-	input we,
-	input re,
-	input [`ADDR_RAM-1:0] rd_addr,
-	input [`ADDR_RAM-1:0] wr_addr,
-	input [`WID_RAM-1:0] data_in,
-	output[`WID_RAM-1:0] data_out
+	input logic clk,
+	input logic we,
+	input logic re,
+	input logic [`ADDR_RAM-1:0] rd_addr,
+	input logic [`ADDR_RAM-1:0] wr_addr,
+	input logic [`WID_RAM-1:0] data_in,
+	output logic [`WID_RAM-1:0] data_out
     );
 
-reg [`WID_RAM-1:0] mem[2**`ADDR_RAM-1:0];
-reg [`WID_RAM-1:0] data_out;
+logic [`WID_RAM-1:0] mem[2**`ADDR_RAM-1:0];
 
 always@(posedge clk)
 begin
 	if (re) begin
-	data_out <= mem[rd_addr];
+	data_out <= #1 mem[rd_addr];
 	end
 	
 	if (we) begin
-	mem[wr_addr] <= data_in;
+	mem[wr_addr] <= #1 data_in;
 	end
 
 end

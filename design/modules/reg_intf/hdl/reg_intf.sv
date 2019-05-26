@@ -13,17 +13,15 @@ module reg_intf(
     input logic rd_en_drv,
     input logic [13:0] addr_drv,
     input logic [15:0] write_data_drv,
-    output logic [15:0] read_data_drv
-    
-
+    output logic [15:0] read_data_drv,
     
     //Register Fields Signals 
+    interface_regfile regfile,
 
     //From Controller
     input logic spi_or_driver 
 );
 
-interface_regfile regfile();
 
 //INSTANTIATING spi_slave_inst
 

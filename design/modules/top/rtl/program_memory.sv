@@ -1,24 +1,23 @@
 module program_memory(
-	input clk,
-	input we,
-	input re,
-	input [31:0] rd_addr,
-	input [31:0] wr_addr,
-	input [31:0] data_in,
-	output[31:0] data_out
+	input logic clk,
+	input logic we,
+	input logic re,
+	input logic [31:0] rd_addr,
+	input logic [31:0] wr_addr,
+	input logic [31:0] data_in,
+	output logic [31:0] data_out
     );
 
-reg [31:0] mem[65535:0];
-reg [31:0] data_out;
+logic [31:0] mem[65535:0];
 
 always@(posedge clk)
 begin
 	if (re) begin
-	data_out <= mem[rd_addr];
+	data_out <= #1 mem[rd_addr];
 	end
 	
 	if (we) begin
-	mem[wr_addr] <= data_in;
+	mem[wr_addr] <= #1 data_in;
 	end
 
 end

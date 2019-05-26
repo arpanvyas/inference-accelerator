@@ -1,9 +1,9 @@
 `include "header.vh"
 
 
-task hot_to_dec;
+function hot_to_dec;
 input [`N_PE-1:0] hot;
-output [4:0] dec;
+output [5:0] dec;
 integer i;
 begin
 	dec = 0;
@@ -12,4 +12,18 @@ begin
 		else 			dec	= dec;
 	end
 end
-endtask	
+endfunction
+
+
+function automatic [`N_PE-1:0] dec_to_hot;
+
+    input   [5:0]   dec;
+    integer i;
+
+    begin
+        dec_to_hot = 'd0;
+        dec_to_hot[dec]    = 1'b1;
+
+    end
+
+endfunction

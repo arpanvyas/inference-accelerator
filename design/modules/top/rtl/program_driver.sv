@@ -13,14 +13,15 @@ module program_driver (
     input logic done_executing,
     input logic [31:0] pc_max,
     input logic run_program,
-    output logic execute_2
+    output logic execute_2,
+    output logic next_layer
 
 );
 
 
-parameter IDLE = 3'b000, FETCH = 3'b010, EXECUTE_1 = 3'b011,EXECUTE_2 = 3'b100, DONE = 3'b101;
+typedef enum { IDLE, FETCH, EXECUTE_1,EXECUTE_2, DONE} ProgdrvStates;
 
-logic [2:0] state;
+ProgdrvStates state;
 logic [31:0] pc; 
 logic [31:0] instr;
 
@@ -55,50 +56,59 @@ assign write_data_drv  = instr[15:0];
 always@(posedge clk, posedge rst)
 begin
     if(rst) begin
-        state <= IDLE;
-        pc    <= 0;
-        re    <= 0;
-        send_regfile <= 0;
+        state <= #1 IDLE;
+        pc    <= #1 0;
+        re    <= #1 0;
+        send_regfile <= #1 0;
     end else begin
         
+        execute_2 <= #1 0;
+        next_layer  <= #1 0;
+
         case(state) 
 
             IDLE : begin
-                send_regfile <= 0;
+                send_regfile <= #1 0;
                 if(run_program) begin
                     if(pc < pc_max) begin
-                        re <= 1;
-                        state <= FETCH;
+                        re <= #1 1;
+                        state <= #1 FETCH;
                     end else begin
-                        state <= IDLE;
-                        re <= 0;
+                        state <= #1 IDLE;
+                        re <= #1 0;
                     end
                 end else begin
-                    state <= IDLE;
-                    re    <= 0;
+                    state <= #1 IDLE;
+                    re    <= #1 0;
                     
                 end
             
             end
 
             FETCH : begin //should be here for exactly 1 cycle
-                re <= 0;
-                pc <= pc + 1;
-                send_regfile <= 1;
-                state <= EXECUTE_1;
+                re <= #1 0;
+                pc <= #1 pc + 1;
+                send_regfile <= #1 1;
+                state <= #1 EXECUTE_1;
         
             end
 
             EXECUTE_1 : begin
 
-                send_regfile <= 0;
+                send_regfile <= #1 0;
+                next_layer   <= #1 0;
 
-                if(instr[31:30] == 2'b10 && instr[13:7] == 7'h01) begin //wait for done when Wr and WOC
-                    state <= EXECUTE_2; 
+                if(instr[31:30] == 2'b01 && instr[29:23] == 7'h01) begin //wait for done when Wr and WOC
+                    state <= #1 EXECUTE_2; 
+                    execute_2 <= #1 1;
                     
                 end else begin //send to regfile
-                    state <= IDLE;
+                    state <= #1 IDLE;
                     
+                end
+
+                if(instr[31:30] == 2'b01 && instr[29:16] == 14'h01) begin
+                    next_layer  <= #1 1;
                 end
 
 
@@ -107,15 +117,15 @@ begin
 
             EXECUTE_2 : begin
                 if(done_executing == 1) begin
-                    state <= IDLE;
+                    state <= #1 IDLE;
                 end else begin
-                    state <= EXECUTE_2; 
+                    state <= #1 EXECUTE_2; 
                 end
 
             end
 
             default : begin
-                state <= IDLE;
+                state <= #1 IDLE;
 
             end
         

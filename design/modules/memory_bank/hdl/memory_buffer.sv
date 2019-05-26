@@ -1,21 +1,9 @@
 `include "header.vh"
 module memory_buffer(
-    input 									rst,
-    input										clk,
-    input										mode,
-    input		[`N_PE-1:0]					m0_r_en,
-    input		[`ADDR_RAM-1:0]			m0_r_addr,
-    output logic		[`WID_RAM-1:0]		m0_r_data,
-    input		[`N_PE-1:0]					m0_w_en,
-    input		[`ADDR_RAM-1:0]			m0_w_addr,
-    input		[`WID_RAM-1:0]				m0_w_data,
+    input		rst,
+    input       clk,
+    interface_buffer    intf_buf
 
-    input										m1_r_en,
-    input		[`ADDR_RAM-1:0]			m1_r_addr,
-    output	[`WID_PE_BITS*`N_PE-1:0]m1_output_bus,
-    input										m1_w_en,
-    input		[`ADDR_RAM-1:0]			m1_w_addr,
-    input		[`WID_PE_BITS*`N_PE-1:0]m1_input_bus
 );
 
 `include "user_tasks.vh"
@@ -25,8 +13,8 @@ module memory_buffer(
 logic [`WID_PE_BITS-1:0] m1_input_bus_unpack [`N_PE-1:0];
 logic [`WID_PE_BITS-1:0] m1_output_bus_unpack [`N_PE-1:0];
 
-`UNPACK_ARRAY(`WID_PE_BITS,`N_PE,m1_input_bus_unpack,m1_input_bus)
-`PACK_ARRAY(`WID_PE_BITS,`N_PE,m1_output_bus_unpack,m1_output_bus)
+`UNPACK_ARRAY(`WID_PE_BITS,`N_PE,m1_input_bus_unpack,intf_buf.m1_input_bus)
+`PACK_ARRAY(`WID_PE_BITS,`N_PE,m1_output_bus_unpack,intf_buf.m1_output_bus)
 
 logic		[`N_PE-1:0]		m_w_en;
 logic		[`N_PE-1:0]		m_r_en;
@@ -40,51 +28,39 @@ logic	 [5:0]				m0_r_en_dec;
 integer i1;
 always@(*)
 begin
-    hot_to_dec(m0_r_en,m0_r_en_dec);
-    case(mode)
+    case(intf_buf.mode)
 
         0: begin
-            m_w_en	<=	m0_w_en;
-            m_r_en	<=	m0_r_en;
-            m_w_addr <=	m0_w_addr;
-            m_r_addr <=	m0_r_addr;
-            m0_r_data	<= m_r_data[m0_r_en_dec];
+            m_w_en	<= #1 intf_buf.m0_w_en;
+            m_w_addr <= #1 intf_buf.m0_w_addr;
+
             for(i1=0;i1<`N_PE;i1=i1+1) begin	
-                m_w_data[i1]	<=	m0_w_data;	
-                m1_output_bus_unpack[i1] <= m_r_data[i1];
+                m_w_data[i1]	<= #1 intf_buf.m0_w_data;	
+                m1_output_bus_unpack[i1] <= #1 m_r_data[i1];
             end
+
+
+
+            m_r_en  <= #1 intf_buf.m0_r_en;
+            m_r_addr <= #1 intf_buf.m0_r_addr;
+
+            intf_buf.m0_r_data	<= #1 m_r_data[hot_to_dec(intf_buf.m0_r_en)];
 
         end
 
         1: begin
 
 
-            m_w_addr<=	m1_w_addr;
-            m_r_addr<=	m1_r_addr;	
+            m_w_addr <= #1 intf_buf.m1_w_addr;
+            m_r_addr <= #1 intf_buf.m1_r_addr;	
 
             for(i1=0;i1<`N_PE;i1=i1+1) begin	
-                m_w_en[i1]		<=	m1_w_en;
-                m_r_en[i1]		<=	m1_r_en;
-                m_w_data[i1]	<= m1_input_bus_unpack[i1];
-                m1_output_bus_unpack[i1]	<=	m_r_data[i1];
+                m_w_en[i1]		<= #1 intf_buf.m1_w_en;
+                m_r_en[i1]		<= #1 intf_buf.m1_r_en;
+                m_w_data[i1]	<= #1 m1_input_bus_unpack[i1];
+                m1_output_bus_unpack[i1]	<= #1 m_r_data[i1];
             end	
-            m0_r_data	<= m_r_data[m0_r_en_dec];
-
-        end
-
-        default: begin
-
-            m_w_en	<=	m0_w_en;
-            m_r_en	<=	m0_r_en;
-            m_w_addr <=	m0_w_addr;
-            m_r_addr <=	m0_r_addr;
-
-            for(i1=0;i1<`N_PE;i1=i1+1) begin	
-                m_w_data[i1]	<=	m0_w_data;
-                m1_output_bus_unpack[i1]	<=	m_r_data[i1];
-
-            end
-            m0_r_data	<= m_r_data[m0_r_en_dec];
+            intf_buf.m0_r_data	<= #1 m_r_data[m0_r_en_dec];
 
         end
 

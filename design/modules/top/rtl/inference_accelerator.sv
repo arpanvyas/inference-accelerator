@@ -11,12 +11,7 @@ module inference_accelerator (
     output MISO,
 
     //External Memory Interfacing : Assuming DMA
-    output   logic			    we_extmem,
-    output   logic			    re_extmem,
-    output   logic	[23:0]		rd_addr_extmem,
-    output   logic	[23:0]		wr_addr_extmem,
-    output   logic	[31:0]		data_wr_extmem,
-    input   logic	[31:0]		data_rd_extmem
+    interface_extmem    intf_extmem
 
 );
 
@@ -28,39 +23,9 @@ logic			MOSI;
 logic			SS;
 logic			MISO;
 
-	
-//first buffer 
-logic	[1:0]						f_mode;
-logic	[`N_PE-1:0]					f_m0_r_en;
-logic	[`ADDR_RAM-1:0]				f_m0_r_addr;
-logic	[`WID_RAM-1:0]				f_m0_r_data;
-logic	[`N_PE-1:0]					f_m0_w_en;
-logic	[`ADDR_RAM-1:0]				f_m0_w_addr;
-logic	[`WID_RAM-1:0]				f_m0_w_data;
-	
-logic								f_m1_r_en;
-logic	[`ADDR_RAM-1:0]				f_m1_r_addr;
-logic	[`WID_PE_BITS*`N_PE-1:0]	f_m1_output_bus;
-logic								f_m1_w_en;
-logic	[`ADDR_RAM-1:0]				f_m1_w_addr;
-logic	[`WID_PE_BITS*`N_PE-1:0] 	f_m1_input_bus;
 
-//second buffer 
-logic	[1:0]						s_mode;
-logic	[`N_PE-1:0]					s_m0_r_en;
-logic	[`ADDR_RAM-1:0]				s_m0_r_addr;
-logic	[`WID_RAM-1:0]				s_m0_r_data;
-logic	[`N_PE-1:0]					s_m0_w_en;
-logic	[`ADDR_RAM-1:0]				s_m0_w_addr;
-logic	[`WID_RAM-1:0]				s_m0_w_data;
-	
-logic								s_m1_r_en;
-logic	[`ADDR_RAM-1:0]				s_m1_r_addr;
-logic	[`WID_PE_BITS*`N_PE-1:0]	s_m1_output_bus;
-logic								s_m1_w_en;
-logic	[`ADDR_RAM-1:0]				s_m1_w_addr;
-logic	[`WID_PE_BITS*`N_PE-1:0]	s_m1_input_bus;
-
+interface_buffer intf_buf1();
+interface_buffer intf_buf2();
 
 controller controller_inst (
 	.clk(clk),
@@ -70,79 +35,30 @@ controller controller_inst (
 	.SS(SS),
 	.MISO(MISO),
 
+    //External Memory
+    .intf_extmem(intf_extmem),
 	
 //First Buffer 
-	.mode(f_mode),
-	.m0_r_en(f_m0_r_en),
-	.m0_r_addr(f_m0_r_addr),
-	.m0_r_data(f_m0_r_data),
-	.m0_w_en(f_m0_w_en),
-	.m0_w_addr(f_m0_w_addr),
-	.m0_w_data(f_m0_w_data),
-	
-	.m1_r_en(f_m1_r_en),
-	.m1_r_addr(f_m1_r_addr),
-	.m1_output_bus(f_m1_output_bus),
-	.m1_w_en(f_m1_w_en),
-	.m1_w_addr(f_m1_w_addr),
-	.m1_input_bus(f_m1_input_bus),
+    .intf_buf1(intf_buf1),
 
 //Second Buffer 
-	.mode(s_mode),
-	.m0_r_en(s_m0_r_en),
-	.m0_r_addr(s_m0_r_addr),
-	.m0_r_data(s_m0_r_data),
-	.m0_w_en(s_m0_w_en),
-	.m0_w_addr(s_m0_w_addr),
-	.m0_w_data(s_m0_w_data),
-	
-	.m1_r_en(s_m1_r_en),
-	.m1_r_addr(s_m1_r_addr),
-	.m1_output_bus(s_m1_output_bus),
-	.m1_w_en(s_m1_w_en),
-	.m1_w_addr(s_m1_w_addr),
-	.m1_input_bus(s_m1_input_bus)
+    .intf_buf2(intf_buf2)
 
 
 );
-
-
 memory_buffer first_buffer_module(
 	.rst(rst),
 	.clk(clk),
-	.mode(f_mode),
-	.m0_r_en(f_m0_r_en),
-	.m0_r_addr(f_m0_r_addr),
-	.m0_r_data(f_m0_r_data),
-	.m0_w_en(f_m0_w_en),
-	.m0_w_addr(f_m0_w_addr),
-	.m0_w_data(f_m0_w_data),
-	
-	.m1_r_en(f_m1_r_en),
-	.m1_r_addr(f_m1_r_addr),
-	.m1_output_bus(f_m1_output_bus),
-	.m1_w_en(f_m1_w_en),
-	.m1_w_addr(f_m1_w_addr),
-	.m1_input_bus(f_m1_input_bus)
+    .intf_buf(intf_buf1)
 );
 
 memory_buffer second_buffer_module(
 	.rst(rst),
 	.clk(clk),
-	.mode(s_mode),
-	.m0_r_en(s_m0_r_en),
-	.m0_r_addr(s_m0_r_addr),
-	.m0_r_data(s_m0_r_data),
-	.m0_w_en(s_m0_w_en),
-	.m0_w_addr(s_m0_w_addr),
-	.m0_w_data(s_m0_w_data),
-	
-	.m1_r_en(s_m1_r_en),
-	.m1_r_addr(s_m1_r_addr),
-	.m1_output_bus(s_m1_output_bus),
-	.m1_w_en(s_m1_w_en),
-	.m1_w_addr(s_m1_w_addr),
-	.m1_input_bus(s_m1_input_bus)
+    .intf_buf(intf_buf2)
 );		
 
 
+
+
+endmodule
