@@ -26,6 +26,7 @@ logic			MISO;
 
 interface_buffer intf_buf1();
 interface_buffer intf_buf2();
+interface_pe_array intf_pea();
 
 controller controller_inst (
 	.clk(clk),
@@ -38,27 +39,34 @@ controller controller_inst (
     //External Memory
     .intf_extmem(intf_extmem),
 	
-//First Buffer 
+    //First Buffer 
     .intf_buf1(intf_buf1),
 
-//Second Buffer 
-    .intf_buf2(intf_buf2)
+    //Second Buffer 
+    .intf_buf2(intf_buf2),
 
+    //PE Array
+    .intf_pea(intf_pea)
 
 );
-memory_buffer first_buffer_module(
+memory_buffer first_buffer_inst(
 	.rst(rst),
 	.clk(clk),
     .intf_buf(intf_buf1)
 );
 
-memory_buffer second_buffer_module(
+memory_buffer second_buffer_inst(
 	.rst(rst),
 	.clk(clk),
     .intf_buf(intf_buf2)
 );		
 
+PE_array pe_array_inst(
+    .rst(rst),
+    .clk(clk),
+    .intf_pea(intf_pea)
 
+);
 
 
 endmodule

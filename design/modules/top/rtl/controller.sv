@@ -14,8 +14,11 @@ module controller (
     //First Buffer
     interface_buffer intf_buf1,
 
-    //second buffer 
-    interface_buffer intf_buf2
+    //Second buffer 
+    interface_buffer intf_buf2,
+
+    //PE Array
+    interface_pe_array intf_pea
 
 );
 
@@ -88,6 +91,28 @@ reg_intf reg_intf_inst (
 
 );
 
+
+///////////////////////////////////////////////////////
+//Computation Controller
+///////////////////////////////////////////////////////
+
+computation_controller computation_controller_inst (
+
+    .clk(clk),
+    .rst(rst),
+    .comp_sel(comp_sel),
+    .regfile(regfile),
+    .intf_pea(intf_pea),
+    .intf_buf1(intf_buf1),
+    .intf_buf2(intf_buf2)
+);
+
+
+///////////////////////////////////////////////////////
+//State Machine For This Block
+///////////////////////////////////////////////////////
+
+
 typedef enum { IDLE, MEM_LOAD, MEM_SAVE, COMPUTATION} ControllerStates;
 ControllerStates state;
 ControllerStates prev_state;
@@ -98,10 +123,10 @@ logic [31:0] mem_load_words;
 logic [5:0]  mem_load_buffer_addr;
 logic [31:0] mem_load_idx;
 logic [31:0] next_mem_load_idx;
-logic [`ADDR_RAM-1:0]  buf1_wr_addr         [`N_PE-1:0];
-logic [`ADDR_RAM-1:0]  next_buf1_wr_addr    [`N_PE-1:0];
-logic [`ADDR_RAM-1:0]  buf2_wr_addr         [`N_PE-1:0];
-logic [`ADDR_RAM-1:0]  next_buf2_wr_addr    [`N_PE-1:0];
+logic [`ADDR_RAM-1:0]  buf1_wr_addr         [`N_BUF-1:0];
+logic [`ADDR_RAM-1:0]  next_buf1_wr_addr    [`N_BUF-1:0];
+logic [`ADDR_RAM-1:0]  buf2_wr_addr         [`N_BUF-1:0];
+logic [`ADDR_RAM-1:0]  next_buf2_wr_addr    [`N_BUF-1:0];
 logic mem_load_buff_1_or_2;
 logic mem_save_buff_1_or_2;
 
@@ -110,14 +135,13 @@ logic [31:0] mem_save_words;
 logic [5:0]  mem_save_buffer_addr;
 logic [31:0] mem_save_idx;
 logic [31:0] next_mem_save_idx;
-logic [`ADDR_RAM-1:0]  buf1_rd_addr        [`N_PE-1:0];
-logic [`ADDR_RAM-1:0]  next_buf1_rd_addr   [`N_PE-1:0];
-logic [`ADDR_RAM-1:0]  buf2_rd_addr        [`N_PE-1:0];
-logic [`ADDR_RAM-1:0]  next_buf2_rd_addr   [`N_PE-1:0];
+logic [`ADDR_RAM-1:0]  buf1_rd_addr        [`N_BUF-1:0];
+logic [`ADDR_RAM-1:0]  next_buf1_rd_addr   [`N_BUF-1:0];
+logic [`ADDR_RAM-1:0]  buf2_rd_addr        [`N_BUF-1:0];
+logic [`ADDR_RAM-1:0]  next_buf2_rd_addr   [`N_BUF-1:0];
 
-integer idx;
 
-always@(posedge clk, posedge rst) begin
+always_ff@(posedge clk, posedge rst) begin
     if(rst) begin
         state   <= #1 IDLE;
         mem_load_idx <= #1 0;
@@ -130,7 +154,7 @@ always@(posedge clk, posedge rst) begin
 end
 
 
-always@(*) begin
+always_comb begin
 
     next_state  = state;
     done_executing = 0;
@@ -164,11 +188,11 @@ always@(*) begin
     next_mem_save_idx = mem_save_idx;
 
 
-    for(idx = 0; idx < `N_PE; idx = idx + 1) begin
-        next_buf1_wr_addr[idx]   = buf1_wr_addr[idx];
-        next_buf2_wr_addr[idx]   = buf2_wr_addr[idx];
-        next_buf1_rd_addr[idx]   = buf1_rd_addr[idx];
-        next_buf2_rd_addr[idx]   = buf2_rd_addr[idx];
+    for(int idx_var = 0; idx_var < `N_BUF; idx_var = idx_var + 1) begin
+        next_buf1_wr_addr[idx_var]   = buf1_wr_addr[idx_var];
+        next_buf2_wr_addr[idx_var]   = buf2_wr_addr[idx_var];
+        next_buf1_rd_addr[idx_var]   = buf1_rd_addr[idx_var];
+        next_buf2_rd_addr[idx_var]   = buf2_rd_addr[idx_var];
     end
 
     case(state)
@@ -291,34 +315,34 @@ always@(*) begin
 end
 
 
-always@(posedge clk, posedge rst) begin
+always_ff@(posedge clk, posedge rst) begin
     if(rst) begin
 
-        for(idx = 0; idx < `N_PE; idx = idx + 1) begin
-            buf1_wr_addr[idx]   <= #1 0;
-            buf2_wr_addr[idx]   <= #1 0;
-            buf1_rd_addr[idx]   <= #1 0;
-            buf2_rd_addr[idx]   <= #1 0;
+        for(int idx_var = 0; idx_var < `N_BUF; idx_var = idx_var + 1) begin
+            buf1_wr_addr[idx_var]   <= #1 0;
+            buf2_wr_addr[idx_var]   <= #1 0;
+            buf1_rd_addr[idx_var]   <= #1 0;
+            buf2_rd_addr[idx_var]   <= #1 0;
 
         end
 
     end else begin
 
         if(next_layer) begin
-            for(idx = 0; idx < `N_PE ; idx = idx + 1) begin
-                buf1_wr_addr[idx]    <= #1 0;
-                buf2_wr_addr[idx]    <= #1 0;
+            for(int idx_var = 0; idx_var < `N_BUF ; idx_var = idx_var + 1) begin
+                buf1_wr_addr[idx_var]    <= #1 0;
+                buf2_wr_addr[idx_var]    <= #1 0;
 
-                buf1_rd_addr[idx]    <= #1 0;
-                buf2_rd_addr[idx]    <= #1 0;
+                buf1_rd_addr[idx_var]    <= #1 0;
+                buf2_rd_addr[idx_var]    <= #1 0;
             end
         end else begin
-            for(idx = 0; idx < `N_PE ; idx = idx + 1) begin
-                buf1_wr_addr[idx]    <= #1 next_buf1_wr_addr[idx];
-                buf2_wr_addr[idx]    <= #1 next_buf2_wr_addr[idx];
+            for(int idx_var = 0; idx_var < `N_BUF ; idx_var = idx_var + 1) begin
+                buf1_wr_addr[idx_var]    <= #1 next_buf1_wr_addr[idx_var];
+                buf2_wr_addr[idx_var]    <= #1 next_buf2_wr_addr[idx_var];
 
-                buf1_rd_addr[idx]    <= #1 next_buf1_rd_addr[idx];
-                buf2_rd_addr[idx]    <= #1 next_buf2_rd_addr[idx];
+                buf1_rd_addr[idx_var]    <= #1 next_buf1_rd_addr[idx_var];
+                buf2_rd_addr[idx_var]    <= #1 next_buf2_rd_addr[idx_var];
             end
         end
     end
@@ -336,7 +360,7 @@ assign mem_save_buffer_addr = regfile.general__mem_save_buffer_addr;
 assign mem_load_buff_1_or_2 = (regfile.general__mem_load_buffer_addr[8] == 0) ? 1 : 0;
 assign mem_save_buff_1_or_2 = (regfile.general__mem_save_buffer_addr[8] == 0) ? 1 : 0;
 
-always@(posedge clk,posedge rst)
+always_ff@(posedge clk,posedge rst)
 begin
     if(rst) begin
         prev_state  <= #1 IDLE;

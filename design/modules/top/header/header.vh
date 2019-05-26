@@ -23,7 +23,10 @@
 
 
 //PE Array
-`define N_PE 33
+`define N_PE 32
+
+//Buffers
+`define N_BUF `N_PE+1
 
 //PE
 `define WID_PE_BITS `DATA_WIDTH

@@ -53,7 +53,7 @@ assign write_data_drv  = instr[15:0];
 
 
 
-always@(posedge clk, posedge rst)
+always_ff@(posedge clk, posedge rst)
 begin
     if(rst) begin
         state <= #1 IDLE;

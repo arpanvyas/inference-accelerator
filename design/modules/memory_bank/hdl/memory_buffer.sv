@@ -10,18 +10,18 @@ module memory_buffer(
 
 
 
-logic [`WID_PE_BITS-1:0] m1_input_bus_unpack [`N_PE-1:0];
-logic [`WID_PE_BITS-1:0] m1_output_bus_unpack [`N_PE-1:0];
+logic [`WID_PE_BITS-1:0] m1_input_bus_unpack [`N_BUF-1:0];
+logic [`WID_PE_BITS-1:0] m1_output_bus_unpack [`N_BUF-1:0];
 
-`UNPACK_ARRAY(`WID_PE_BITS,`N_PE,m1_input_bus_unpack,intf_buf.m1_input_bus)
-`PACK_ARRAY(`WID_PE_BITS,`N_PE,m1_output_bus_unpack,intf_buf.m1_output_bus)
+`UNPACK_ARRAY(`WID_PE_BITS,`N_BUF,m1_input_bus_unpack,intf_buf.m1_input_bus)
+`PACK_ARRAY(`WID_PE_BITS,`N_BUF,m1_output_bus_unpack,intf_buf.m1_output_bus)
 
-logic		[`N_PE-1:0]		m_w_en;
-logic		[`N_PE-1:0]		m_r_en;
+logic		[`N_BUF-1:0]		m_w_en;
+logic		[`N_BUF-1:0]		m_r_en;
 logic		[`ADDR_RAM-1:0]	m_r_addr;
 logic		[`ADDR_RAM-1:0]	m_w_addr;
-logic	 [`WID_PE_BITS-1:0] m_w_data [`N_PE-1:0];
-logic [`WID_PE_BITS-1:0] m_r_data [`N_PE-1:0];
+logic	 [`WID_PE_BITS-1:0] m_w_data [`N_BUF-1:0];
+logic [`WID_PE_BITS-1:0] m_r_data [`N_BUF-1:0];
 logic	 [5:0]				m0_r_en_dec;
 
 
@@ -34,7 +34,7 @@ begin
             m_w_en	<= #1 intf_buf.m0_w_en;
             m_w_addr <= #1 intf_buf.m0_w_addr;
 
-            for(i1=0;i1<`N_PE;i1=i1+1) begin	
+            for(i1=0;i1<`N_BUF;i1=i1+1) begin	
                 m_w_data[i1]	<= #1 intf_buf.m0_w_data;	
                 m1_output_bus_unpack[i1] <= #1 m_r_data[i1];
             end
@@ -54,7 +54,7 @@ begin
             m_w_addr <= #1 intf_buf.m1_w_addr;
             m_r_addr <= #1 intf_buf.m1_r_addr;	
 
-            for(i1=0;i1<`N_PE;i1=i1+1) begin	
+            for(i1=0;i1<`N_BUF;i1=i1+1) begin	
                 m_w_en[i1]		<= #1 intf_buf.m1_w_en;
                 m_r_en[i1]		<= #1 intf_buf.m1_r_en;
                 m_w_data[i1]	<= #1 m1_input_bus_unpack[i1];
@@ -69,7 +69,7 @@ end
 
 
 genvar i;
-generate for(i=0 ; i<`N_PE ; i=i+1)
+generate for(i=0 ; i<`N_BUF ; i=i+1)
 begin
     memory_bank memory_bank 
     (
