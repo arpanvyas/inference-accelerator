@@ -96,15 +96,21 @@ reg_intf reg_intf_inst (
 //Computation Controller
 ///////////////////////////////////////////////////////
 
+logic   [2:0]   comp_sel;
+logic           start_comp;
+logic           done_comp;
+
 computation_controller computation_controller_inst (
 
     .clk(clk),
     .rst(rst),
     .comp_sel(comp_sel),
+    .start_comp(start_comp),
     .regfile(regfile),
     .intf_pea(intf_pea),
     .intf_buf1(intf_buf1),
-    .intf_buf2(intf_buf2)
+    .intf_buf2(intf_buf2),
+    .done(done_comp)
 );
 
 
@@ -194,6 +200,10 @@ always_comb begin
         next_buf1_rd_addr[idx_var]   = buf1_rd_addr[idx_var];
         next_buf2_rd_addr[idx_var]   = buf2_rd_addr[idx_var];
     end
+
+
+    comp_sel = 0;
+    start_comp = 0;
 
     case(state)
 
@@ -303,9 +313,34 @@ always_comb begin
         COMPUTATION : begin
             busy   = 1;
 
-            if(prev_state == state) begin
+            case (regfile.general__layer_type[3:0])
+
+                4'b0000, 4'b0101: begin
+                    comp_sel = 3'b001;
+                end
+
+                4'b0001, 4'b1000: begin
+                    comp_sel = 3'b010;
+                end
+
+                4'b0011: begin
+                    comp_sel = 3'b011;
+                end
+
+                default : begin
+                    comp_sel = 3'b000;
+                end
+
+            endcase
+
+            if(done_comp) begin
                 done_executing = 1;
                 next_state  = IDLE;
+            end
+
+            if(prev_state != state) begin
+
+                start_comp = 1;
             end
 
         end
