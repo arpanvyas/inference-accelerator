@@ -116,6 +116,16 @@ interface interface_regfile;
 	//CONV_0017
 	logic	[3:0]	conv__status;
 
+	//CONV_0018
+	logic	[3:0]	conv__padding_horiz;
+	logic	[3:0]	conv__padding_vert;
+
+	//CONV_0019
+	logic	[15:0]	conv__out_data_wid;
+
+	//CONV_0020
+	logic	[15:0]	conv__out_data_hei;
+
 	//POOL_0001
 	logic	[15:0]	pool__data_wid;
 

@@ -2,11 +2,14 @@
 module PE(
     input rst,
     input clk,
-	input shifting_line,
+    input logic [`N_PE-1:0]  shifting_line,
+	input logic [`N_PE-1:0]  shifting_filter,
+	input logic [`N_PE-1:0]  mac_enable,
+    input logic              nl_enable,
+    input logic              feedback_enable,
+
 	input line_buffer_reset,
 	input [`ADDR_FIFO-1:0]	row_length,
-	input shifting_filter,
-	input mac_enable,
 	input adder_enable,
 	input final_filter_bank,								//0 for intermediate filter banks, 1 for final bank
     input [2:0]							pool_nl,		//state reg
@@ -15,7 +18,6 @@ module PE(
     input								line_buffer_reset_pool,
     input [`ADDR_FIFO-1:0]				row_length_pool,
     input [2:0]							nl_type,
-    input								nl_enable,
     input [`WID_PE_BITS*`N_PE-1:0]		input_bus1_PE,	//line inputs to all the convolvers = 32*16b
     input [`WID_PE_BITS-1:0]			input_2_PE,		//feedback input for the Single PE
     output[`WID_PE_BITS:0]				output_1_PE		//Single PE output
@@ -38,13 +40,13 @@ convolver convolver_module
 	(
 		.rst						(rst),
 		.clk						(clk),
-		.shifting_line				(shifting_line),
+		.shifting_line				(shifting_line[i]),
+		.input_line					(input_channels[i]),
+		.shifting_filter			(shifting_filter[i]),
 		.line_buffer_reset			(line_buffer_reset),
 		.row_length					(row_length),
-		.input_line					(input_channels[i]),
-		.shifting_filter			(shifting_filter),
 		.input_filter				(input_channels[i]),
-		.mac_enable					(mac_enable),
+		.mac_enable					(mac_enable[i]),
 		.output_mac					(output_mac[i])
 	);
 end

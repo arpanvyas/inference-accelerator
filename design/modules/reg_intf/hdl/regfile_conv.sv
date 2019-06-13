@@ -27,6 +27,9 @@ logic	[15:0]	CONV_0014;
 logic	[15:0]	CONV_0015;
 logic	[15:0]	CONV_0016;
 logic	[15:0]	CONV_0017;
+logic	[15:0]	CONV_0018;
+logic	[15:0]	CONV_0019;
+logic	[15:0]	CONV_0020;
 
 //READ REGISTER
 always@(*)
@@ -49,6 +52,9 @@ begin
 		14'h10f : read_data_CONV = CONV_0015;
 		14'h110 : read_data_CONV = CONV_0016;
 		14'h111 : read_data_CONV = CONV_0017;
+		14'h112 : read_data_CONV = CONV_0018;
+		14'h113 : read_data_CONV = CONV_0019;
+		14'h114 : read_data_CONV = CONV_0020;
 		default : read_data_CONV = 16'h0;
 	endcase
 end
@@ -298,6 +304,37 @@ assign	{CONV_0016[15:0] }	=	{ regfile.conv__data_status_cout };
 
 //REGISTER CONV_0017
 assign	{CONV_0017[3:0] }	=	{ regfile.conv__status };
+
+
+
+
+
+//REGISTER CONV_0018
+assign	{regfile.conv__padding_vert,regfile.conv__padding_horiz }	=	{ CONV_0018[7:4],CONV_0018[3:0] };
+//RW fields
+always@(posedge clk, posedge rst) begin
+	if (rst) begin
+		{ CONV_0018[7:4],CONV_0018[3:0] } <= #1 { 4'h1,4'h1 };
+	end else begin
+		if (wr_en && addr == 14'h112) begin
+			{ CONV_0018[7:4],CONV_0018[3:0] } <= #1 { write_data[7:4],write_data[3:0] };
+		end
+	end
+end
+
+
+
+
+
+//REGISTER CONV_0019
+assign	{CONV_0019[15:0] }	=	{ regfile.conv__out_data_wid };
+
+
+
+
+
+//REGISTER CONV_0020
+assign	{CONV_0020[15:0] }	=	{ regfile.conv__out_data_hei };
 
 
 

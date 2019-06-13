@@ -24,6 +24,7 @@
 
 //PE Array
 `define N_PE 32
+`define LOG_N_PE $clog2(`N_PE)
 
 //Buffers
 `define N_BUF `N_PE+1

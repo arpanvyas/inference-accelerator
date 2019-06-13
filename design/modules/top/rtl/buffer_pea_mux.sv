@@ -76,20 +76,26 @@ always_comb begin
         3'b000: begin       //IDLE
             
             intf_buf1.m1_r_en = 0;
-            intf_buf1.m1_r_addr = 0;
             intf_buf1.m1_w_en = 0;
-            intf_buf1.m1_w_addr = 0;
 
             intf_buf2.m1_r_en = 0;
-            intf_buf2.m1_r_addr = 0;
             intf_buf2.m1_w_en = 0;
-            intf_buf2.m1_w_addr = 0;
 
-            intf_pea.shifting_line = 0;
+            for(int i0 = 0; i0 < `N_BUF-1; i0 = i0+1) begin
+                intf_buf1.m1_r_addr[i0] = 0;
+                intf_buf1.m1_w_addr[i0] = 0;
+                intf_buf2.m1_r_addr[i0] = 0;
+                intf_buf2.m1_w_addr[i0] = 0;
+            end
+
+            for(int i1 = 0; i1 < `N_PE-1; i1 = i1+1) begin
+                intf_pea.shifting_line[i1] = 0;
+                intf_pea.shifting_filter[i1] = 0;
+                intf_pea.mac_enable[i1] = 0;
+            end
+
             intf_pea.line_buffer_reset = 0;
             intf_pea.row_length = 0;
-            intf_pea.shifting_filter = 0;
-            intf_pea.mac_enable = 0;
             intf_pea.adder_enable = 0;
             intf_pea.final_filter_bank = 0;
             intf_pea.shifting_line_pool = 0;
@@ -187,20 +193,28 @@ always_comb begin
 
             
             intf_buf1.m1_r_en = 0;
-            intf_buf1.m1_r_addr = 0;
             intf_buf1.m1_w_en = 0;
-            intf_buf1.m1_w_addr = 0;
 
             intf_buf2.m1_r_en = 0;
-            intf_buf2.m1_r_addr = 0;
             intf_buf2.m1_w_en = 0;
-            intf_buf2.m1_w_addr = 0;
 
-            intf_pea.shifting_line = 0;
+
+            for(int i0 = 0; i0 < `N_BUF-1; i0 = i0+1) begin
+                intf_buf1.m1_r_addr[i0] = 0;
+                intf_buf1.m1_w_addr[i0] = 0;
+                intf_buf2.m1_r_addr[i0] = 0;
+                intf_buf2.m1_w_addr[i0] = 0;
+            end
+
+            for(int i1 = 0; i1 < `N_PE-1; i1 = i1+1) begin
+                intf_pea.shifting_line[i1] = 0;
+                intf_pea.shifting_filter[i1] = 0;
+                intf_pea.mac_enable[i1] = 0;
+
+            end
+
             intf_pea.line_buffer_reset = 0;
             intf_pea.row_length = 0;
-            intf_pea.shifting_filter = 0;
-            intf_pea.mac_enable = 0;
             intf_pea.adder_enable = 0;
             intf_pea.final_filter_bank = 0;
             intf_pea.shifting_line_pool = 0;
