@@ -81,14 +81,14 @@ always_comb begin
             intf_buf2.m1_r_en = 0;
             intf_buf2.m1_w_en = 0;
 
-            for(int i0 = 0; i0 < `N_BUF-1; i0 = i0+1) begin
+            for(int i0 = 0; i0 < `N_BUF; i0 = i0+1) begin
                 intf_buf1.m1_r_addr[i0] = 0;
                 intf_buf1.m1_w_addr[i0] = 0;
                 intf_buf2.m1_r_addr[i0] = 0;
                 intf_buf2.m1_w_addr[i0] = 0;
             end
 
-            for(int i1 = 0; i1 < `N_PE-1; i1 = i1+1) begin
+            for(int i1 = 0; i1 < `N_PE; i1 = i1+1) begin
                 intf_pea.shifting_line[i1] = 0;
                 intf_pea.shifting_filter[i1] = 0;
                 intf_pea.mac_enable[i1] = 0;
@@ -103,6 +103,7 @@ always_comb begin
             intf_pea.row_length_pool = 0;
             intf_pea.nl_type = 0;
             intf_pea.nl_enable = 0;
+            intf_pea.feedback_enable = 0;
 
         end
 
@@ -130,6 +131,7 @@ always_comb begin
             intf_pea.row_length_pool = intf_pea_ctrl_conv.row_length_pool;
             intf_pea.nl_type = intf_pea_ctrl_conv.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_conv.nl_enable;
+            intf_pea.feedback_enable = intf_pea_ctrl_conv.feedback_enable;
 
 
         end
@@ -158,6 +160,7 @@ always_comb begin
             intf_pea.row_length_pool = intf_pea_ctrl_dense.row_length_pool;
             intf_pea.nl_type = intf_pea_ctrl_dense.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_dense.nl_enable;
+            intf_pea.feedback_enable = intf_pea_ctrl_dense.feedback_enable;
 
         end
 
@@ -185,6 +188,7 @@ always_comb begin
             intf_pea.row_length_pool = intf_pea_ctrl_pool.row_length_pool;
             intf_pea.nl_type = intf_pea_ctrl_pool.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_pool.nl_enable;
+            intf_pea.feedback_enable = intf_pea_ctrl_pool.feedback_enable;
 
 
         end
@@ -199,14 +203,14 @@ always_comb begin
             intf_buf2.m1_w_en = 0;
 
 
-            for(int i0 = 0; i0 < `N_BUF-1; i0 = i0+1) begin
+            for(int i0 = 0; i0 < `N_BUF; i0 = i0+1) begin
                 intf_buf1.m1_r_addr[i0] = 0;
                 intf_buf1.m1_w_addr[i0] = 0;
                 intf_buf2.m1_r_addr[i0] = 0;
                 intf_buf2.m1_w_addr[i0] = 0;
             end
 
-            for(int i1 = 0; i1 < `N_PE-1; i1 = i1+1) begin
+            for(int i1 = 0; i1 < `N_PE; i1 = i1+1) begin
                 intf_pea.shifting_line[i1] = 0;
                 intf_pea.shifting_filter[i1] = 0;
                 intf_pea.mac_enable[i1] = 0;
@@ -222,6 +226,7 @@ always_comb begin
             intf_pea.row_length_pool = 0;
             intf_pea.nl_type = 0;
             intf_pea.nl_enable = 0;
+            intf_pea.feedback_enable = 0;
 
 
         end
