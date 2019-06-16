@@ -21,6 +21,8 @@ logic	[15:0]	POOL_0008;
 logic	[15:0]	POOL_0009;
 logic	[15:0]	POOL_0010;
 logic	[15:0]	POOL_0011;
+logic	[15:0]	POOL_0012;
+logic	[15:0]	POOL_0013;
 
 //READ REGISTER
 always@(*)
@@ -37,6 +39,8 @@ begin
 		14'h209 : read_data_POOL = POOL_0009;
 		14'h20a : read_data_POOL = POOL_0010;
 		14'h20b : read_data_POOL = POOL_0011;
+		14'h20c : read_data_POOL = POOL_0012;
+		14'h20d : read_data_POOL = POOL_0013;
 		default : read_data_POOL = 16'h0;
 	endcase
 end
@@ -194,6 +198,20 @@ assign	{POOL_0010[15:0] }	=	{ regfile.pool__output_hei };
 
 //REGISTER POOL_0011
 assign	{POOL_0011[15:0] }	=	{ regfile.pool__output_ch };
+
+
+
+
+
+//REGISTER POOL_0012
+assign	{POOL_0012[15:0] }	=	{ regfile.pool__out_data_wid };
+
+
+
+
+
+//REGISTER POOL_0013
+assign	{POOL_0013[15:0] }	=	{ regfile.pool__out_data_hei };
 
 
 

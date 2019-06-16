@@ -30,6 +30,7 @@
 `define LAT_ADD_TREE 5
 `define LAT_FB_ADD 1
 `define LAT_NL 1
+`define LAT_POOL 2
 
 //Buffers
 `define N_BUF `N_PE+1

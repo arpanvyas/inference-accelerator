@@ -23,6 +23,9 @@ logic	[`WID_PE_BITS*`N_PE-1:0]	output_bus1_PEA;
 logic   [2:0]                       pool_nl;
 logic   [2:0]                       nl_type;
 logic                               pool_enable;
+logic   [15:0]                      pool_type;
+logic   [15:0]                      pool_horiz;
+logic   [15:0]                      pool_vert;
 
 
 endinterface
@@ -47,8 +50,11 @@ logic	[`WID_PE_BITS*`N_PE-1:0]	input_bus2_PEA;
 logic	[`WID_PE_BITS*`N_PE-1:0]	output_bus1_PEA;
 
 logic   [2:0]                       pool_nl;
-logic   [15:0]                      nl_type;
 logic                               pool_enable;
+logic   [15:0]                      pool_type;
+logic   [15:0]                      pool_horiz;
+logic   [15:0]                      pool_vert;
+logic   [15:0]                      nl_type;
 
 
 endinterface

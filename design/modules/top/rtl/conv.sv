@@ -61,14 +61,13 @@ logic           cbe_on, next_cbe_on;
 logic           fbe_on, next_fbe_on;
 
 logic   [15:0]  f_act;
-logic   [15:0]  c_act;
 
 logic   [15:0]  channels;
-logic   [7:0]   channel_push;
 logic   [15:0]  filters;
-logic   [7:0]   input_push;
 logic   [15:0]  input_size;
 logic   [15:0]  output_size;
+logic   [15:0]  output_width;
+logic   [15:0]  output_height;
 logic   [7:0]   filter_size;
 
 logic   [7:0]   kern_idx, next_kern_idx;
@@ -76,10 +75,18 @@ logic   [15:0]  input_idx_ff1, next_input_idx_ff1; //read from BUF1
 logic   [15:0]  input_idx_ff2, next_input_idx_ff2; //write to PEA
 logic   [15:0]  input_idx_ff3, next_input_idx_ff3; //Mac Enable
 logic   [15:0]  input_idx_ff4, next_input_idx_ff4; //write to BUF2
+logic   [15:0]  input_idx_ff4_gate, next_input_idx_ff4_gate; //write to BUF2
+logic           ff4_gate;
 
 logic   [15:0]  input_idx_fb1, next_input_idx_fb1; //read from buf2
+logic   [15:0]  input_idx_fb1_gate, next_input_idx_fb1_gate; //read from buf2
+logic           fb1_gate;
 logic   [15:0]  input_idx_fb2, next_input_idx_fb2; 
+logic   [15:0]  input_idx_fb2_gate, next_input_idx_fb2_gate; 
+logic           fb2_gate;
 logic   [15:0]  input_idx_fb3, next_input_idx_fb3; 
+logic   [15:0]  input_idx_fb3_gate, next_input_idx_fb3_gate; 
+logic           fb3_gate;
 
 logic   [15:0]  latency_cnt_1, next_latency_cnt_1;
 logic   [15:0]  latency_inp_sh_to_mac_en, latency_cnt_2, next_latency_cnt_2;
@@ -112,6 +119,7 @@ always_ff@(posedge clk, posedge rst) begin
         input_idx_ff2 <= #1 0;
         input_idx_ff3 <= #1 0;
         input_idx_ff4 <= #1 0;
+        input_idx_ff4_gate <= #1 0;
         input_idx_fb1 <= #1 0;
         input_idx_fb2 <= #1 0;
         input_idx_fb3 <= #1 0;
@@ -141,9 +149,13 @@ always_ff@(posedge clk, posedge rst) begin
         input_idx_ff2 <= #1 next_input_idx_ff2;
         input_idx_ff3 <= #1 next_input_idx_ff3;
         input_idx_ff4 <= #1 next_input_idx_ff4;
+        input_idx_ff4_gate <= #1 next_input_idx_ff4_gate;
         input_idx_fb1 <= #1 next_input_idx_fb1;
+        input_idx_fb1_gate <= #1 next_input_idx_fb1_gate;
         input_idx_fb2 <= #1 next_input_idx_fb2;
+        input_idx_fb2_gate <= #1 next_input_idx_fb2_gate;
         input_idx_fb3 <= #1 next_input_idx_fb3;
+        input_idx_fb3_gate <= #1 next_input_idx_fb3_gate;
 
         latency_cnt_1 <= #1 next_latency_cnt_1;
         latency_cnt_2 <= #1 next_latency_cnt_2;
@@ -174,9 +186,15 @@ always_comb begin
     next_input_idx_ff2 = input_idx_ff2;
     next_input_idx_ff3 = input_idx_ff3;
     next_input_idx_ff4 = input_idx_ff4;
+    next_input_idx_ff4_gate = input_idx_ff4_gate;
     next_input_idx_fb1 = input_idx_fb1;
+    next_input_idx_fb1_gate = input_idx_fb1_gate;
     next_input_idx_fb2 = input_idx_fb2;
+    next_input_idx_fb2_gate = input_idx_fb2_gate;
     next_input_idx_fb3 = input_idx_fb3;
+    next_input_idx_fb3_gate = input_idx_fb3_gate;
+
+
 
     for (int idx_var = 0; idx_var < `N_PE; idx_var = idx_var + 1) begin
         intf_pea_ctrl.shifting_line[idx_var] = 0;
@@ -185,17 +203,31 @@ always_comb begin
         intf_pea_ctrl.feedback_enable[idx_var] = 0;
     end
 
+    for (int i0 = 0; i0 < `N_BUF; i0 = i0 + 1) begin
+        intf_buf1_m1_ctrl.m1_r_en[i0] = 0;
+        intf_buf1_m1_ctrl.m1_r_addr[i0] = 0;
+        intf_buf1_m1_ctrl.m1_w_en[i0] = 0;
+        intf_buf1_m1_ctrl.m1_w_addr[i0] = 0;
+
+        intf_buf2_m1_ctrl.m1_r_en[i0] = 0;
+        intf_buf2_m1_ctrl.m1_r_addr[i0] = 0;
+        intf_buf2_m1_ctrl.m1_w_en[i0] = 0;
+        intf_buf2_m1_ctrl.m1_w_addr[i0] = 0;
+    end
+
     intf_pea_ctrl.nl_enable = 0;
     intf_pea_ctrl.row_length = regfile.conv__data_wid;
     intf_pea_ctrl.nl_type = regfile.nl__nl_type;
     intf_pea_ctrl.adder_enable = 0;
     intf_pea_ctrl.line_buffer_reset = 1;
+    intf_pea_ctrl.pool_enable = 0;
 
     next_latency_cnt_1 = latency_cnt_1;
     next_latency_cnt_2 = latency_cnt_2;
     next_latency_cnt_3 = latency_cnt_3;
 
     next_latency_cnt_4 = latency_cnt_4;
+    next_latency_cnt_4_d = latency_cnt_4_d;
     next_latency_cnt_5 = latency_cnt_5;
 
     case(state) 
@@ -265,10 +297,14 @@ always_comb begin
             next_input_idx_ff2 = 0;
             next_input_idx_ff3 = 0;
             next_input_idx_ff4 = 0;
+            next_input_idx_ff4_gate = 0;
 
             next_input_idx_fb1 = 0;
+            next_input_idx_fb1_gate = 0;
             next_input_idx_fb2 = 0;
+            next_input_idx_fb2_gate = 0;
             next_input_idx_fb3 = 0;
+            next_input_idx_fb3_gate = 0;
 
             next_latency_cnt_1 = 0;
             next_latency_cnt_2 = 0;
@@ -367,7 +403,7 @@ always_comb begin
 
             //1. Read Image logic
 
-            if(input_idx_ff1 < input_size + (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid ) begin
+            if(input_idx_ff1 < input_size ) begin
 
                 for(int i1 = 0; i1 < `N_PE; i1 = i1 + 1) begin
                     if(cbe_on == 0) begin
@@ -391,7 +427,7 @@ always_comb begin
             //2. Writing logic, follows read logic by 1 cycle
             if(latency_cnt_1 == 1) begin
 
-                if(input_idx_ff2 < input_size + (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid ) begin
+                if(input_idx_ff2 < input_size ) begin
                     if(fbe_on == 1) begin
 
                         for(int i0 = 0; i0 < extra_f; i0 = i0 + 1) begin 
@@ -439,7 +475,7 @@ always_comb begin
             //3. MAC enable logic
             if(latency_cnt_2 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid ) begin
 
-                if(input_idx_ff3 < input_size ) begin
+                if(input_idx_ff3 < input_size - ( (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid) ) begin
                     if(fbe_on == 1) begin
 
                         for(int i0 = 0; i0 < extra_f; i0 = i0 + 1) begin 
@@ -488,26 +524,49 @@ always_comb begin
 
                 if(input_idx_ff4 < output_size) begin
 
-                    for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                        if(fbe_on == 0) begin
-                            intf_buf2_m1_ctrl.m1_w_en[i0] = 1;
-                            intf_buf2_m1_ctrl.m1_w_addr[i0] = output_size*fb + input_idx_ff4;
-                        end else begin
-                            if(extra_f[i0] == 1) begin
+                    if(ff4_gate == 1) begin
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            if(fbe_on == 0) begin
                                 intf_buf2_m1_ctrl.m1_w_en[i0] = 1;
                                 intf_buf2_m1_ctrl.m1_w_addr[i0] = output_size*fb + input_idx_ff4;
                             end else begin
-                                intf_buf2_m1_ctrl.m1_w_en[i0] = 0;
-                                intf_buf2_m1_ctrl.m1_w_addr[i0] = 0;
+                                if(extra_f[i0] == 1) begin
+                                    intf_buf2_m1_ctrl.m1_w_en[i0] = 1;
+                                    intf_buf2_m1_ctrl.m1_w_addr[i0] = output_size*fb + input_idx_ff4;
+                                end else begin
+                                    intf_buf2_m1_ctrl.m1_w_en[i0] = 0;
+                                    intf_buf2_m1_ctrl.m1_w_addr[i0] = 0;
+                                end
+
                             end
 
-                        end
+                        end//for i0
 
-                    end//for i0
+                        next_input_idx_ff4 = input_idx_ff4 + 1;
 
-                    next_input_idx_ff4 = input_idx_ff4 + 1;
+                    end else begin //ff4_gate == 0
 
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            intf_buf2_m1_ctrl.m1_w_en[i0] = 0;
+                            intf_buf2_m1_ctrl.m1_w_addr[i0] = output_size*fb + input_idx_ff4;
+                        end//for i0
+
+
+                        next_input_idx_ff4 = input_idx_ff4;
+                    end //ff4_gate
+
+                end//input_idx_ff4 < ..
+
+
+                if(input_idx_ff4_gate < output_width) begin
+                    next_input_idx_ff4_gate = input_idx_ff4_gate + 1;
+                end else if(input_idx_ff4_gate < output_width + regfile.conv__filter_wid - 2 ) begin
+                    next_input_idx_ff4_gate = input_idx_ff4_gate + 1;
+                end else if(input_idx_ff4_gate == output_width + regfile.conv__filter_wid - 2) begin
+                    next_input_idx_ff4_gate = 0;
                 end
+
+
 
             end else begin
                 next_latency_cnt_3 = latency_cnt_3 + 1;
@@ -517,26 +576,49 @@ always_comb begin
             //II. Feed Back logic
 
             //1. Feedback Reads From Buffer2, Read Logic
-            if(latency_cnt_4 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE-1) begin //FIXME stop this loop
+            if(latency_cnt_4 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE-1) begin 
 
                 if(input_idx_fb1 < output_size) begin
-                    for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                        if(cb > 0 && fbe_on == 0) begin
-                            intf_buf2_m1_ctrl.m1_r_en[i0] = 1;
-                            intf_buf2_m1_ctrl.m1_r_addr[i0] = output_size*fb + input_idx_fb1;
-                        end else if(cb > 0) begin //fbe_on
-                            if(extra_f[i0] == 1) begin
+
+                    if(fb1_gate == 1) begin
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            if(cb > 0 && fbe_on == 0) begin
                                 intf_buf2_m1_ctrl.m1_r_en[i0] = 1;
                                 intf_buf2_m1_ctrl.m1_r_addr[i0] = output_size*fb + input_idx_fb1;
-                            end else begin
-                                intf_buf2_m1_ctrl.m1_r_en[i0] = 0;
-                                intf_buf2_m1_ctrl.m1_r_addr[i0] = 0;
+                            end else if(cb > 0) begin //fbe_on
+                                if(extra_f[i0] == 1) begin
+                                    intf_buf2_m1_ctrl.m1_r_en[i0] = 1;
+                                    intf_buf2_m1_ctrl.m1_r_addr[i0] = output_size*fb + input_idx_fb1;
+                                end else begin
+                                    intf_buf2_m1_ctrl.m1_r_en[i0] = 0;
+                                    intf_buf2_m1_ctrl.m1_r_addr[i0] = 0;
+                                end
                             end
-                        end
-                    end //for i0
+                        end //for i0
 
-                    next_input_idx_fb1 = input_idx_fb1 + 1;
+                        next_input_idx_fb1 = input_idx_fb1 + 1;
+                    end else begin
+
+                        for(int i0=0; i0 < `N_PE; i0 = i0 + 1) begin
+                            intf_buf2_m1_ctrl.m1_r_en[i0] = 0;
+                            intf_buf2_m1_ctrl.m1_r_addr[i0] = output_size*fb + input_idx_fb1;
+                        end
+
+                        next_input_idx_fb1 = input_idx_fb1;
+
+                    end //fb1_gate 
+
                 end
+
+                if(input_idx_fb1_gate < output_width) begin
+                    next_input_idx_fb1_gate = input_idx_fb1_gate + 1;
+                end else if(input_idx_fb1_gate < output_width + regfile.conv__filter_wid - 2 ) begin
+                    next_input_idx_fb1_gate = input_idx_fb1_gate + 1;
+                end else if(input_idx_fb1_gate == output_width + regfile.conv__filter_wid - 2) begin
+                    next_input_idx_fb1_gate = 0;
+                end
+
+
 
             end else begin
                 next_latency_cnt_4 = latency_cnt_4 + 1;
@@ -547,20 +629,42 @@ always_comb begin
             if(latency_cnt_4_d == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE) begin
 
                 if(input_idx_fb2 < output_size) begin
-                    for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                        if(cb > 0 && fbe_on == 0) begin
-                            intf_pea_ctrl.feedback_enable[i0] = 1;
-                        end else if(cb > 0) begin //fbe_on
-                            if(extra_f[i0] == 1) begin
-                                intf_pea_ctrl.feedback_enable[i0] = 1;     
-                            end else begin
-                                intf_pea_ctrl.feedback_enable[i0] = 0;     
-                            end
-                        end
-                    end //for i0
 
-                    next_input_idx_fb2 = input_idx_fb2 + 1;
+                    if(fb2_gate == 1) begin
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            if(cb > 0 && fbe_on == 0) begin
+                                intf_pea_ctrl.feedback_enable[i0] = 1;
+                            end else if(cb > 0) begin //fbe_on
+                                if(extra_f[i0] == 1) begin
+                                    intf_pea_ctrl.feedback_enable[i0] = 1;     
+                                end else begin
+                                    intf_pea_ctrl.feedback_enable[i0] = 0;     
+                                end
+                            end
+                        end //for i0
+
+                        next_input_idx_fb2 = input_idx_fb2 + 1;
+
+                    end else begin
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            intf_pea_ctrl.feedback_enable[i0] = 0;
+                        end
+                        next_input_idx_fb2 = input_idx_fb2;
+                    end
+
                 end
+
+
+
+                if(input_idx_fb2_gate < output_width) begin
+                    next_input_idx_fb2_gate = input_idx_fb2_gate + 1;
+                end else if(input_idx_fb2_gate < output_width + regfile.conv__filter_wid - 2 ) begin
+                    next_input_idx_fb2_gate = input_idx_fb2_gate + 1;
+                end else if(input_idx_fb2_gate == output_width + regfile.conv__filter_wid - 2) begin
+                    next_input_idx_fb2_gate = 0;
+                end
+
+
 
             end else begin
                 next_latency_cnt_4_d = latency_cnt_4_d + 1;
@@ -570,26 +674,53 @@ always_comb begin
             if(latency_cnt_5 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD) begin
 
                 if(input_idx_fb3 < output_size) begin
-                    for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                        if(cb == CBe - 1) begin
-                            intf_pea_ctrl.nl_enable[i0] = 1;
-                        end else begin
+
+                    if(fb3_gate == 1) begin
+
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            if(cb == CBe - 1) begin
+                                intf_pea_ctrl.nl_enable[i0] = 1;
+                            end else begin
+                                intf_pea_ctrl.nl_enable[i0] = 0;
+                            end
+                        end //for (int i0 ..
+
+                        next_input_idx_fb3 = input_idx_fb3 + 1;
+
+                    end else begin
+
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
                             intf_pea_ctrl.nl_enable[i0] = 0;
                         end
-                    end //for (int i0 ..
 
-                    next_input_idx_fb3 = input_idx_fb3 + 1;
+                        next_input_idx_fb3 = input_idx_fb3;
 
-                end else begin
-
-                    //All over jump to parent state
-                    next_state = s_FB_CB_F;
+                    end //fb3_gate
 
                 end
 
 
+                if(input_idx_fb3_gate < output_width) begin
+                    next_input_idx_fb3_gate = input_idx_fb3_gate + 1;
+                end else if(input_idx_fb3_gate < output_width + regfile.conv__filter_wid - 2 ) begin
+                    next_input_idx_fb3_gate = input_idx_fb3_gate + 1;
+                end else if(input_idx_fb3_gate == output_width + regfile.conv__filter_wid - 2) begin
+                    next_input_idx_fb3_gate = 0;
+                end
+
+
+
+
             end else begin
                 next_latency_cnt_5 = latency_cnt_5 + 1;
+            end
+
+
+
+            if(input_idx_ff4 == output_size) begin
+                //All over jump to parent state
+                next_state = s_FB_CB_F;
+
             end
 
         end //s_FB_CB_F_push_cb
@@ -599,12 +730,33 @@ always_comb begin
 
 end
 
+assign ff4_gate = (input_idx_ff4_gate < output_width) ? 1'b1 : 1'b0;
+assign fb1_gate = (input_idx_fb1_gate < output_width) ? 1'b1 : 1'b0;
+assign fb2_gate = (input_idx_fb2_gate < output_width) ? 1'b1 : 1'b0;
+assign fb3_gate = (input_idx_fb3_gate < output_width) ? 1'b1 : 1'b0;
+
+always_comb begin
+
+    if(input_idx_ff4_gate < output_width) begin 
+        
+    end
+
+
+end
 
 
 
 
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//NOTE: The ff4/fb1,2,3_gate logic is to ensure while input wrapping, output
+//is not captured
+//
+//Although only ff4_gate : for wr_en = 0 and wr_addr STILL and fb1 : for
+//rd_addr STILL are required
+//
+//Still just for uniformity this gate logic is put on fb2 and fb3 as well
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -637,6 +789,8 @@ assign input_size = regfile.conv__data_wid * regfile.conv__data_hei;
 
 assign regfile.conv__out_data_hei = (regfile.conv__data_hei + 2*regfile.conv__padding_vert - regfile.conv__filter_hei)/regfile.conv__stride_vert + 1;
 assign regfile.conv__out_data_wid = (regfile.conv__data_wid + 2*regfile.conv__padding_horiz - regfile.conv__filter_wid)/regfile.conv__stride_horiz + 1;
+assign output_width = regfile.conv__out_data_wid;
+assign output_height = regfile.conv__out_data_hei;
 assign output_size = regfile.conv__out_data_hei*regfile.conv__out_data_wid;
 
 assign filter_size = regfile.conv__filter_wid * regfile.conv__filter_hei;

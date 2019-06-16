@@ -159,6 +159,12 @@ interface interface_regfile;
 	//POOL_0011
 	logic	[15:0]	pool__output_ch;
 
+	//POOL_0012
+	logic	[15:0]	pool__out_data_wid;
+
+	//POOL_0013
+	logic	[15:0]	pool__out_data_hei;
+
 	//NL_0001
 	logic	[15:0]	nl__data_wid;
 

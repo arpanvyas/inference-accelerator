@@ -1,7 +1,7 @@
 `include "header.vh"
 
 
-function hot_to_dec;
+function automatic hot_to_dec;
 input [`N_BUF-1:0] hot;
 output [5:0] dec;
 integer i;

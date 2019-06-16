@@ -5,18 +5,18 @@ module adder_tree(
     input								adder_enable,
 	input logic [`N_PE-1:0]  mac_enable,
     input	[`WID_PE_BITS*`N_PE-1:0]	output_mac_packed,
-    output	[`WID_PE_BITS-1:0]		adder_tree_out
+    output logic signed	[`WID_PE_BITS-1:0]		adder_tree_out
     );
 
 
-logic[`WID_PE_BITS-1:0]	output_mac		        [`N_PE-1:0];
-logic[`WID_PE_BITS-1:0]	cleaned_output_mac		[`N_PE-1:0];
+logic   signed [`WID_PE_BITS-1:0]	output_mac		        [`N_PE-1:0];
+logic   signed [`WID_PE_BITS-1:0]	cleaned_output_mac		[`N_PE-1:0];
 
-reg [`WID_PE_BITS-1:0]	adder_stage1	[`N_PE/2-1:0]; //16 output
-reg [`WID_PE_BITS-1:0]	adder_stage2	[`N_PE/4-1:0]; //8 output
-reg [`WID_PE_BITS-1:0]	adder_stage3	[`N_PE/8-1:0]; //4 output
-reg [`WID_PE_BITS-1:0]	adder_stage4	[`N_PE/16-1:0]; //2 output
-reg [`WID_PE_BITS-1:0]	adder_stage5; //1 output
+logic signed [`WID_PE_BITS-1:0]	adder_stage1	[`N_PE/2-1:0]; //16 output
+logic signed [`WID_PE_BITS-1:0]	adder_stage2	[`N_PE/4-1:0]; //8 output
+logic signed [`WID_PE_BITS-1:0]	adder_stage3	[`N_PE/8-1:0]; //4 output
+logic signed [`WID_PE_BITS-1:0]	adder_stage4	[`N_PE/16-1:0]; //2 output
+logic signed [`WID_PE_BITS-1:0]	adder_stage5; //1 output
 integer					i1,i2,i3,i4,i5;
 
 `UNPACK_ARRAY(`WID_PE_BITS,`N_PE,output_mac,output_mac_packed)

@@ -314,7 +314,7 @@ assign	{regfile.conv__padding_vert,regfile.conv__padding_horiz }	=	{ CONV_0018[7
 //RW fields
 always@(posedge clk, posedge rst) begin
 	if (rst) begin
-		{ CONV_0018[7:4],CONV_0018[3:0] } <= #1 { 4'h1,4'h1 };
+		{ CONV_0018[7:4],CONV_0018[3:0] } <= #1 { 4'h0,4'h0 };
 	end else begin
 		if (wr_en && addr == 14'h112) begin
 			{ CONV_0018[7:4],CONV_0018[3:0] } <= #1 { write_data[7:4],write_data[3:0] };
