@@ -195,38 +195,38 @@ interface interface_regfile;
 	//NL_0010
 	logic	[15:0]	nl__output_data_length;
 
-	//FC_0001
-	logic	[15:0]	fc__input_data_type;
+	//DENSE_0001
+	logic	[15:0]	dense__input_data_type;
 
-	//FC_0002
-	logic	[15:0]	fc__data_wid;
+	//DENSE_0002
+	logic	[15:0]	dense__data_wid;
 
-	//FC_0003
-	logic	[15:0]	fc__data_hei;
+	//DENSE_0003
+	logic	[15:0]	dense__data_hei;
 
-	//FC_0004
-	logic	[15:0]	fc__data_ch;
+	//DENSE_0004
+	logic	[15:0]	dense__data_ch;
 
-	//FC_0005
-	logic	[15:0]	fc__output_wid;
+	//DENSE_0005
+	logic	[15:0]	dense__output_wid;
 
-	//FC_0006
-	logic	[15:0]	fc__output_hei;
+	//DENSE_0006
+	logic	[15:0]	dense__output_hei;
 
-	//FC_0007
-	logic	[15:0]	fc__output_ch;
+	//DENSE_0007
+	logic	[15:0]	dense__output_ch;
 
-	//FC_0008
-	logic	[15:0]	fc__input_data_length;
+	//DENSE_0008
+	logic	[15:0]	dense__input_data_length;
 
-	//FC_0009
-	logic	[15:0]	fc__output_data_length;
+	//DENSE_0009
+	logic	[15:0]	dense__output_data_length;
 
-	//FC_0010
-	logic	[15:0]	fc__wid_weight_matrix;
+	//DENSE_0010
+	logic	[15:0]	dense__wid_weight_matrix;
 
-	//FC_0011
-	logic	[15:0]	fc__hei_weight_matrix;
+	//DENSE_0011
+	logic	[15:0]	dense__hei_weight_matrix;
 
 
 endinterface

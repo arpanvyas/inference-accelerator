@@ -12,7 +12,7 @@
 `define DATA_EXT_RAM 16
 
 //Memory Bank
-`define ADDR_RAM 12
+`define ADDR_RAM 16
 `define WID_RAM `DATA_WIDTH
 
 //Controller
@@ -30,7 +30,11 @@
 `define LAT_ADD_TREE 5
 `define LAT_FB_ADD 1
 `define LAT_NL 1
+`define LAT_DENSE_ADD 1
 `define LAT_POOL 2
+`define CONV_ROW_MAX 3
+`define MAC_COL_MAX 3
+`define DENSE_PER_GO `CONV_ROW_MAX * `MAC_COL_MAX
 
 //Buffers
 `define N_BUF `N_PE+1

@@ -37,6 +37,8 @@ logic [`ADDR_RAM-1:0]  next_buf1_rd_addr   [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  buf2_rd_addr        [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  next_buf2_rd_addr   [`N_BUF-1:0];
 
+logic ping_pong; //1: ping, 0: pong
+
 //L1 : Separator for input and filter in a buffer
 logic [`ADDR_RAM-1:0]  L1                  [`N_BUF-1:0];
 //S1 : Size of a channel for all filters
@@ -221,6 +223,10 @@ always_comb begin
     intf_pea_ctrl.adder_enable = 0;
     intf_pea_ctrl.line_buffer_reset = 1;
     intf_pea_ctrl.pool_enable = 0;
+    intf_pea_ctrl.dense_enable = 0;
+    intf_pea_ctrl.dense_valid = 0;
+    intf_pea_ctrl.dense_adder_reset = 0;
+    intf_pea_ctrl.dense_adder_on = 0;
 
     next_latency_cnt_1 = latency_cnt_1;
     next_latency_cnt_2 = latency_cnt_2;
@@ -738,7 +744,7 @@ assign fb3_gate = (input_idx_fb3_gate < output_width) ? 1'b1 : 1'b0;
 always_comb begin
 
     if(input_idx_ff4_gate < output_width) begin 
-        
+
     end
 
 
@@ -801,7 +807,8 @@ assign latency_inp_sh_to_mac_en = regfile.conv__data_wid*2 + regfile.conv__filte
 assign latency_mac_en_to_write_back = 5; //adder tree delay
 
 
-assign aybz_azby = 0;
+assign ping_pong = 1; //ping
+assign aybz_azby = (ping_pong == 1) ? 2'b01 : 2'b00 ;
 
 
 

@@ -1,0 +1,1 @@
+../../pe_array/hdl/dense_latch.sv

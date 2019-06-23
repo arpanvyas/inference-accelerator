@@ -166,8 +166,6 @@ always_comb begin
     done_executing = 0;
     busy = 0;
 
-    intf_buf1.mode = 0;
-    intf_buf2.mode = 0;
 
     intf_buf1.m0_w_en   = 0;
     intf_buf2.m0_w_en   = 0;
@@ -226,8 +224,6 @@ always_comb begin
         MEM_LOAD : begin
             busy = 1;
 
-            intf_buf1.mode = 0;
-            intf_buf2.mode = 0;
 
             intf_buf1.m0_w_data = intf_extmem.rd_data;
             intf_buf2.m0_w_data = intf_extmem.rd_data;
@@ -264,8 +260,6 @@ always_comb begin
         MEM_SAVE : begin
             busy         = 1;
 
-            intf_buf1.mode = 0;
-            intf_buf2.mode = 0;
 
             if(mem_save_buff_1_or_2) begin
                 intf_extmem.wr_data = intf_buf1.m0_r_data;

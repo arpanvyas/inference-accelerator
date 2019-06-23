@@ -29,16 +29,16 @@ interface_buffer intf_buf2();
 interface_pe_array intf_pea();
 
 controller controller_inst (
-	.clk(clk),
-	.rst(rst),
-	.SCLK(SCLK),
-	.MOSI(MOSI),
-	.SS(SS),
-	.MISO(MISO),
+    .clk(clk),
+    .rst(rst),
+    .SCLK(SCLK),
+    .MOSI(MOSI),
+    .SS(SS),
+    .MISO(MISO),
 
     //External Memory
     .intf_extmem(intf_extmem),
-	
+
     //First Buffer 
     .intf_buf1(intf_buf1),
 
@@ -50,14 +50,14 @@ controller controller_inst (
 
 );
 memory_buffer first_buffer_inst(
-	.rst(rst),
-	.clk(clk),
+    .rst(rst),
+    .clk(clk),
     .intf_buf(intf_buf1)
 );
 
 memory_buffer second_buffer_inst(
-	.rst(rst),
-	.clk(clk),
+    .rst(rst),
+    .clk(clk),
     .intf_buf(intf_buf2)
 );		
 

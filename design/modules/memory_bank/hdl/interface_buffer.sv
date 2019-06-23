@@ -12,11 +12,11 @@ logic	    [`ADDR_RAM-1:0]			    m0_w_addr;
 logic	    [`WID_RAM-1:0]				m0_w_data;
 
 logic	    [`N_BUF-1:0]				m1_r_en;
-logic	    [`ADDR_RAM-1:0]			    m1_r_addr   [`N_BUF-1:0];
-logic       [`WID_PE_BITS*`N_BUF-1:0]   m1_output_bus;
+logic	    [`ADDR_RAM-1:0]			    m1_r_addr       [`N_BUF-1:0];
+logic       [`WID_PE_BITS-1:0]          m1_output_bus   [`N_BUF-1:0];
 logic       [`N_BUF-1:0]				m1_w_en;
-logic	    [`ADDR_RAM-1:0]			    m1_w_addr   [`N_BUF-1:0];
-logic	    [`WID_PE_BITS*`N_BUF-1:0]   m1_input_bus;
+logic	    [`ADDR_RAM-1:0]			    m1_w_addr       [`N_BUF-1:0];
+logic	    [`WID_PE_BITS-1:0]          m1_input_bus    [`N_BUF-1:0];
 
 
 endinterface

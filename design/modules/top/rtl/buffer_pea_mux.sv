@@ -1,26 +1,26 @@
 module buffer_pea_mux (
 
-    
+
     interface_buffer            intf_buf1,
     interface_buffer            intf_buf2,
     interface_pe_array          intf_pea,
 
     input   logic   [2:0]       comp_sel,
-   
+
     interface_pe_array_ctrl     intf_pea_ctrl_conv,
     interface_buffer_m1_ctrl    intf_buf1_m1_ctrl_conv,
     interface_buffer_m1_ctrl    intf_buf2_m1_ctrl_conv,
-    input   logic               aybz_azby_conv,
+    input   logic  [1:0]        aybz_azby_conv,
 
     interface_pe_array_ctrl     intf_pea_ctrl_dense,
     interface_buffer_m1_ctrl    intf_buf1_m1_ctrl_dense,
     interface_buffer_m1_ctrl    intf_buf2_m1_ctrl_dense,
-    input   logic               aybz_azby_dense,
+    input   logic  [1:0]        aybz_azby_dense,
 
     interface_pe_array_ctrl     intf_pea_ctrl_pool,
     interface_buffer_m1_ctrl    intf_buf1_m1_ctrl_pool,
     interface_buffer_m1_ctrl    intf_buf2_m1_ctrl_pool,
-    input   logic               aybz_azby_pool
+    input   logic  [1:0]        aybz_azby_pool
 
 );
 
@@ -30,7 +30,20 @@ module buffer_pea_mux (
 //////////////////////////////////////////////
 
 
-logic   aybz_azby;
+logic [1:0]   aybz_azby;
+//This decides the ping pong mode, 1 : default, Feed forward starts from Buf1
+//                                 0 : Feed forward starts from Buf2
+//
+//Basically connects inputs of PEA with BUF1/BUF2 outputs
+//A : Output BUF1 ; B : Output BUF2
+//Y : Input1 PEA  ; Z : Input2 PEA 
+//a : Output BUF1 bank#32 spread out 
+//b : Output BUF2 bank#32 spread out
+//So, 4 modes
+//AYBZ : conv/pool, BUF1 driver --> 2'b01
+//AZBY : conv/pool, BUF2 driver --> 2'b00
+//AYaZ : dense , BUF1 driver    --> 2'b11
+//BYbZ : dense, BUF2 driver     --> 2'b10
 
 //comp_sel
 //000: IDLE
@@ -39,30 +52,86 @@ logic   aybz_azby;
 //011: POOL
 always_comb begin
     case(comp_sel)
-        3'b000  : aybz_azby = 1;
-        3'b001  : aybz_azby = aybz_azby_conv;
-        3'b010  : aybz_azby = aybz_azby_dense;
-        3'b011  : aybz_azby = aybz_azby_pool;
-        default : aybz_azby = 1;
+        3'b000  : begin
+            aybz_azby = 2'b01;
+            intf_buf1.mode = 0;
+            intf_buf2.mode = 0;
+        end
+        3'b001  : begin
+            aybz_azby = aybz_azby_conv;
+            intf_buf1.mode = 1;
+            intf_buf2.mode = 1;
+        end
+        3'b010  : begin
+            aybz_azby = aybz_azby_dense;
+            intf_buf1.mode = 1;
+            intf_buf2.mode = 1;
+        end
+        3'b011  : begin
+            aybz_azby = aybz_azby_pool;
+            intf_buf1.mode = 1;
+            intf_buf2.mode = 1;
+        end
+        default : begin
+            aybz_azby = 2'b01;
+            intf_buf1.mode = 0;
+            intf_buf2.mode = 0;
+        end
     endcase
 end
 
 
-assign intf_buf1.m1_input_bus = intf_pea.output_bus1_PEA;
-assign intf_buf2.m1_input_bus = intf_pea.output_bus1_PEA;
 
 always_comb begin
 
     if(aybz_azby) begin
-        intf_pea.input_bus1_PEA = intf_buf1.m1_output_bus;
-        intf_pea.input_bus2_PEA = intf_buf2.m1_output_bus;
-    end else begin 
-        intf_pea.input_bus1_PEA = intf_buf2.m1_output_bus;
-        intf_pea.input_bus2_PEA = intf_buf1.m1_output_bus;
+
+        case(aybz_azby)
+
+            2'b01: begin //AYBZ: conv/pool PING
+                for(int i = 0; i < `N_PE; i = i + 1) begin
+                    intf_pea.input_bus1_PEA[i] = intf_buf1.m1_output_bus[i]; //conv input and filters
+                    intf_pea.input_bus2_PEA[i] = intf_buf2.m1_output_bus[i]; //conv output feedback
+
+                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[i]; //not relevant
+                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[i]; //conv outputs
+                end 
+            end
+
+            2'b00: begin //AZBY: conv/pool PONG
+                for(int i = 0; i < `N_PE; i = i + 1) begin
+                    intf_pea.input_bus1_PEA[i] = intf_buf2.m1_output_bus[i]; //conv output feedback
+                    intf_pea.input_bus2_PEA[i] = intf_buf1.m1_output_bus[i]; //conv input and filters
+
+                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[i]; //conv outputs
+                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[i]; //not relevant
+                end
+            end
+
+            2'b11: begin //AYaZ: dense PING
+                for(int i = 0; i < `N_PE; i = i + 1) begin
+                    intf_pea.input_bus1_PEA[i] = intf_buf1.m1_output_bus[i]; //dense weights
+                    intf_pea.input_bus2_PEA[i] = intf_buf1.m1_output_bus[32]; //dense input
+
+                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //not relevant
+                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //dense output
+                end
+            end
+
+            2'b10: begin //BYbZ: dense PONG
+                for(int i = 0; i < `N_PE; i = i + 1) begin
+                    intf_pea.input_bus1_PEA[i] = intf_buf2.m1_output_bus[i]; //dense weights
+                    intf_pea.input_bus2_PEA[i] = intf_buf2.m1_output_bus[32]; //dense input
+
+                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //dense output
+                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //not relevant
+                end
+            end
+
+        endcase
+
     end
-
 end
-
 
 ////////////////////////////////////////////////////////////
 //Connect Control Signals
@@ -70,11 +139,11 @@ end
 
 
 always_comb begin
-    
+
     case(comp_sel)
 
         3'b000: begin       //IDLE
-            
+
             intf_buf1.m1_r_en = 0;
             intf_buf1.m1_w_en = 0;
 
@@ -105,6 +174,10 @@ always_comb begin
             intf_pea.nl_enable = 0;
             intf_pea.feedback_enable = 0;
 
+            intf_pea.pool_enable = 0;
+            intf_pea.dense_enable = 0;
+            intf_pea.dense_valid = 0;
+
         end
 
         3'b001: begin       //CONV
@@ -132,6 +205,10 @@ always_comb begin
             intf_pea.nl_type = intf_pea_ctrl_conv.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_conv.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_conv.feedback_enable;
+
+            intf_pea.pool_enable    = intf_pea_ctrl_conv.pool_enable;
+            intf_pea.dense_enable    = intf_pea_ctrl_conv.dense_enable;
+            intf_pea.dense_valid    = intf_pea_ctrl_conv.dense_valid;
 
 
         end
@@ -162,6 +239,10 @@ always_comb begin
             intf_pea.nl_enable = intf_pea_ctrl_dense.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_dense.feedback_enable;
 
+            intf_pea.pool_enable    = intf_pea_ctrl_dense.pool_enable;
+            intf_pea.dense_enable    = intf_pea_ctrl_dense.dense_enable;
+            intf_pea.dense_valid    = intf_pea_ctrl_dense.dense_valid;
+
         end
 
         3'b011: begin       //POOL
@@ -191,11 +272,16 @@ always_comb begin
             intf_pea.feedback_enable = intf_pea_ctrl_pool.feedback_enable;
 
 
+            intf_pea.pool_enable    = intf_pea_ctrl_pool.pool_enable;
+            intf_pea.dense_enable    = intf_pea_ctrl_pool.dense_enable;
+            intf_pea.dense_valid    = intf_pea_ctrl_pool.dense_valid;
+
+
         end
 
         default: begin
 
-            
+
             intf_buf1.m1_r_en = 0;
             intf_buf1.m1_w_en = 0;
 
@@ -227,6 +313,10 @@ always_comb begin
             intf_pea.nl_type = 0;
             intf_pea.nl_enable = 0;
             intf_pea.feedback_enable = 0;
+
+            intf_pea.pool_enable = 0;
+            intf_pea.dense_enable = 0;
+            intf_pea.dense_valid = 0;
 
 
         end

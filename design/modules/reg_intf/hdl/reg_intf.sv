@@ -97,7 +97,7 @@ logic	[15:0]		read_data_GENERAL;
 logic	[15:0]		read_data_CONV;
 logic	[15:0]		read_data_POOL;
 logic	[15:0]		read_data_NL;
-logic	[15:0]		read_data_FC;
+logic	[15:0]		read_data_DENSE;
 
 always@(*)
 begin
@@ -106,7 +106,7 @@ begin
         5'h01 : read_data = read_data_CONV;
         5'h02 : read_data = read_data_POOL;
         5'h03 : read_data = read_data_NL;
-        5'h04 : read_data = read_data_FC;
+        5'h04 : read_data = read_data_DENSE;
         default : read_data = 16'h0; 
     endcase
 end
@@ -140,16 +140,16 @@ regfile_conv regfile_conv_inst (
     .regfile(regfile)
 );
 
-//INSTANTIATING regfile_fc_inst
+//INSTANTIATING regfile_dense_inst
 
-regfile_fc regfile_fc_inst (
+regfile_dense regfile_dense_inst (
 	.clk(clk),
 	.rst(rst),
 	.wr_en(wr_en),
 	.rd_en(rd_en),
 	.addr(addr),
 	.write_data(write_data),
-	.read_data_FC(read_data_FC),
+	.read_data_DENSE(read_data_DENSE),
     .regfile(regfile)
 );
 

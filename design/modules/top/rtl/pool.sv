@@ -1,4 +1,4 @@
-module pool(
+module pool (
     input   logic   clk,
     input   logic   rst,
     input   logic   start,
@@ -20,6 +20,8 @@ logic [`ADDR_RAM-1:0]  buf1_rd_addr        [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  next_buf1_rd_addr   [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  buf2_rd_addr        [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  next_buf2_rd_addr   [`N_BUF-1:0];
+
+logic ping_pong; //1: ping, 0: pong
 
 logic   [`LOG_N_PE-1:0] extra_c;
 logic   extra_c_present;
@@ -116,6 +118,10 @@ always_comb begin
     next_input_idx_ff4 = input_idx_ff4;
 
     intf_pea_ctrl.pool_enable = 1;
+    intf_pea_ctrl.dense_enable = 0;
+    intf_pea_ctrl.dense_valid = 0;
+    intf_pea_ctrl.dense_adder_reset = 1;
+    intf_pea_ctrl.dense_adder_on = 0;
 
     for (int idx_var = 0; idx_var < `N_PE; idx_var = idx_var + 1) begin
         intf_pea_ctrl.shifting_line[idx_var] = 0;
@@ -141,6 +147,7 @@ always_comb begin
     intf_pea_ctrl.nl_type = regfile.nl__nl_type;
     intf_pea_ctrl.adder_enable = 0;
     intf_pea_ctrl.line_buffer_reset = 1;
+    
 
     next_latency_cnt_1 = latency_cnt_1;
     next_latency_cnt_2 = latency_cnt_2;
@@ -216,19 +223,21 @@ always_comb begin
             end
 
             //2. Writing logic, follows read logic by 1 cycle
+            //The pooling happens diagonally because i'th input from BUF will
+            //go to each PE's i'th Conv
             if(latency_cnt_1 == 1) begin
 
                 if(input_idx_ff2 < input_size ) begin
                     if(cbe_on == 1) begin
 
                         for(int i0 = 0; i0 < extra_c; i0 = i0 + 1) begin 
-                            intf_pea_ctrl.shifting_line[i0][0] = 1;                
+                            intf_pea_ctrl.shifting_line[i0][i0] = 1;                
                         end //for i0
 
                     end else begin //!cbe_on
 
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                            intf_pea_ctrl.shifting_line[i0][0] = 1;                
+                            intf_pea_ctrl.shifting_line[i0][i0] = 1;                
                         end //for i0
 
                     end //if !cbe_on
@@ -412,7 +421,8 @@ assign CB = (channels >> `LOG_N_PE);
 
 
 
-assign aybz_azby = 0;
+assign ping_pong = 1; //ping
+assign aybz_azby = (ping_pong == 1) ? 2'b01 : 2'b00 ;
 
 
 
