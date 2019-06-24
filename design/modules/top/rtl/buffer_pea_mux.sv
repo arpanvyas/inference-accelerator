@@ -177,6 +177,10 @@ always_comb begin
             intf_pea.pool_enable = 0;
             intf_pea.dense_enable = 0;
             intf_pea.dense_valid = 0;
+            intf_pea.dense_adder_reset = 1;
+            intf_pea.dense_adder_on = 0;
+            intf_pea.dense_latch = 0;
+            intf_pea.dense_rd_addr = 0;
 
         end
 
@@ -209,6 +213,10 @@ always_comb begin
             intf_pea.pool_enable    = intf_pea_ctrl_conv.pool_enable;
             intf_pea.dense_enable    = intf_pea_ctrl_conv.dense_enable;
             intf_pea.dense_valid    = intf_pea_ctrl_conv.dense_valid;
+            intf_pea.dense_adder_reset = intf_pea_ctrl_conv.dense_adder_reset;
+            intf_pea.dense_adder_on = intf_pea_ctrl_conv.dense_adder_on;
+            intf_pea.dense_latch = intf_pea_ctrl_conv.dense_latch;
+            intf_pea.dense_rd_addr = intf_pea_ctrl_conv.dense_rd_addr;
 
 
         end
@@ -242,6 +250,10 @@ always_comb begin
             intf_pea.pool_enable    = intf_pea_ctrl_dense.pool_enable;
             intf_pea.dense_enable    = intf_pea_ctrl_dense.dense_enable;
             intf_pea.dense_valid    = intf_pea_ctrl_dense.dense_valid;
+            intf_pea.dense_adder_reset = intf_pea_ctrl_dense.dense_adder_reset;
+            intf_pea.dense_adder_on = intf_pea_ctrl_dense.dense_adder_on;
+            intf_pea.dense_latch = intf_pea_ctrl_dense.dense_latch;
+            intf_pea.dense_rd_addr = intf_pea_ctrl_dense.dense_rd_addr;
 
         end
 
@@ -275,6 +287,11 @@ always_comb begin
             intf_pea.pool_enable    = intf_pea_ctrl_pool.pool_enable;
             intf_pea.dense_enable    = intf_pea_ctrl_pool.dense_enable;
             intf_pea.dense_valid    = intf_pea_ctrl_pool.dense_valid;
+            intf_pea.dense_adder_reset = intf_pea_ctrl_pool.dense_adder_reset;
+            intf_pea.dense_adder_on = intf_pea_ctrl_pool.dense_adder_on;
+            intf_pea.dense_latch = intf_pea_ctrl_pool.dense_latch;
+            intf_pea.dense_rd_addr = intf_pea_ctrl_pool.dense_rd_addr;
+
 
 
         end
@@ -317,6 +334,10 @@ always_comb begin
             intf_pea.pool_enable = 0;
             intf_pea.dense_enable = 0;
             intf_pea.dense_valid = 0;
+            intf_pea.dense_adder_reset = 1;
+            intf_pea.dense_adder_on = 0;
+            intf_pea.dense_latch = 0;
+            intf_pea.dense_rd_addr = 0;
 
 
         end
