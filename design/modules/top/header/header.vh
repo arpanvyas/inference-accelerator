@@ -34,7 +34,7 @@
 `define LAT_POOL 2
 `define CONV_ROW_MAX 3
 `define MAC_COL_MAX 3
-`define DENSE_PER_GO `CONV_ROW_MAX * `MAC_COL_MAX
+`define DENSE_PER_GO (`CONV_ROW_MAX*`MAC_COL_MAX)
 
 //Buffers
 `define N_BUF `N_PE+1

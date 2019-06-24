@@ -17,7 +17,7 @@ logic   start_conv;
 interface_pe_array_ctrl    intf_pea_ctrl_conv();
 interface_buffer_m1_ctrl   intf_buf1_m1_ctrl_conv();
 interface_buffer_m1_ctrl   intf_buf2_m1_ctrl_conv();
-logic   aybz_azby_conv;
+logic [1:0]  aybz_azby_conv;
 logic   done_conv;
 
 
@@ -40,7 +40,7 @@ logic   start_dense;
 interface_pe_array_ctrl    intf_pea_ctrl_dense();
 interface_buffer_m1_ctrl   intf_buf1_m1_ctrl_dense();
 interface_buffer_m1_ctrl   intf_buf2_m1_ctrl_dense();
-logic   aybz_azby_dense;
+logic [1:0]  aybz_azby_dense;
 logic   done_dense;
 
 
@@ -62,7 +62,7 @@ logic   start_pool;
 interface_pe_array_ctrl    intf_pea_ctrl_pool();
 interface_buffer_m1_ctrl   intf_buf1_m1_ctrl_pool();
 interface_buffer_m1_ctrl   intf_buf2_m1_ctrl_pool();
-logic   aybz_azby_pool;
+logic   [1:0]  aybz_azby_pool;
 logic   done_pool;
 
 
