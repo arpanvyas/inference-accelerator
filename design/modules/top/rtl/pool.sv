@@ -122,6 +122,8 @@ always_comb begin
     intf_pea_ctrl.dense_valid = 0;
     intf_pea_ctrl.dense_adder_reset = 1;
     intf_pea_ctrl.dense_adder_on = 0;
+    intf_pea_ctrl.dense_latch = 0;
+    intf_pea_ctrl.dense_rd_addr = 0;
 
     for (int idx_var = 0; idx_var < `N_PE; idx_var = idx_var + 1) begin
         intf_pea_ctrl.shifting_line[idx_var] = 0;

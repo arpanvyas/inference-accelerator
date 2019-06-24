@@ -227,6 +227,8 @@ always_comb begin
     intf_pea_ctrl.dense_valid = 0;
     intf_pea_ctrl.dense_adder_reset = 0;
     intf_pea_ctrl.dense_adder_on = 0;
+    intf_pea_ctrl.dense_latch = 0;
+    intf_pea_ctrl.dense_rd_addr = 0;
 
     next_latency_cnt_1 = latency_cnt_1;
     next_latency_cnt_2 = latency_cnt_2;

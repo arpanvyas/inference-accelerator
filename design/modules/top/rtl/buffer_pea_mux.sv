@@ -166,10 +166,6 @@ always_comb begin
             intf_pea.line_buffer_reset = 0;
             intf_pea.row_length = 0;
             intf_pea.adder_enable = 0;
-            intf_pea.final_filter_bank = 0;
-            intf_pea.shifting_line_pool = 0;
-            intf_pea.line_buffer_reset_pool = 0;
-            intf_pea.row_length_pool = 0;
             intf_pea.nl_type = 0;
             intf_pea.nl_enable = 0;
             intf_pea.feedback_enable = 0;
@@ -202,10 +198,6 @@ always_comb begin
             intf_pea.shifting_filter = intf_pea_ctrl_conv.shifting_filter;
             intf_pea.mac_enable = intf_pea_ctrl_conv.mac_enable;
             intf_pea.adder_enable = intf_pea_ctrl_conv.adder_enable;
-            intf_pea.final_filter_bank = intf_pea_ctrl_conv.final_filter_bank;
-            intf_pea.shifting_line_pool = intf_pea_ctrl_conv.shifting_line_pool;
-            intf_pea.line_buffer_reset_pool = intf_pea_ctrl_conv.line_buffer_reset_pool;
-            intf_pea.row_length_pool = intf_pea_ctrl_conv.row_length_pool;
             intf_pea.nl_type = intf_pea_ctrl_conv.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_conv.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_conv.feedback_enable;
@@ -239,10 +231,6 @@ always_comb begin
             intf_pea.shifting_filter = intf_pea_ctrl_dense.shifting_filter;
             intf_pea.mac_enable = intf_pea_ctrl_dense.mac_enable;
             intf_pea.adder_enable = intf_pea_ctrl_dense.adder_enable;
-            intf_pea.final_filter_bank = intf_pea_ctrl_dense.final_filter_bank;
-            intf_pea.shifting_line_pool = intf_pea_ctrl_dense.shifting_line_pool;
-            intf_pea.line_buffer_reset_pool = intf_pea_ctrl_dense.line_buffer_reset_pool;
-            intf_pea.row_length_pool = intf_pea_ctrl_dense.row_length_pool;
             intf_pea.nl_type = intf_pea_ctrl_dense.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_dense.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_dense.feedback_enable;
@@ -275,10 +263,6 @@ always_comb begin
             intf_pea.shifting_filter = intf_pea_ctrl_pool.shifting_filter;
             intf_pea.mac_enable = intf_pea_ctrl_pool.mac_enable;
             intf_pea.adder_enable = intf_pea_ctrl_pool.adder_enable;
-            intf_pea.final_filter_bank = intf_pea_ctrl_pool.final_filter_bank;
-            intf_pea.shifting_line_pool = intf_pea_ctrl_pool.shifting_line_pool;
-            intf_pea.line_buffer_reset_pool = intf_pea_ctrl_pool.line_buffer_reset_pool;
-            intf_pea.row_length_pool = intf_pea_ctrl_pool.row_length_pool;
             intf_pea.nl_type = intf_pea_ctrl_pool.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_pool.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_pool.feedback_enable;
@@ -323,10 +307,6 @@ always_comb begin
             intf_pea.line_buffer_reset = 0;
             intf_pea.row_length = 0;
             intf_pea.adder_enable = 0;
-            intf_pea.final_filter_bank = 0;
-            intf_pea.shifting_line_pool = 0;
-            intf_pea.line_buffer_reset_pool = 0;
-            intf_pea.row_length_pool = 0;
             intf_pea.nl_type = 0;
             intf_pea.nl_enable = 0;
             intf_pea.feedback_enable = 0;

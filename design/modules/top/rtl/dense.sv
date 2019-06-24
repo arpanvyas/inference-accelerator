@@ -374,6 +374,7 @@ end
 
 
 logic [`LOG_N_PE-1:0] next_dense_rd_addr;
+logic [`LOG_N_PE-1:0] dense_rd_addr;
 logic [`LOG_N_PE-1:0] dense_rd_addr_d;
 
 logic obe_on_latch, ob_latch;
@@ -394,18 +395,18 @@ always_comb begin
 
     //1. Reading from Latch
     if(obe_on_latch == 0) begin
-        if((intf_pea_ctrl.dense_rd_addr > 0 || dense_latch_d[0] == 1) && intf_pea_ctrl.dense_rd_addr < `N_PE-1) begin
+        if((dense_rd_addr > 0 || dense_latch_d[0] == 1) && dense_rd_addr < `N_PE-1) begin
             ongoing_dense_out = 1;
-            next_dense_rd_addr = intf_pea_ctrl.dense_rd_addr + 1;
-        end else if (intf_pea_ctrl.dense_rd_addr == `N_PE-1) begin
+            next_dense_rd_addr = dense_rd_addr + 1;
+        end else if (dense_rd_addr == `N_PE-1) begin
             ongoing_dense_out = 1;
             next_dense_rd_addr = 0;
         end
     end else begin
-        if( (intf_pea_ctrl.dense_rd_addr > 0 || dense_latch_d[0] == 1) && intf_pea_ctrl.dense_rd_addr < extra_ob-1 ) begin
+        if( (dense_rd_addr > 0 || dense_latch_d[0] == 1) && dense_rd_addr < extra_ob-1 ) begin
             ongoing_dense_out = 1;
-            next_dense_rd_addr = intf_pea_ctrl.dense_rd_addr + 1;
-        end else if (intf_pea_ctrl.dense_rd_addr == extra_ob - 1 || dense_latch_d[0] == 1) begin
+            next_dense_rd_addr = dense_rd_addr + 1;
+        end else if (dense_rd_addr == extra_ob - 1 || dense_latch_d[0] == 1) begin
             //the || above because extra_ob may be 1 as well
             ongoing_dense_out = 1;
             next_dense_rd_addr = 0;
@@ -422,7 +423,7 @@ always_comb begin
             intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr_d; 
         end
     end else begin
-        if( (dense_rd_addr_d > 0 || ongoing_dense_out_d[0] == 1) && intf_pea_ctrl.dense_rd_addr < extra_ob -1 ) begin
+        if( (dense_rd_addr_d > 0 || ongoing_dense_out_d[0] == 1) && dense_rd_addr < extra_ob -1 ) begin
             intf_buf2_m1_ctrl.m1_w_en[`N_PE] = 1;
             intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr_d;
         end else if (dense_rd_addr_d == extra_ob - 1 || dense_latch_d[0] == 1) begin
@@ -442,20 +443,21 @@ always_comb begin //dense_out_start
 
 end
 
+assign intf_pea_ctrl.dense_rd_addr = dense_rd_addr;
 
 always_ff@(posedge clk, posedge rst) begin
     if(rst) begin
         mac_now_d <= #1 0;
         nl_now_d  <= #1 0;
-        intf_pea_ctrl.dense_rd_addr <= #1 0;
+        dense_rd_addr <= #1 0;
         dense_rd_addr_d <= #1 0;
     end else begin
         mac_now_d[15:0] <= #1 {mac_now_d[14:0],mac_now};
         nl_now_d[15:0] <= #1 {nl_now_d[14:0],nl_now};
         dense_latch_d[15:0] <= #1 {dense_latch_d[14:0], intf_pea_ctrl.dense_latch};
-        intf_pea_ctrl.dense_rd_addr <= #1 next_dense_rd_addr;
+        dense_rd_addr <= #1 next_dense_rd_addr;
         ongoing_dense_out_d[15:0] <= #1 {ongoing_dense_out_d[14:0], ongoing_dense_out};
-        dense_rd_addr_d <= #1 intf_pea_ctrl.dense_rd_addr;
+        dense_rd_addr_d <= #1 dense_rd_addr;
 
         if(intf_pea_ctrl.dense_latch) begin
             obe_on_latch <= #1 obe_on;
