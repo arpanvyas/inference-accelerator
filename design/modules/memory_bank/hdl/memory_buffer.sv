@@ -26,8 +26,8 @@ begin
         0: begin    //Only one address here as serial: i.e only one buffer reading/writing at a time
 
             //1. ENABLES
-            m_w_en	= intf_buf.m0_w_en;
-            m_r_en  = intf_buf.m0_r_en;
+            m_w_en	= dec_to_hot(intf_buf.m0_w_en);
+            m_r_en  = dec_to_hot(intf_buf.m0_r_en);
 
             //2. ADDRESSES
 
@@ -42,7 +42,7 @@ begin
             //3. DATA M0
 
             //Put the appropriate read data to the output read word m0_r_data
-            intf_buf.m0_r_data	=  m_r_data[hot_to_dec(intf_buf.m0_r_en)];
+            intf_buf.m0_r_data	=  m_r_data[intf_buf.m0_r_en];
 
             //Put the write date to all buffers, the wr_en will decide where
             //to write to
@@ -75,7 +75,7 @@ begin
             end	
 
             //4. READ DATA M0
-            intf_buf.m0_r_data	= m_r_data[m0_r_en_dec];
+            intf_buf.m0_r_data	= m_r_data[intf_buf.m0_r_en];
 
         end
 

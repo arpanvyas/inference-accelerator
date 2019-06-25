@@ -1,10 +1,11 @@
+`include "header.vh"
 interface interface_extmem;
 
 logic   we;
 logic   re;
-logic   [23:0]      rd_addr;
-logic   [23:0]      wr_addr;
-logic   [31:0]      rd_data;
-logic   [31:0]      wr_data;
+logic   [`ADDR_EXT_RAM-1:0]      rd_addr;
+logic   [`ADDR_EXT_RAM-1:0]      wr_addr;
+logic   [`DATA_EXT_RAM-1:0]      rd_data;
+logic   [`DATA_EXT_RAM-1:0]      wr_data;
 
 endinterface;

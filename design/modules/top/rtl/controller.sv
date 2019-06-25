@@ -240,13 +240,13 @@ always_comb begin
 
             if(prev_state == state) begin
                 if(mem_load_buff_1_or_2) begin
-                    intf_buf1.m0_w_en   = dec_to_hot(mem_load_buffer_addr);
+                    intf_buf1.m0_w_en   = mem_load_buffer_addr;
                     intf_buf1.m0_w_addr = buf1_wr_addr[mem_load_buffer_addr];
                     intf_buf2.m0_w_en   = 0;
 
                     next_buf1_wr_addr[mem_load_buffer_addr]  =  buf1_wr_addr[mem_load_buffer_addr] + 1;
                 end else begin
-                    intf_buf2.m0_w_en   = dec_to_hot(mem_load_buffer_addr);
+                    intf_buf2.m0_w_en   = mem_load_buffer_addr;
                     intf_buf2.m0_w_addr = buf2_wr_addr[mem_load_buffer_addr];
                     intf_buf1.m0_w_en   = 0;
 
@@ -272,15 +272,15 @@ always_comb begin
 
                 if(mem_save_buff_1_or_2) begin
 
-                    intf_buf1.m0_r_en   = dec_to_hot(mem_save_buffer_addr);
+                    intf_buf1.m0_r_en   = mem_save_buffer_addr;
                     intf_buf1.m0_r_addr = buf1_rd_addr[mem_save_buffer_addr];
 
                     next_buf1_rd_addr[mem_save_buffer_addr]  =  buf1_rd_addr[mem_save_buffer_addr] + 1;
 
                 end else begin
 
-                    intf_buf2.m0_r_en   = dec_to_hot(mem_save_buffer_addr);
-                    intf_buf2.m0_r_addr = buf2_wr_addr[mem_save_buffer_addr];
+                    intf_buf2.m0_r_en   = mem_save_buffer_addr;
+                    intf_buf2.m0_r_addr = buf2_rd_addr[mem_save_buffer_addr];
 
                     next_buf2_rd_addr[mem_save_buffer_addr]  =  buf2_rd_addr[mem_save_buffer_addr] + 1;
 

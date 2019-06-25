@@ -2,16 +2,19 @@
 
 
 function automatic hot_to_dec;
-input [`N_BUF-1:0] hot;
-output [5:0] dec;
-integer i;
-begin
-	dec = 0;
-	for(i=0;i<`N_BUF;i=i+1) begin
-		if(hot[i])	dec	= i;
-		else 			dec	= dec;
-	end
-end
+    input [`N_BUF-1:0] hot;
+    output [5:0] dec;
+    integer i;
+    begin
+        dec = 0;
+        for(i=0;i<`N_BUF;i=i+1) begin
+            if(hot[i] == 1) begin
+                dec	= i;
+            end else begin
+                dec	= dec;
+            end
+        end
+    end
 endfunction
 
 
