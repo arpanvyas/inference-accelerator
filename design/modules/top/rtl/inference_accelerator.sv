@@ -27,6 +27,7 @@ logic			MISO;
 interface_buffer intf_buf1();
 interface_buffer intf_buf2();
 interface_pe_array intf_pea();
+interface_regfile regfile();
 
 controller controller_inst (
     .clk(clk),
@@ -46,7 +47,10 @@ controller controller_inst (
     .intf_buf2(intf_buf2),
 
     //PE Array
-    .intf_pea(intf_pea)
+    .intf_pea(intf_pea),
+
+    //Register File
+    .regfile(regfile)
 
 );
 memory_buffer first_buffer_inst(
@@ -64,7 +68,8 @@ memory_buffer second_buffer_inst(
 PE_array pe_array_inst(
     .rst(rst),
     .clk(clk),
-    .intf_pea(intf_pea)
+    .intf_pea(intf_pea),
+    .regfile(regfile)
 
 );
 

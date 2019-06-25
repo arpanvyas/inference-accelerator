@@ -61,7 +61,8 @@ class mem_param:
 
 
     #scaling factor
-    scale = 16
+    scale = 1
+    overall_scale = scale*frac_size
 
 
 

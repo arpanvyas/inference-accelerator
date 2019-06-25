@@ -18,13 +18,14 @@ module controller (
     interface_buffer intf_buf2,
 
     //PE Array
-    interface_pe_array intf_pea
+    interface_pe_array intf_pea,
 
+    //Register File
+    interface_regfile regfile
 );
 
 `include "user_tasks.vh"
 
-interface_regfile regfile();
 
 
 //INSTANTIATING program_driver_inst
@@ -177,7 +178,7 @@ always_comb begin
     intf_buf2.m0_r_addr = 0;
 
     intf_buf1.m0_w_addr = 0;
-    intf_buf1.m0_w_addr = 0;
+    intf_buf2.m0_w_addr = 0;
 
     intf_buf1.m0_w_data = 0;
     intf_buf2.m0_w_data = 0;

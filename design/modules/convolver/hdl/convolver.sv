@@ -9,7 +9,8 @@ module convolver(
     input							shifting_filter,	
     input		[`WID_FILTER-1:0]	input_filter,	
     input							mac_enable,
-    output		[`WID_MAC_OUT-1:0]	output_mac
+    output signed[`WID_MAC_OUT-1:0]	output_mac,
+    interface_regfile               regfile
 );
 
 wire signed [`WID_FILTER-1:0]	out_filter_1;
@@ -94,6 +95,7 @@ mac mac_module
     .input_line_7		(out_line_7),
     .input_line_8		(out_line_8),
     .input_line_9		(out_line_9),
-    .output_mac			(output_mac)
+    .output_mac			(output_mac),
+    .regfile            (regfile)
 );
 endmodule

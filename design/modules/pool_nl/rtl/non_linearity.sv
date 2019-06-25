@@ -5,7 +5,8 @@ module non_linearity(
 	input		nl_enable, 
 	input[15:0]	nl_type, 
 	input logic signed		[`WID_PE_BITS-1:0]		in_nl_data,
-	output logic signed	[`WID_PE_BITS-1:0]	out_nl_data
+	output logic signed	[`WID_PE_BITS-1:0]	out_nl_data,
+    interface_regfile       regfile
     );
 	  
 

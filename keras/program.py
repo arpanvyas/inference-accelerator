@@ -570,17 +570,17 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
     #iii. Set Configs
 
     #iii.a Write Layer type
-    regdict = {'name':'REG_0001','fields':{'layer_type':8}, 'sheetname' : "general"} #8 = FC + NL 
+    regdict = {'name':'REG_0001','fields':{'layer_type':8}, 'sheetname' : "general"} #8 = Dense + NL 
     instr.append(write_reg_cmd(regfile,regdict))
     regdict = {'name':'NL_0004','fields':{'nl_type':nl_to_code(activation) }, 'sheetname' : "nl"}
     instr.append(write_reg_cmd(regfile,regdict))
 
     #iii.b Write input and output shape
-    regdict = {'name':'FC_0001','fields':{'input_data_type':1}, 'sheetname' : "fc"} #Linear
+    regdict = {'name':'DENSE_0001','fields':{'input_data_type':1}, 'sheetname' : "dense"} #Linear
     instr.append(write_reg_cmd(regfile,regdict))
-    regdict = {'name':'FC_0008','fields':{'input_data_length':input_nodes}, 'sheetname' : "fc"}
+    regdict = {'name':'DENSE_0008','fields':{'input_data_length':input_nodes}, 'sheetname' : "dense"}
     instr.append(write_reg_cmd(regfile,regdict))
-    regdict = {'name':'FC_0009','fields':{'output_data_length':output_nodes}, 'sheetname' : "fc"}
+    regdict = {'name':'DENSE_0009','fields':{'output_data_length':output_nodes}, 'sheetname' : "dense"}
     instr.append(write_reg_cmd(regfile,regdict))
 
 

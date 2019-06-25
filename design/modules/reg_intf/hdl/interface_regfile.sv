@@ -35,6 +35,9 @@ interface interface_regfile;
 	//REG_000b
 	logic	[15:0]	general__mem_save_buffer_addr;
 
+	//REG_000c
+	logic	[15:0]	general__scale;
+
 	//REG_0040
 	logic	[15:0]	general__status;
 

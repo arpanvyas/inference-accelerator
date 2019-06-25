@@ -10,7 +10,8 @@ module pooling(
     input   logic [15:0]    pool_type,    //unused
     input   logic [15:0]    pool_horiz,   //unused
     input   logic [15:0]    pool_vert,    //unused
-    output reg	[`WID_PE_BITS-1:0]	out_pool_data
+    output reg	[`WID_PE_BITS-1:0]	out_pool_data,
+    interface_regfile               regfile
 );
 
 

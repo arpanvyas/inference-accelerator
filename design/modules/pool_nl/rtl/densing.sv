@@ -1,15 +1,16 @@
 `include "header.vh"
 module densing(
-    input	rst,
-    input	clk,
-    input	shifting_line,
-    input	line_buffer_reset,
-    input	[`ADDR_FIFO-1:0]	row_length,
-    input	[`WID_PE_BITS-1:0]  input_line,
-    input							shifting_filter,	
-    input		[`WID_FILTER-1:0]	input_filter,	
-    input   [7:0]   dense_valid,
-    output reg	[`WID_PE_BITS-1:0]	out_dense_data
+    input	                        rst,
+    input	                        clk,
+    input	                        shifting_line,
+    input	                        line_buffer_reset,
+    input	[`ADDR_FIFO-1:0]	    row_length,
+    input	[`WID_PE_BITS-1:0]      input_line,
+    input						    shifting_filter,	
+    input	[`WID_FILTER-1:0]	    input_filter,	
+    input   [7:0]                   dense_valid,
+    output reg	[`WID_PE_BITS-1:0]	out_dense_data,
+    interface_regfile               regfile
 );
 
 
@@ -109,7 +110,8 @@ mac mac_module
     .input_line_7		(out_line_7),
     .input_line_8		(out_line_8),
     .input_line_9		(out_line_9),
-    .output_mac			(out_dense_data)
+    .output_mac			(out_dense_data),
+    .regfile            (regfile)
 );
 
 

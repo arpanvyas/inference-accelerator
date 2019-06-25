@@ -2,7 +2,8 @@
 module PE_array(
     input									 	rst,
     input									 	clk,
-    interface_pe_array                          intf_pea
+    interface_pe_array                          intf_pea,
+    interface_regfile                           regfile
 );
 
 
@@ -35,7 +36,9 @@ begin
         .nl_type				(intf_pea.nl_type),
         .input_bus1_PE			(intf_pea.input_bus1_PEA[`N_PE-1:0]),
         .input_2_PE				(intf_pea.input_bus2_PEA[i]),
-        .output_1_PE			(intf_pea.output_bus1_PEA[i])
+        .output_1_PE			(intf_pea.output_bus1_PEA[i]),
+
+        .regfile                (regfile)
     );
 end
 endgenerate

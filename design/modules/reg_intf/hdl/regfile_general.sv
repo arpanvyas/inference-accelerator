@@ -21,6 +21,7 @@ logic	[15:0]	REG_0008;
 logic	[15:0]	REG_0009;
 logic	[15:0]	REG_000a;
 logic	[15:0]	REG_000b;
+logic	[15:0]	REG_000c;
 logic	[15:0]	REG_0040;
 logic	[15:0]	REG_0041;
 logic	[15:0]	REG_0080;
@@ -40,6 +41,7 @@ begin
 		14'h9 : read_data_GENERAL = REG_0009;
 		14'ha : read_data_GENERAL = REG_000a;
 		14'hb : read_data_GENERAL = REG_000b;
+		14'hc : read_data_GENERAL = REG_000c;
 		14'h40 : read_data_GENERAL = REG_0040;
 		14'h41 : read_data_GENERAL = REG_0041;
 		14'h80 : read_data_GENERAL = REG_0080;
@@ -227,6 +229,23 @@ always@(posedge clk, posedge rst) begin
 	end else begin
 		if (wr_en && addr == 14'hb) begin
 			{ REG_000b[15:0] } <= #1 { write_data[15:0] };
+		end
+	end
+end
+
+
+
+
+
+//REGISTER REG_000c
+assign	{regfile.general__scale }	=	{ REG_000c[15:0] };
+//RW fields
+always@(posedge clk, posedge rst) begin
+	if (rst) begin
+		{ REG_000c[15:0] } <= #1 { 16'h8 };
+	end else begin
+		if (wr_en && addr == 14'hc) begin
+			{ REG_000c[15:0] } <= #1 { write_data[15:0] };
 		end
 	end
 end
