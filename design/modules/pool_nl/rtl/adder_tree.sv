@@ -79,7 +79,7 @@ end
 
 //assign adder_tree_out = adder_stage5;
 
-assign adder_tree_out = adder_stage5[0];
+assign adder_tree_out = adder_stage5;
 
 
 

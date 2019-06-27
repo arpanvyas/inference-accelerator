@@ -53,7 +53,9 @@ line_buffer line_buffer_module
 
 always@(posedge clk, posedge rst) begin
     if(rst) begin
-        out_pool_data <= 0;
+        out_pool_data <= #1 0;
+        max1          <= #1 0;
+        max2          <= #1 0;
     end else begin
         if(pool_enable) begin
             max1			<= (out_line_1>out_line_2) ? out_line_1: out_line_2;
