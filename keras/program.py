@@ -311,6 +311,21 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             for item in instr1: instr.append(item)
 
             model_idx += 1
+        else:
+            buffer_addr = 32
+            str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_nobias"
+            if(model_map[model_idx][2] == str_cmp):
+                ram_start   = model_map[model_idx][0]
+                ram_number  = model_map[model_idx][1]
+            else:
+                print("program.py:b Model parsing error in layer conv")
+                print(model_map[model_idx][2] + " != "+ str_cmp)
+                return
+
+            instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+            for item in instr1: instr.append(item)
+
+            model_idx += 1
 
     model_idx_end = model_idx
 
@@ -551,8 +566,22 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
         model_idx += 1
 
         if(use_bias):
-            buffer_addr = 32
+            buffer_addr = opnu%32
             str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_bias"
+            if(model_map[model_idx][2] == str_cmp):
+                ram_start  = model_map[model_idx][0]
+                ram_number = model_map[model_idx][1]
+            else:
+                print("program.py: Model parsing error in layer dense")
+                return
+
+            instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+            for item in instr1: instr.append(item)
+
+            model_idx += 1
+        else:
+            buffer_addr = opnu%32
+            str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_nobias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start  = model_map[model_idx][0]
                 ram_number = model_map[model_idx][1]

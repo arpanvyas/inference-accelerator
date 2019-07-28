@@ -2,9 +2,11 @@
 module PE(
     input rst,
     input clk,
-    input logic [`N_BUF-1:0]  shifting_line,
+    input logic [`N_BUF-1:0] shifting_line,
     input logic [`N_PE-1:0]  shifting_filter,
+    input logic              shifting_bias,
     input logic [`N_PE-1:0]  mac_enable,
+    input logic              bias_enable,
     input logic              nl_enable,
     input logic              feedback_enable,
 
@@ -22,7 +24,7 @@ module PE(
     input logic                         dense_adder_on,
 
     input [15:0]					    nl_type,
-    input [`WID_PE_BITS-1:0]		    input_bus1_PE [`N_PE-1:0],	//line inputs to all the convolvers = 32*16b
+    input [`WID_PE_BITS-1:0]		    input_bus1_PE [`N_BUF-1:0],	//line inputs to all the convolvers = 32*16b
     input [`WID_PE_BITS-1:0]			input_2_PE,		//feedback input for the Single PE
     output[`WID_PE_BITS-1:0]			output_1_PE,    //Single PE output
 
@@ -90,8 +92,41 @@ end
 
 
 logic signed [`WID_PE_BITS-1:0] in_nl_data,out_nl_data, out_pool_data, out_dense_data;
+logic signed [`WID_PE_BITS-1:0] bias_add_out, bias_add_in, bias_val;
 
-assign in_nl_data = (dense_enable == 1) ? dense_adder_out : fb_adder_out;
+assign bias_add_in = (dense_enable == 1) ? dense_adder_out : fb_adder_out;
+
+
+always_ff@(posedge clk, posedge rst) begin
+    if(rst) begin
+        bias_add_out <= #1 0;
+        bias_val     <= #1 0;
+    end else begin
+        if(bias_enable) begin
+            bias_add_out <= #1 bias_add_in + bias_val;
+        end else begin
+            bias_add_out <= #1 bias_add_in;
+        end
+
+        if(dense_enable == 0) begin //in case of conv take bias from last buffer i.e. #32 and in form of line (as all bias are clubbed together in last buffer)
+            if(shifting_bias) begin
+                bias_val <= #1 input_bus1_PE[`N_PE]; //bias comes from buffer#32
+            end else begin
+                bias_val <= #1 bias_val;
+            end
+        end else begin //in case of dense take bias from PE_index buffer and in form of filter (as each filter has 1 bias with it in its own buffer)
+            if(shifting_bias) begin
+                bias_val <= #1 input_bus1_PE[PE_index];
+            end else begin
+                bias_val <= #1 bias_val;
+            end
+        end
+    end
+end
+
+
+assign in_nl_data = bias_add_out;
+
 
 non_linearity	non_linearity_module
 (
@@ -103,6 +138,7 @@ non_linearity	non_linearity_module
     .out_nl_data				(out_nl_data),
     .regfile                    (regfile)
 );
+
 
 
 assign output_1_PE = (pool_enable == 1 ) ? out_pool_data : out_nl_data;

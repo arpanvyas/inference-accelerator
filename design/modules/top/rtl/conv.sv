@@ -89,13 +89,19 @@ logic           fb2_gate;
 logic   [15:0]  input_idx_fb3, next_input_idx_fb3; 
 logic   [15:0]  input_idx_fb3_gate, next_input_idx_fb3_gate; 
 logic           fb3_gate;
+logic   [15:0]  input_idx_fb4, next_input_idx_fb4; 
+logic   [15:0]  input_idx_fb4_gate, next_input_idx_fb4_gate; 
+logic           fb4_gate;
 
+logic   [15:0]  latency_cnt_01, next_latency_cnt_01;
+logic   [15:0]  latency_cnt_02, next_latency_cnt_02;
 logic   [15:0]  latency_cnt_1, next_latency_cnt_1;
 logic   [15:0]  latency_inp_sh_to_mac_en, latency_cnt_2, next_latency_cnt_2;
 logic   [15:0]  latency_mac_en_to_write_back, latency_cnt_3, next_latency_cnt_3;
 logic   [15:0]  latency_feedback_start, latency_cnt_4, next_latency_cnt_4;
 logic   [15:0]  latency_cnt_4_d, next_latency_cnt_4_d;        
 logic   [15:0]  latency_nl_start, latency_cnt_5, next_latency_cnt_5;
+logic   [15:0]  latency_cnt_6, next_latency_cnt_6;
 
 
 typedef enum { IDLE, s_FB, s_FB_CB, s_FB_CB_F, s_FB_CB_F_push_cb, s_FB_CB_I_CH  } ConvStates;
@@ -125,13 +131,17 @@ always_ff@(posedge clk, posedge rst) begin
         input_idx_fb1 <= #1 0;
         input_idx_fb2 <= #1 0;
         input_idx_fb3 <= #1 0;
+        input_idx_fb4 <= #1 0;
 
+        latency_cnt_01 <= #1 0;
+        latency_cnt_02 <= #1 0;
         latency_cnt_1 <= #1 0;
         latency_cnt_2 <= #1 0;
         latency_cnt_3 <= #1 0;
         latency_cnt_4 <= #1 0;
         latency_cnt_4_d <= #1 0;
         latency_cnt_5 <= #1 0;
+        latency_cnt_6 <= #1 0;
 
     end else begin
         state <= #1 next_state;
@@ -158,13 +168,18 @@ always_ff@(posedge clk, posedge rst) begin
         input_idx_fb2_gate <= #1 next_input_idx_fb2_gate;
         input_idx_fb3 <= #1 next_input_idx_fb3;
         input_idx_fb3_gate <= #1 next_input_idx_fb3_gate;
+        input_idx_fb4 <= #1 next_input_idx_fb4;
+        input_idx_fb4_gate <= #1 next_input_idx_fb4_gate;
 
+        latency_cnt_01 <= #1 next_latency_cnt_01;
+        latency_cnt_02 <= #1 next_latency_cnt_02;
         latency_cnt_1 <= #1 next_latency_cnt_1;
         latency_cnt_2 <= #1 next_latency_cnt_2;
         latency_cnt_3 <= #1 next_latency_cnt_3;
         latency_cnt_4 <= #1 next_latency_cnt_4;
         latency_cnt_4_d <= #1 next_latency_cnt_4_d;
         latency_cnt_5 <= #1 next_latency_cnt_5;
+        latency_cnt_6 <= #1 next_latency_cnt_6;
 
     end
 end
@@ -195,6 +210,8 @@ always_comb begin
     next_input_idx_fb2_gate = input_idx_fb2_gate;
     next_input_idx_fb3 = input_idx_fb3;
     next_input_idx_fb3_gate = input_idx_fb3_gate;
+    next_input_idx_fb4 = input_idx_fb4;
+    next_input_idx_fb4_gate = input_idx_fb4_gate;
 
 
 
@@ -217,6 +234,8 @@ always_comb begin
         intf_buf2_m1_ctrl.m1_w_addr[i0] = 0;
     end
 
+    intf_pea_ctrl.shifting_bias = 0;
+    intf_pea_ctrl.bias_enable = 0;
     intf_pea_ctrl.nl_enable = 0;
     intf_pea_ctrl.row_length = regfile.conv__data_wid;
     intf_pea_ctrl.nl_type = regfile.nl__nl_type;
@@ -230,6 +249,8 @@ always_comb begin
     intf_pea_ctrl.dense_latch = 0;
     intf_pea_ctrl.dense_rd_addr = 0;
 
+    next_latency_cnt_01 = latency_cnt_01;
+    next_latency_cnt_02 = latency_cnt_02;
     next_latency_cnt_1 = latency_cnt_1;
     next_latency_cnt_2 = latency_cnt_2;
     next_latency_cnt_3 = latency_cnt_3;
@@ -237,6 +258,7 @@ always_comb begin
     next_latency_cnt_4 = latency_cnt_4;
     next_latency_cnt_4_d = latency_cnt_4_d;
     next_latency_cnt_5 = latency_cnt_5;
+    next_latency_cnt_6 = latency_cnt_6;
 
     case(state) 
 
@@ -313,13 +335,20 @@ always_comb begin
             next_input_idx_fb2_gate = 0;
             next_input_idx_fb3 = 0;
             next_input_idx_fb3_gate = 0;
+            next_input_idx_fb4 = 0;
+            next_input_idx_fb4_gate = 0;
 
+            next_latency_cnt_01 = 0;
+            next_latency_cnt_02 = 0;
             next_latency_cnt_1 = 0;
             next_latency_cnt_2 = 0;
             next_latency_cnt_3 = 0;
             next_latency_cnt_4 = 0;
             next_latency_cnt_4_d = 0;
             next_latency_cnt_5 = 0;
+            next_latency_cnt_6 = 0;
+
+            next_kern_idx = 0;
 
 
             if(prev_state == s_FB_CB) begin
@@ -355,9 +384,12 @@ always_comb begin
         end
 
         s_FB_CB_F_push_cb : begin //pushes ( f_mod + fb = f_act ) filter's cb
+            //also pushes filter's bias when cb is last
+            //  in CB
+
 
             //1. Reading logic
-            if(kern_idx < filter_size) begin
+            if(latency_cnt_01 == 0 && kern_idx < filter_size) begin
 
                 for(int i1 = 0; i1 < `N_PE; i1 = i1 + 1) begin
                     if(cbe_on == 0) begin
@@ -376,30 +408,54 @@ always_comb begin
 
                 next_kern_idx = kern_idx + 1;
 
-            end else begin
 
+                next_latency_cnt_01 = 0;
+            end else if(latency_cnt_01 == 0 && kern_idx == filter_size) begin //read bias
+
+                next_kern_idx = 0;
+                next_latency_cnt_01 = latency_cnt_01 + 1;
+
+                if(cb == CBe - 1) begin //last cb so now push bias, bother 1 cycle even when use_bias = 0
+                    intf_buf1_m1_ctrl.m1_r_en[`N_PE] = 1;
+                    intf_buf1_m1_ctrl.m1_r_addr[`N_PE] = (`N_PE*fb+f_mod); //because bias occupies one word
+                    next_state = state;
+                end else begin //not the last cb, do not bother 1 cycle for bias
+                    next_state = s_FB_CB_F;
+                end
+            end else if(latency_cnt_01 == 1) begin
                 next_state = s_FB_CB_F;
                 next_kern_idx = 0;
+                next_latency_cnt_01 = latency_cnt_01 + 1;
             end
 
             //2. Writing logic, follows read logic by 1 cycle
-            if(prev_state == state) begin
+            if(latency_cnt_02 == 1) begin
 
-                for(int i1 = 0; i1 < `N_PE; i1 = i1 + 1) begin
-                    if(cbe_on == 0) begin
-                        intf_pea_ctrl.shifting_filter[f_mod][i1] = 1;                
-                    end else begin //extra_c
-                        if(extra_c[i1] == 1) begin
+                if(latency_cnt_01 == 0) begin
+                    for(int i1 = 0; i1 < `N_PE; i1 = i1 + 1) begin
+                        if(cbe_on == 0) begin
                             intf_pea_ctrl.shifting_filter[f_mod][i1] = 1;                
-                        end else begin
-                            intf_pea_ctrl.shifting_filter[f_mod][i1] = 0;                
+                        end else begin //extra_c
+                            if(extra_c[i1] == 1) begin
+                                intf_pea_ctrl.shifting_filter[f_mod][i1] = 1;                
+                            end else begin
+                                intf_pea_ctrl.shifting_filter[f_mod][i1] = 0;                
+                            end
                         end
-                    end
-                end //for i1
+                    end //for i1
+                end else begin //meaning last cb and bias worth (as latency_cnt_01 == 1), reaching here automatically means bais's time
+                    for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                        intf_pea_ctrl.shifting_filter[i0] = 0;                
+                    end //for i0
 
+                    intf_pea_ctrl.shifting_bias[f_mod] = 1;
+                end
 
+                next_latency_cnt_02 = latency_cnt_02;
+
+            end else begin
+                next_latency_cnt_01 = latency_cnt_02 + 1;
             end
-
         end
 
         s_FB_CB_I_CH : begin
@@ -409,7 +465,7 @@ always_comb begin
 
             //I. Feed forward
 
-            //1. Read Image logic
+            //I.1. Read Image logic
 
             if(input_idx_ff1 < input_size ) begin
 
@@ -432,7 +488,7 @@ always_comb begin
 
             end
 
-            //2. Writing logic, follows read logic by 1 cycle
+            //I.2. Writing logic, follows read logic by 1 cycle
             if(latency_cnt_1 == 1) begin
 
                 if(input_idx_ff2 < input_size ) begin
@@ -480,7 +536,7 @@ always_comb begin
 
 
 
-            //3. MAC enable logic
+            //I.3. MAC enable logic
             if(latency_cnt_2 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid ) begin
 
                 if(input_idx_ff3 < input_size - ( (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid) ) begin
@@ -527,8 +583,8 @@ always_comb begin
             end
 
 
-            //4. Write Back Logic
-            if(latency_cnt_3 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_NL) begin
+            //I.4. Write to BUF2 Logic
+            if(latency_cnt_3 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_BIAS_ADD+`LAT_NL) begin
 
                 if(input_idx_ff4 < output_size) begin
 
@@ -583,7 +639,7 @@ always_comb begin
 
             //II. Feed Back logic
 
-            //1. Feedback Reads From Buffer2, Read Logic
+            //II.1. Feedback Reads From Buffer2, Read Logic
             if(latency_cnt_4 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE-1) begin 
 
                 if(input_idx_fb1 < output_size) begin
@@ -633,7 +689,7 @@ always_comb begin
             end
 
 
-            //2. Feedback Write to PEA, Write Logic, follows read logic by 1 cycle
+            //II.2. Feedback Write to PEA, Write Logic, follows read logic by 1 cycle
             if(latency_cnt_4_d == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE) begin
 
                 if(input_idx_fb2 < output_size) begin
@@ -678,36 +734,26 @@ always_comb begin
                 next_latency_cnt_4_d = latency_cnt_4_d + 1;
             end
 
-            //3. Non Linear: When to do it
+            //II.3. Bias Add: When to do it, lets do it for all filters, we'll
+            //only store a few from I.4.
             if(latency_cnt_5 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD) begin
-
                 if(input_idx_fb3 < output_size) begin
-
                     if(fb3_gate == 1) begin
-
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
                             if(cb == CBe - 1) begin
-                                intf_pea_ctrl.nl_enable[i0] = 1;
+                                intf_pea_ctrl.bias_enable[i0] = 1;
                             end else begin
-                                intf_pea_ctrl.nl_enable[i0] = 0;
+                                intf_pea_ctrl.bias_enable[i0] = 0;
                             end
                         end //for (int i0 ..
-
                         next_input_idx_fb3 = input_idx_fb3 + 1;
-
                     end else begin
-
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                            intf_pea_ctrl.nl_enable[i0] = 0;
+                            intf_pea_ctrl.bias_enable[i0] = 0;
                         end
-
                         next_input_idx_fb3 = input_idx_fb3;
-
                     end //fb3_gate
-
                 end
-
-
                 if(input_idx_fb3_gate < output_width) begin
                     next_input_idx_fb3_gate = input_idx_fb3_gate + 1;
                 end else if(input_idx_fb3_gate < output_width + regfile.conv__filter_wid - 2 ) begin
@@ -715,15 +761,39 @@ always_comb begin
                 end else if(input_idx_fb3_gate == output_width + regfile.conv__filter_wid - 2) begin
                     next_input_idx_fb3_gate = 0;
                 end
-
-
-
-
             end else begin
                 next_latency_cnt_5 = latency_cnt_5 + 1;
             end
 
-
+            //II.4. Non Linear: When to do it
+            if(latency_cnt_6 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_BIAS_ADD) begin
+                if(input_idx_fb4 < output_size) begin
+                    if(fb4_gate == 1) begin
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            if(cb == CBe - 1) begin
+                                intf_pea_ctrl.nl_enable[i0] = 1;
+                            end else begin
+                                intf_pea_ctrl.nl_enable[i0] = 0;
+                            end
+                        end //for (int i0 ..
+                        next_input_idx_fb4 = input_idx_fb4 + 1;
+                    end else begin
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            intf_pea_ctrl.nl_enable[i0] = 0;
+                        end
+                        next_input_idx_fb4 = input_idx_fb4;
+                    end //fb4_gate
+                end
+                if(input_idx_fb4_gate < output_width) begin
+                    next_input_idx_fb4_gate = input_idx_fb4_gate + 1;
+                end else if(input_idx_fb4_gate < output_width + regfile.conv__filter_wid - 2 ) begin
+                    next_input_idx_fb4_gate = input_idx_fb4_gate + 1;
+                end else if(input_idx_fb4_gate == output_width + regfile.conv__filter_wid - 2) begin
+                    next_input_idx_fb4_gate = 0;
+                end
+            end else begin
+                next_latency_cnt_5 = latency_cnt_5 + 1;
+            end
 
             if(input_idx_ff4 == output_size) begin
                 //All over jump to parent state
@@ -742,6 +812,7 @@ assign ff4_gate = (input_idx_ff4_gate < output_width) ? 1'b1 : 1'b0;
 assign fb1_gate = (input_idx_fb1_gate < output_width) ? 1'b1 : 1'b0;
 assign fb2_gate = (input_idx_fb2_gate < output_width) ? 1'b1 : 1'b0;
 assign fb3_gate = (input_idx_fb3_gate < output_width) ? 1'b1 : 1'b0;
+assign fb4_gate = (input_idx_fb4_gate < output_width) ? 1'b1 : 1'b0;
 
 always_comb begin
 
@@ -913,9 +984,6 @@ always_ff@(posedge clk, posedge rst) begin
     end
 
 end
-
-
-
 
 
 endmodule

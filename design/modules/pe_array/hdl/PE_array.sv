@@ -16,7 +16,9 @@ begin
         .clk					(clk),
         .shifting_line			(intf_pea.shifting_line[i]),
         .shifting_filter		(intf_pea.shifting_filter[i]),
+        .shifting_bias  		(intf_pea.shifting_bias[i]),
         .mac_enable				(intf_pea.mac_enable[i]),	
+        .bias_enable            (intf_pea.bias_enable[i]),
         .nl_enable              (intf_pea.nl_enable[i]),
         .feedback_enable        (intf_pea.feedback_enable[i]),
 
@@ -34,7 +36,7 @@ begin
         .dense_adder_on         (intf_pea.dense_adder_on[i]),
 
         .nl_type				(intf_pea.nl_type),
-        .input_bus1_PE			(intf_pea.input_bus1_PEA[`N_PE-1:0]),
+        .input_bus1_PE			(intf_pea.input_bus1_PEA[`N_PE:0]),
         .input_2_PE				(intf_pea.input_bus2_PEA[i]),
         .output_1_PE			(intf_pea.output_bus1_PEA[i]),
 

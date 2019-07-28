@@ -89,7 +89,7 @@ always_comb begin
         case(aybz_azby)
 
             2'b01: begin //AYBZ: conv/pool PING
-                for(int i = 0; i < `N_PE; i = i + 1) begin
+                for(int i = 0; i < `N_BUF; i = i + 1) begin
                     intf_pea.input_bus1_PEA[i] = intf_buf1.m1_output_bus[i]; //conv input and filters
                     intf_pea.input_bus2_PEA[i] = intf_buf2.m1_output_bus[i]; //conv output feedback
 
@@ -99,7 +99,7 @@ always_comb begin
             end
 
             2'b00: begin //AZBY: conv/pool PONG
-                for(int i = 0; i < `N_PE; i = i + 1) begin
+                for(int i = 0; i < `N_BUF; i = i + 1) begin
                     intf_pea.input_bus1_PEA[i] = intf_buf2.m1_output_bus[i]; //conv output feedback
                     intf_pea.input_bus2_PEA[i] = intf_buf1.m1_output_bus[i]; //conv input and filters
 
@@ -109,7 +109,7 @@ always_comb begin
             end
 
             2'b11: begin //AYaZ: dense PING
-                for(int i = 0; i < `N_PE; i = i + 1) begin
+                for(int i = 0; i < `N_BUF; i = i + 1) begin
                     intf_pea.input_bus1_PEA[i] = intf_buf1.m1_output_bus[i]; //dense weights
                     intf_pea.input_bus2_PEA[i] = intf_buf1.m1_output_bus[32]; //dense input
 
@@ -119,7 +119,7 @@ always_comb begin
             end
 
             2'b10: begin //BYbZ: dense PONG
-                for(int i = 0; i < `N_PE; i = i + 1) begin
+                for(int i = 0; i < `N_BUF; i = i + 1) begin
                     intf_pea.input_bus1_PEA[i] = intf_buf2.m1_output_bus[i]; //dense weights
                     intf_pea.input_bus2_PEA[i] = intf_buf2.m1_output_bus[32]; //dense input
 
@@ -167,6 +167,8 @@ always_comb begin
             intf_pea.row_length = 0;
             intf_pea.adder_enable = 0;
             intf_pea.nl_type = 0;
+            intf_pea.shifting_bias = 0;
+            intf_pea.bias_enable = 0;
             intf_pea.nl_enable = 0;
             intf_pea.feedback_enable = 0;
 
@@ -201,6 +203,9 @@ always_comb begin
             intf_pea.nl_type = intf_pea_ctrl_conv.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_conv.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_conv.feedback_enable;
+            intf_pea.bias_enable = intf_pea_ctrl_conv.bias_enable;
+            intf_pea.shifting_bias = intf_pea_ctrl_conv.shifting_bias;
+
 
             intf_pea.pool_enable    = intf_pea_ctrl_conv.pool_enable;
             intf_pea.dense_enable    = intf_pea_ctrl_conv.dense_enable;
@@ -234,6 +239,8 @@ always_comb begin
             intf_pea.nl_type = intf_pea_ctrl_dense.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_dense.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_dense.feedback_enable;
+            intf_pea.bias_enable = intf_pea_ctrl_dense.bias_enable;
+            intf_pea.shifting_bias = intf_pea_ctrl_dense.shifting_bias;
 
             intf_pea.pool_enable    = intf_pea_ctrl_dense.pool_enable;
             intf_pea.dense_enable    = intf_pea_ctrl_dense.dense_enable;
@@ -266,6 +273,8 @@ always_comb begin
             intf_pea.nl_type = intf_pea_ctrl_pool.nl_type;
             intf_pea.nl_enable = intf_pea_ctrl_pool.nl_enable;
             intf_pea.feedback_enable = intf_pea_ctrl_pool.feedback_enable;
+            intf_pea.bias_enable = intf_pea_ctrl_pool.bias_enable;
+            intf_pea.shifting_bias = intf_pea_ctrl_pool.shifting_bias;
 
 
             intf_pea.pool_enable    = intf_pea_ctrl_pool.pool_enable;
@@ -308,6 +317,8 @@ always_comb begin
             intf_pea.row_length = 0;
             intf_pea.adder_enable = 0;
             intf_pea.nl_type = 0;
+            intf_pea.shifting_bias = 0;
+            intf_pea.bias_enable = 0;
             intf_pea.nl_enable = 0;
             intf_pea.feedback_enable = 0;
 

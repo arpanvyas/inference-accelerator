@@ -5,7 +5,9 @@ interface interface_pe_array;
 
 logic   [`N_BUF-1:0]			    shifting_line [`N_PE-1:0];
 logic 	[`N_PE-1:0]					shifting_filter [`N_PE-1:0];
+logic   [`N_PE-1:0]                 shifting_bias;
 logic 	[`N_PE-1:0]					mac_enable [`N_PE-1:0];	 
+logic   [`N_PE-1:0]                 bias_enable;
 logic   [`N_PE-1:0]                 nl_enable;
 logic   [`N_PE-1:0]                 feedback_enable;
 
@@ -38,7 +40,9 @@ interface interface_pe_array_ctrl;
 
 logic   [`N_BUF-1:0]			    shifting_line   [`N_PE-1:0];
 logic 	[`N_PE-1:0]					shifting_filter [`N_PE-1:0];
+logic   [`N_PE-1:0]                 shifting_bias;
 logic   [`N_PE-1:0]					mac_enable      [`N_PE-1:0];	 
+logic   [`N_PE-1:0]                 bias_enable;
 logic   [`N_PE-1:0]                 nl_enable;
 logic   [`N_PE-1:0]                 feedback_enable;
 

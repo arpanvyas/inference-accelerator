@@ -29,6 +29,7 @@
 `define LAT_MAC 3
 `define LAT_ADD_TREE 5
 `define LAT_FB_ADD 1
+`define LAT_BIAS_ADD 1
 `define LAT_NL 1
 `define LAT_DENSE_ADD 1
 `define LAT_POOL 2

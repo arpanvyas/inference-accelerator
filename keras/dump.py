@@ -59,6 +59,14 @@ def dump_conv(dumpfile,mem_map,mem_start,this_layer):
             memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_bias'
             mem_map.append([mem_ptr,mem_idx0,memstr])
             mem_ptr += mem_idx0
+        else:
+            dat = 0*mem.scale
+            bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+            dumpfile.write(bina+'\n')
+            mem_idx0 += mem.word_per_byte
+            memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_nobias'
+            mem_map.append([mem_ptr,mem_idx0,memstr])
+            mem_ptr += mem_idx0
 
     return mem_ptr
 
@@ -100,6 +108,14 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
             memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)+'_bias'
             mem_map.append([mem_ptr,mem_idx0,memstr])
             mem_ptr +=mem_idx0
+        else:
+            dat = 0*mem.scale
+            bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+            dumpfile.write(bina+'\n')
+            mem_idx0 += mem.word_per_byte
+            memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_nobias'
+            mem_map.append([mem_ptr,mem_idx0,memstr])
+            mem_ptr += mem_idx0
 
     return mem_ptr
 

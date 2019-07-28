@@ -144,6 +144,8 @@ always_comb begin
         intf_buf2_m1_ctrl.m1_w_addr[i0] = 0;
     end
 
+    intf_pea_ctrl.shifting_bias = 0;
+    intf_pea_ctrl.bias_enable = 0;
     intf_pea_ctrl.nl_enable = 0;
     intf_pea_ctrl.row_length = regfile.pool__data_wid;
     intf_pea_ctrl.nl_type = regfile.nl__nl_type;

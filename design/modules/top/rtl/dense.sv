@@ -133,6 +133,8 @@ always_comb begin
         intf_buf2_m1_ctrl.m1_r_addr[i0] = 0;
     end
 
+    intf_pea_ctrl.shifting_bias = 0;
+    intf_pea_ctrl.bias_enable = 0;
     intf_pea_ctrl.nl_enable = 0;
     intf_pea_ctrl.row_length = `MAC_COL_MAX;
     intf_pea_ctrl.nl_type = regfile.nl__nl_type;
@@ -154,9 +156,7 @@ always_comb begin
             end
         end
 
-
         s_OB : begin
-
             next_input_idx_ff1 = 0;
             next_input_idx_ff2 = 0;
             next_input_idx_ff3 = 0;
@@ -192,16 +192,16 @@ always_comb begin
             //1. Read Input and Weights logic
 
             //1.1 Read Weights
-            if(input_idx_ff1 < input_neurons) begin
+            if(input_idx_ff1 < input_neurons + 1) begin
                 if(obe_on == 0) begin 
                     for(int i1 = 0; i1 < `N_PE; i1 = i1 + 1) begin
                         intf_buf1_m1_ctrl.m1_r_en[i1] = 1;
-                        intf_buf1_m1_ctrl.m1_r_addr[i1] = input_neurons*ob + input_idx_ff1;
+                        intf_buf1_m1_ctrl.m1_r_addr[i1] = (input_neurons+1)*ob + input_idx_ff1;//plus 1 for bias
                     end
                 end else begin //extra_ob
                     for(int i1 = 0; i1 <  extra_ob; i1 = i1 + 1) begin
                         intf_buf1_m1_ctrl.m1_r_en[i1] = 1;
-                        intf_buf1_m1_ctrl.m1_r_addr[i1] = input_neurons*ob + input_idx_ff1;
+                        intf_buf1_m1_ctrl.m1_r_addr[i1] = (input_neurons+1)*ob + input_idx_ff1;//plus 1 for bias
                     end
                 end
 
@@ -223,7 +223,7 @@ always_comb begin
             //Both 2.1 and 2.2
             if(latency_cnt_1 == 1) begin
 
-                if(input_idx_ff2 < input_neurons) begin
+                if(input_idx_ff2 < input_neurons) begin //matrix row elements
                     if(obe_on == 1) begin
                         for(int i0 = 0; i0 < extra_ob; i0 = i0 + 1) begin
                             intf_pea_ctrl.shifting_filter[i0][i0] = 1;
@@ -236,9 +236,19 @@ always_comb begin
                         end //for i0
                     end //if !obe_on
 
-                    next_input_idx_ff2 = input_idx_ff2 + 1;
-
+                end else if (input_idx_ff2 == input_neurons) begin //bias, do not shift input only weights
+                    if(obe_on == 1) begin
+                        for(int i0 = 0; i0 < extra_ob; i0 = i0 + 1) begin
+                            intf_pea_ctrl.shifting_filter[i0][i0] = 1;
+                        end //for i0
+                    end else begin //!obe_on
+                        for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
+                            intf_pea_ctrl.shifting_filter[i0][i0] = 1;
+                        end //for i0
+                    end //if !obe_on
                 end
+
+                next_input_idx_ff2 = input_idx_ff2 + 1;
 
             end else begin
                 next_latency_cnt_1 = latency_cnt_1 + 1;
@@ -247,17 +257,18 @@ always_comb begin
 
             //3. MAC Enable Logic
             if(latency_cnt_2 == 2) begin //at this point data is out of 1'st element
-                if(input_idx_ff3 < input_neurons) begin
+                if(input_idx_ff3 < input_neurons + 1) begin
                     next_input_idx_ff3 = input_idx_ff3 + 1;
                 end else begin
                     next_input_idx_ff3 = input_idx_ff3;
                 end
-                
+
                 next_latency_cnt_2 = latency_cnt_2;
             end else begin
                 next_latency_cnt_2 = latency_cnt_2 + 1;
             end
 
+            //4. Marking dense numbers before MAC : via dense valid
             if(mac_now == 1) begin
                 if(ibe_on == 0) begin
                     intf_pea_ctrl.dense_valid = `DENSE_PER_GO;
@@ -266,7 +277,7 @@ always_comb begin
                 end
             end
 
-
+            //5. Making dense adder ON (accumulator of values)
             if(mac_now_d[`LAT_MAC-1] == 1) begin
                 if(obe_on == 0) begin
                     for(int i = 0; i < `N_PE ; i = i + 1) begin
@@ -279,7 +290,22 @@ always_comb begin
                 end
             end
 
-            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD-1] == 1) begin
+            //6.1 Making bias add ON
+            if(nl_now_d[`LAT_MAC+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1) begin
+                if(obe_on == 0) begin
+                    for(int i = 0; i < `N_PE; i= i + 1) begin
+                        intf_pea_ctrl.bias_enable[i] = 1;
+                    end
+                end else begin
+                    for(int i = 0; i < extra_ob; i= i + 1) begin
+                        intf_pea_ctrl.bias_enable[i] = 1;
+                    end
+                end
+            end
+
+
+            //6.2 Making non linearity ON
+            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1) begin
                 if(obe_on == 0) begin
                     for(int i = 0; i < `N_PE; i= i + 1) begin
                         intf_pea_ctrl.nl_enable[i] = 1;
@@ -292,8 +318,10 @@ always_comb begin
             end
 
 
-
-            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD] == 1 && ongoing_dense_out == 0) begin
+            //7. Dense Latch logic: Required because only single write back
+            //point for BUF2, thus latching all values then releasing one by
+            //one
+            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD] == 1 && ongoing_dense_out == 0) begin
                 intf_pea_ctrl.dense_latch = 1;
                 next_state = s_OB;
             end else if(ongoing_dense_out == 1) begin
@@ -305,24 +333,13 @@ always_comb begin
                 intf_pea_ctrl.dense_latch = 0;
             end
 
-
-
-
-
-
         end //s_OB_I
-
-
-
-
 
     endcase
 
-
-
 end
 
-
+//nl logic
 always_comb begin
 
     next_ib = ib;
@@ -363,14 +380,37 @@ always_comb begin
 
             end //input_idx_ff3_cycle
 
+        end else if(input_idx_ff3 == input_neurons) begin
+            if(input_idx_ff3_cycle != 0) begin //means input_neurons/DENSE_PER_GO has a remainder
+                mac_now = 1;
+                next_input_idx_ff3_cycle = 0;
+                if(IB < IBe && ib == IB - 1) begin
+                    next_ibe_on = 1;
+                    next_ib = ib + 1;
+                    nl_now = 0;
+                end else if(IB < IBe && ib == IBe - 1) begin
+                    next_ibe_on = 0; 
+                    next_ib = 0;
+                    nl_now = 1;
+                end else if(IB == IBe && ib == IBe - 1) begin
+                    next_ibe_on = 0;
+                    next_ib = 0;
+                    nl_now = 1;
+                end else begin
+                    next_ibe_on = 0;
+                    next_ib = ib + 1;
+                    nl_now = 0;
+                end
+            end
+        end
 
-        end //input_idx_ff3
 
-    end //state == s_OB_I
+    end //input_idx_ff3
+
+end //state == s_OB_I
 
 
 
-end
 
 
 logic [`LOG_N_PE-1:0] next_dense_rd_addr;
@@ -378,7 +418,7 @@ logic [`LOG_N_PE-1:0] dense_rd_addr;
 logic [`LOG_N_PE-1:0] dense_rd_addr_d;
 
 logic obe_on_latch, ob_latch;
-
+//latching logic
 always_comb begin
 
     next_dense_rd_addr = 0;
