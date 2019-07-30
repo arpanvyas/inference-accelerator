@@ -1,3 +1,4 @@
+`include "header.vh"
 module program_memory(
 	input logic clk,
 	input logic we,
@@ -8,7 +9,7 @@ module program_memory(
 	output logic [31:0] data_out
     );
 
-logic [31:0] mem[65535:0];
+    logic [31:0] mem[(`PC_MAX*2)-1:0];
 
 always@(posedge clk)
 begin

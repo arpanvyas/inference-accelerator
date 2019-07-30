@@ -560,7 +560,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
             print("program.py: Model parsing error in layer dense")
             return
 
-        instr = ram_to_buffer_instr(ram_start, ram_number, buffer_block,buffer_addr,regfile)
+        instr1 = ram_to_buffer_instr(ram_start, ram_number, buffer_block,buffer_addr,regfile)
         for item in instr1: instr.append(item)
 
         model_idx += 1
@@ -637,7 +637,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
             print("program.py: Input parsing error in layer dense")
             return
 
-        instrn1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+        instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
         for item in instr1: instr.append(item)
 
         interm_idx += 1

@@ -1,3 +1,4 @@
+`include "header.vh"
 module controller (
     input logic clk,
     input logic rst,
@@ -46,7 +47,7 @@ logic           next_layer;
 
 assign run_program = 1;
 assign spi_or_driver = 0;
-assign pc_max = 15504;
+assign pc_max = `PC_MAX;
 
 
 program_driver program_driver_inst (

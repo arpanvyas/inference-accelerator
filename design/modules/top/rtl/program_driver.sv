@@ -1,3 +1,4 @@
+`include "header.vh"
 module program_driver (
     input logic clk,
     input logic rst,

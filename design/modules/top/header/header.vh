@@ -19,6 +19,7 @@
 `define REG_BANK_SIZE 64
 `define CONTR_STATES 14
 `define CONTR_STATES_BITS 6
+`define PC_MAX 73188
 
 
 
