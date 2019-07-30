@@ -9,6 +9,7 @@ module densing(
     input						    shifting_filter,	
     input	[`WID_FILTER-1:0]	    input_filter,	
     input   [7:0]                   dense_valid,
+    input                           mac_enable,
     output reg	[`WID_PE_BITS-1:0]	out_dense_data,
     interface_regfile               regfile
 );

@@ -46,6 +46,7 @@ logic           ongoing_dense_out;
 logic           ongoing_dense_out_fe;
 logic [15:0]    ongoing_dense_out_d;
 
+logic           dense_latch_request, next_dense_latch_request;
 
 
 typedef enum { IDLE, s_OB, s_OB_I} DenseStates;
@@ -73,6 +74,8 @@ always_ff@(posedge clk, posedge rst) begin
 
         input_idx_ff3_cycle <= #1 0;
 
+        dense_latch_request <= #1 0;
+
     end else begin
 
         state <= #1 next_state;
@@ -93,6 +96,8 @@ always_ff@(posedge clk, posedge rst) begin
         latency_cnt_2 <= #1 next_latency_cnt_2;
 
         input_idx_ff3_cycle <= #1 next_input_idx_ff3_cycle;
+
+        dense_latch_request <= #1 next_dense_latch_request;
 
     end
 end
@@ -147,6 +152,8 @@ always_comb begin
     next_obe_on = obe_on;
 
     next_ob = ob;
+
+    next_dense_latch_request = dense_latch_request;
 
     case(state)
 
@@ -259,6 +266,19 @@ always_comb begin
             if(latency_cnt_2 == 2) begin //at this point data is out of 1'st element
                 if(input_idx_ff3 < input_neurons + 1) begin
                     next_input_idx_ff3 = input_idx_ff3 + 1;
+
+                    //the 0th mac_enable is made high by convention, may be
+                    //extenden and made 32nd later
+                    if(obe_on == 0) begin 
+                        for(int i1 = 0; i1 < `N_PE; i1 = i1 + 1) begin
+                            intf_pea_ctrl.mac_enable[i1][0] = 1;
+                        end
+                    end else begin //extra_ob
+                        for(int i1 = 0; i1 <  extra_ob; i1 = i1 + 1) begin
+                            intf_pea_ctrl.mac_enable[i1][0] = 1;
+                        end
+                    end
+
                 end else begin
                     next_input_idx_ff3 = input_idx_ff3;
                 end
@@ -324,14 +344,21 @@ always_comb begin
             if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD] == 1 && ongoing_dense_out == 0) begin
                 intf_pea_ctrl.dense_latch = 1;
                 next_state = s_OB;
-            end else if(ongoing_dense_out == 1) begin
+            end else if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD] == 1 && ongoing_dense_out == 1) begin
                 intf_pea_ctrl.dense_latch = 0;
-            end else if(ongoing_dense_out_fe == 1) begin
+                next_dense_latch_request = 1;
+            end else if(ongoing_dense_out_fe == 1 && dense_latch_request == 1) begin
                 intf_pea_ctrl.dense_latch = 1;
                 next_state = s_OB;
+                next_dense_latch_request = 0;
             end else begin
                 intf_pea_ctrl.dense_latch = 0;
             end
+
+
+
+
+
 
         end //s_OB_I
 

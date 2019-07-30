@@ -170,6 +170,7 @@ densing densing_module
     .input_line 				 	(input_2_PE), //dense input
     .shifting_filter                (shifting_filter[PE_index]), //dense weight
     .input_filter                   (input_bus1_PE[PE_index]), //dense weight
+    .mac_enable                     (mac_enable[0]),
     .dense_valid                    (dense_valid),
     .out_dense_data					(out_dense_data),
     .regfile                        (regfile)

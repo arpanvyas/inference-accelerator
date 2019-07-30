@@ -59,9 +59,9 @@ def read_h5(h5_path):
     #for wt in weights:
     #    print(wt)
     i= 0
-    #for wt in weights:
+    for wt in weights:
         #print(i,wt)
-        #i+=1
+        i+=1
 
     mem_map_model = []
 

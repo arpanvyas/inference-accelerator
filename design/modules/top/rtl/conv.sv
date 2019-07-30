@@ -454,7 +454,7 @@ always_comb begin
                 next_latency_cnt_02 = latency_cnt_02;
 
             end else begin
-                next_latency_cnt_01 = latency_cnt_02 + 1;
+                next_latency_cnt_02 = latency_cnt_02 + 1;
             end
         end
 
@@ -792,7 +792,7 @@ always_comb begin
                     next_input_idx_fb4_gate = 0;
                 end
             end else begin
-                next_latency_cnt_5 = latency_cnt_5 + 1;
+                next_latency_cnt_6 = latency_cnt_6 + 1;
             end
 
             if(input_idx_ff4 == output_size) begin

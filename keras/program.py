@@ -664,10 +664,14 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
         layer_index = layer['number']
         layer_type  = layer['type']
 
+        print(layer_type+" "+"layer_number:"+str(layer_index)+" "+"interm_idx_carry:"+str(interm_idx_carry))
+
         if(layer_type == "Conv2D"):
             instr_this,model_idx_carry,interm_idx_carry = prog_conv(model_map,model_idx_carry,interm_map,interm_idx_carry, all_layers,layer_index,regfile)
+            #instr_this = [] #debug
         elif(layer_type == "MaxPooling2D"):
             instr_this,interm_idx_carry = prog_maxpool(interm_map,interm_idx_carry,all_layers,layer_index,regfile)
+            #instr_this = [] #debug
         elif(layer_type == "Flatten"):
             a = 0
             output_elements = layer['output_elements']
