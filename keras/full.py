@@ -34,7 +34,6 @@ all_layers = rdh5.read_h5(h5_path)
 # II.   Get the list of inputs for inference
 ##########################################################################
 
-input_list_file = 'input_list.txt'
 
 
 ##########################################################################
@@ -48,7 +47,7 @@ model_map_dump  =   hw_dir+'model.map'
 model_map       =   dump.model_to_ram(all_layers,mem_model_dump,model_map_dump)
 
 #ii. Dump Input : Same for one set of inputs
-input_file_list =   hw_dir+'input_list.txt'
+input_file_list =   hw_dir+'inputs/input_list1.txt'
 mem_inp_dump    =   hw_dir+'input.dat'
 inp_map_dump    =   hw_dir+'input.map'
 

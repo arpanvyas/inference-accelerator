@@ -38,26 +38,26 @@ always@(posedge clk, posedge rst)
 begin
 
 	if(rst) begin
-		a1				<= 0;
-		a2				<= 0;
-		output_mac	<= 0;
+		a1				<= #1 0;
+		a2				<= #1 0;
+		output_mac	<= #1 0;
 	end else begin
-		m1	<= input_line_1*input_filter_1 >>> scale;
-		m2	<= input_line_2*input_filter_2 >>> scale;
-		m3	<= input_line_3*input_filter_3 >>> scale;
-		m4	<= input_line_4*input_filter_4 >>> scale;
-		m5	<= input_line_5*input_filter_5 >>> scale;
-		m6	<= input_line_6*input_filter_6 >>> scale;
-		m7	<= input_line_7*input_filter_7 >>> scale;
-		m8	<= input_line_8*input_filter_8 >>> scale;
-		m9	<= input_line_9*input_filter_9 >>> scale;
-		a1	<= m1+m2+m3+m4;
-		a2	<= m5+m6+m7+m8;	
-		a3  <= m9;
+		m1	<= #1 input_line_1*input_filter_1 >>> scale;
+		m2	<= #1 input_line_2*input_filter_2 >>> scale;
+		m3	<= #1 input_line_3*input_filter_3 >>> scale;
+		m4	<= #1 input_line_4*input_filter_4 >>> scale;
+		m5	<= #1 input_line_5*input_filter_5 >>> scale;
+		m6	<= #1 input_line_6*input_filter_6 >>> scale;
+		m7	<= #1 input_line_7*input_filter_7 >>> scale;
+		m8	<= #1 input_line_8*input_filter_8 >>> scale;
+		m9	<= #1 input_line_9*input_filter_9 >>> scale;
+		a1	<= #1 m1+m2+m3+m4;
+		a2	<= #1 m5+m6+m7+m8;	
+		a3  <= #1 m9;
 		if(enable) begin
 			output_mac	<=	a1+a2+a3;
 		end else begin
-			output_mac	<= 0;
+			output_mac	<= #1 0;
 		end
 	end
 

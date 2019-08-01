@@ -22,18 +22,18 @@ always@(posedge clk, posedge rst)
 begin
 	
 	if(rst) begin
-	out_1	<= 0;	out_2	<= 0;	out_3	<= 0;
-	out_4	<= 0;	out_5	<= 0;	out_6	<= 0;
-	out_7	<= 0;	out_8	<= 0;	out_9	<= 0;
+	out_1	<= #1 0;	out_2	<= #1 0;	out_3	<= #1 0;
+	out_4	<= #1 0;	out_5	<= #1 0;	out_6	<= #1 0;
+	out_7	<= #1 0;	out_8	<= #1 0;	out_9	<= #1 0;
 	end else begin
 		if(shifting) begin
-			out_1	<= inp_sr;	out_2 <=	out_1;	out_3	<= out_2;
-			out_4	<= out_3;	out_5	<= out_4;	out_6	<= out_5;
-			out_7	<= out_6;	out_8	<= out_7;	out_9	<= out_8;
+			out_1	<= #1 inp_sr;	out_2   <= #1 out_1;	out_3	<= #1 out_2;
+			out_4	<= #1 out_3;	out_5	<= #1 out_4;	out_6	<= #1 out_5;
+			out_7	<= #1 out_6;	out_8	<= #1 out_7;	out_9	<= #1 out_8;
 		end else begin
-			out_1	<= out_1;	out_2 <=	out_2;	out_3	<= out_3;
-			out_4	<= out_4;	out_5	<= out_5;	out_6	<= out_6;
-			out_7	<= out_7;	out_8	<= out_8;	out_9	<= out_9;
+			out_1	<= #1 out_1;	out_2   <= #1 out_2;	out_3   <= #1 out_3;
+			out_4	<= #1 out_4;	out_5	<= #1 out_5;	out_6	<= #1 out_6;
+			out_7	<= #1 out_7;	out_8	<= #1 out_8;	out_9	<= #1 out_9;
 		end
 	end
 
