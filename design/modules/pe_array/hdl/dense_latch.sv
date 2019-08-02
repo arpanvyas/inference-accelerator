@@ -3,13 +3,13 @@ module dense_latch (
     input   logic clk,
     input   logic rst,
     input   logic   [`WID_PE_BITS-1:0]  data_in [`N_PE-1:0],
-    input   logic   dense_latch,
+    input   logic signed  dense_latch,
     input   logic   [`LOG_N_PE-1:0] rd_addr,
     output  logic   [`WID_PE_BITS-1:0]  data_out
 );
 
 
-logic   [`WID_PE_BITS-1 : 0 ]  data_latched    [`N_PE-1:0];
+logic signed  [`WID_PE_BITS-1 : 0 ]  data_latched    [`N_PE-1:0];
 
 always_ff@(posedge clk, posedge rst)
 begin

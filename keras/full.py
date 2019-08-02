@@ -23,7 +23,7 @@ hw_dir          = main_directory+'hw_related/'
 # I.    Read the model from Keras trained h5 file
 ##########################################################################
 
-h5_path = main_directory+'mnist_cnn_model_int8.h5'
+h5_path = main_directory+'mnist_cnn_model_float16.h5'
 all_layers = rdh5.read_h5(h5_path)
 
 #for l in all_layers:

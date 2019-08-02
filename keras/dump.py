@@ -87,12 +87,24 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
     activation = this_layer['activation']
     mem_ptr = mem_start
 
+    #debug
+    #if(layer_num == 4):
+    #    f1a = open("dense1_node3_parse.txt","w")
+    #    print("outnodes in layer4:" + str(output_nodes))
+    #    print("innodes in layer4:" + str(input_nodes))
+    #debug
+
     for out in range(0,output_nodes):
         mem_idx0 = 0
         mem_idx = 0
         for inp in range(0,input_nodes):
             dat = wt[inp][out]*mem.scale
             bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+            #debug
+            #if(layer_num == 4 and out == 3):
+            #    f1a.write(str(out)+" dat: "+str(int(dat*256))+"\n")
+            #    #f1a.write("bina: "+ bina+"\n")
+            ##debug
             dumpfile.write(bina+'\n')
             mem_idx += mem.word_per_byte
 
@@ -116,6 +128,11 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
             memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_nobias'
             mem_map.append([mem_ptr,mem_idx0,memstr])
             mem_ptr += mem_idx0
+
+    ##debug
+    #if(layer_num == 4):
+    #    f1a.close()
+    ##debug
 
     return mem_ptr
 

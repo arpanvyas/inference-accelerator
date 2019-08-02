@@ -220,6 +220,7 @@ always_comb begin
         intf_pea_ctrl.shifting_filter[idx_var] = 0;
         intf_pea_ctrl.mac_enable[idx_var] = 0;
         intf_pea_ctrl.feedback_enable[idx_var] = 0;
+        intf_pea_ctrl.dense_adder_reset[idx_var] = 1;
     end
 
     for (int i0 = 0; i0 < `N_BUF; i0 = i0 + 1) begin
@@ -244,7 +245,6 @@ always_comb begin
     intf_pea_ctrl.pool_enable = 0;
     intf_pea_ctrl.dense_enable = 0;
     intf_pea_ctrl.dense_valid = 0;
-    intf_pea_ctrl.dense_adder_reset = 0;
     intf_pea_ctrl.dense_adder_on = 0;
     intf_pea_ctrl.dense_latch = 0;
     intf_pea_ctrl.dense_rd_addr = 0;

@@ -682,6 +682,7 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
 
         elif(layer_type == "Dense"):
             instr_this,model_idx_carry,interm_idx_carry = prog_dense(model_map,model_idx_carry,interm_map,interm_idx_carry,all_layers,layer_index,regfile)
+            #a = 0
         else:
             print("program.py: prog_all(), layer type:"+str(layer_type)+" not found")
 

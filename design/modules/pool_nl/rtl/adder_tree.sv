@@ -37,40 +37,40 @@ always @(posedge clk, posedge rst)
 begin
     if(rst) begin
         for(i1=0;i1<`N_PE/2;i1=i1+1) begin
-            adder_stage1[i1]	<= 0;
+            adder_stage1[i1]	<= #1 0;
         end
         for(i2=0;i2<`N_PE/4;i2=i2+1) begin
-            adder_stage2[i2]	<= 0;
+            adder_stage2[i2]	<= #1 0;
         end
         for(i3=0;i3<`N_PE/8;i3=i3+1) begin
-            adder_stage3[i3]	<= 0;				
+            adder_stage3[i3]	<= #1 0;				
         end
         for(i4=0;i4<`N_PE/16;i4=i4+1) begin
-            adder_stage4[i4]	<=0;								
+            adder_stage4[i4]	<= #1 0;								
         end
-        adder_stage5			<= 0;
+        adder_stage5			<= #1 0;
 
     end else begin
         if(adder_enable) begin
 
 
             for(i1=0;i1<`N_PE/2;i1=i1+1) begin
-                adder_stage1[i1]	<= cleaned_output_mac[2*i1]+cleaned_output_mac[2*i1+1];
+                adder_stage1[i1]	<= #1 cleaned_output_mac[2*i1]+cleaned_output_mac[2*i1+1];
             end
 
             for(i2=0;i2<`N_PE/4;i2=i2+1) begin
-                adder_stage2[i2]	<= adder_stage1[2*i2]+adder_stage1[2*i2+1];
+                adder_stage2[i2]	<= #1 adder_stage1[2*i2]+adder_stage1[2*i2+1];
             end
 
             for(i3=0;i3<`N_PE/8;i3=i3+1) begin
-                adder_stage3[i3]	<= adder_stage2[2*i3]+adder_stage2[2*i3+1];				
+                adder_stage3[i3]	<= #1 adder_stage2[2*i3]+adder_stage2[2*i3+1];				
             end
 
             for(i4=0;i4<`N_PE/16;i4=i4+1) begin
-                adder_stage4[i4]	<= adder_stage3[2*i4]+adder_stage3[2*i4+1];								
+                adder_stage4[i4]	<= #1 adder_stage3[2*i4]+adder_stage3[2*i4+1];								
             end
 
-            adder_stage5			<= adder_stage4[0] + adder_stage4[1];
+            adder_stage5			<= #1 adder_stage4[0] + adder_stage4[1];
 
         end		
     end

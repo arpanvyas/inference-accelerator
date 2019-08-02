@@ -63,6 +63,17 @@ def read_h5(h5_path):
         #print(i,wt)
         i+=1
 
+    ####debug
+    #print((weights[4][:,3]*256).astype(int))
+    #f = open("dense1_node3.txt","w")
+    #for i in range(0,9216):
+    #    f.write(str((weights[4][i,3]*256).astype(int))+"\n")
+    #f.close()
+    #print(weights[4][:,0])
+    #print(weights[4][200][127])
+    #print(weights[5])
+    ####debug
+
     mem_map_model = []
 
     #dumpfile = open("test","w")
@@ -284,7 +295,7 @@ if __name__ == "__main__":
     #print(this_layer_all[0])
 
     main_directory  = '/home/vonfaust/data/accelerator/keras/'
-    h5_path = main_directory+'mnist_cnn_model_int8.h5'
+    h5_path = main_directory+'mnist_cnn_model_float16.h5'
 
     this_layer_all = read_h5(h5_path)    
 

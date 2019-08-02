@@ -25,9 +25,9 @@ module fifo_memory
 
    always @(posedge clk) begin
 		if (we)
-			mem[waddr] <= din;
+			mem[waddr] <= #1 din;
 		if (re)
-			dout <= mem[raddr];
+			dout <= #1 mem[raddr];
 	end
 
 endmodule

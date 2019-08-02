@@ -38,7 +38,7 @@ logic [5:0]  counter_n;
 //Rx - sample on posedge
 always@(posedge SCLK, posedge SS) begin
     if (SS) begin 
-      //  buffer_rx <= 0;
+      //  buffer_rx <= #1 0;
     end else if (!SS) begin
         buffer_rx[0] <= #1 MOSI;
         buffer_rx[15:1] <= #1 buffer_rx[14:0];

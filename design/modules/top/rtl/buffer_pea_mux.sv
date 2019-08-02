@@ -175,7 +175,7 @@ always_comb begin
             intf_pea.pool_enable = 0;
             intf_pea.dense_enable = 0;
             intf_pea.dense_valid = 0;
-            intf_pea.dense_adder_reset = 1;
+            intf_pea.dense_adder_reset = '1;
             intf_pea.dense_adder_on = 0;
             intf_pea.dense_latch = 0;
             intf_pea.dense_rd_addr = 0;

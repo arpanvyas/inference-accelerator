@@ -35,9 +35,9 @@ module line_fifo
 //   
 always @(posedge clk, posedge rst) begin
 	if (rst) begin
-		write_pointer <= 0;
-		elements_inside	<= 0;
-		row_length_h		<= 0;
+		write_pointer <= #1 0;
+		elements_inside	<= #1 0;
+		row_length_h		<= #1 0;
 	end else begin
 		
 	if(!fifo_reset) begin
@@ -46,31 +46,31 @@ always @(posedge clk, posedge rst) begin
 		if (shifting) begin
 			
 			if (elements_inside != row_length_h) begin
-				write_pointer <= write_pointer + 1'd1;
-				elements_inside <= elements_inside + 1'd1;
+				write_pointer <= #1 write_pointer + 1'd1;
+				elements_inside <= #1 elements_inside + 1'd1;
 			end else	if(elements_inside == row_length_h) begin
-				elements_inside <= elements_inside;
+				elements_inside <= #1 elements_inside;
 				
 				if(write_pointer != elements_inside) begin
-					write_pointer <= write_pointer + 1'd1;
+					write_pointer <= #1 write_pointer + 1'd1;
 				end else if (write_pointer == elements_inside) begin
-					write_pointer <= 0;
+					write_pointer <= #1 0;
 				end				
 			end 
 			
 		end else begin
-				elements_inside <= elements_inside;
-				write_pointer 	 <= write_pointer;
+				elements_inside <= #1 elements_inside;
+				write_pointer 	 <= #1 write_pointer;
 		end
 
 		
 	end else if (fifo_reset) begin
-		elements_inside	<= 0;
-		write_pointer		<= 0;
+		elements_inside	<= #1 0;
+		write_pointer		<= #1 0;
 		if(row_length>2) begin    //making a difference of 2 as otherwise the data on output comes 2 clocks late because of bad logic
-			row_length_h		<= row_length-2;
+			row_length_h		<= #1 row_length-2;
 		end else begin
-			row_length_h	<= 1;
+			row_length_h	<= #1 1;
 		end
 	end
 

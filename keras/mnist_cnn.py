@@ -11,6 +11,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from datetime import datetime
 
 batch_size = 128
 num_classes = 10
@@ -22,8 +23,8 @@ img_rows, img_cols = 28, 28
 # the data, split between train and test sets
 (X_train, Y_train), (X_test, Y_test) = mnist.load_data()
 
-X_train = X_train[0:1200,:,:]
-Y_train = Y_train[0:1200]
+X_train = X_train[0:6000,:,:]
+Y_train = Y_train[0:6000]
 X_test = X_test[0:1200,:,:]
 Y_test = Y_test[0:1200]
 
@@ -38,7 +39,8 @@ else:       #evaluates else as format is 'channels_last'
 
 
 
-list_dtype = ['int8'] #['int8', 'int16', 'float16','float32']
+#list_dtype = ['int8'] #['int8', 'int16', 'float16','float32']
+list_dtype = ['float16'] #['int8', 'int16', 'float16','float32']
 
 
 
@@ -51,6 +53,11 @@ for np_dtype in list_dtype:
   print('x_train shape:', x_train.shape)
   print(x_train.shape[0], 'train samples')
   print(x_test.shape[0], 'test samples')
+	
+  print(x_train.shape[0], 'train samples')
+  print(x_test.shape[0], 'test samples')
+  print(x_test[0])
+  #exit()
 
   # convert class vectors to binary class matrices
   y_train = keras.utils.to_categorical(Y_train, num_classes)
@@ -77,7 +84,19 @@ for np_dtype in list_dtype:
             epochs=epochs,
             verbose=1,
             validation_data=(x_test, y_test))
+
+
+  tstart = datetime.now()
   score = model.evaluate(x_test, y_test, verbose=0)
+  tend = datetime.now()
+
+  telap = tend - tstart
+  print("tend: " + str(tend))
+  print("tstart: " + str(tstart))
+  print("telap: " + str(telap))
+  print("tper_img: " + str(telap/1200))
+
+
   
   model.save('/home/vonfaust/data/accelerator/keras/mnist_cnn_model_'+np_dtype+'.h5')
 

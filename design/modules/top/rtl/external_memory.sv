@@ -21,9 +21,12 @@ end
 
 //Storing Model in RAM
 integer i;
+integer j;
+integer f;
 initial
 begin
 
+    f = $fopen("poolout.dat","w");
     for (i = 0; i < 2**`ADDR_EXT_RAM; i ++ )
     begin
         mem[i] = 0;
@@ -31,6 +34,22 @@ begin
 
     $readmemb("model.dat",mem,0);
     $readmemb("input.dat",mem,4194304);
+
+
+    #1990726; //pooling ends here
+
+    j = 0;
+    for(i = 7398528; i < 7407744; i ++)
+    begin
+        
+        $fwrite(f,"%b\n", mem[i]);
+        j = j + 1;
+        if(j%144 == 0) begin
+            $fwrite(f,"----------\n");
+        end
+    end
+
+    $fclose(f);
 
 end
 

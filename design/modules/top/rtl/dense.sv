@@ -124,7 +124,7 @@ always_comb begin
         intf_pea_ctrl.mac_enable[idx_var] = 0;
         intf_pea_ctrl.feedback_enable[idx_var] = 0;
 
-        intf_pea_ctrl.dense_adder_reset[idx_var] = 1;
+        intf_pea_ctrl.dense_adder_reset[idx_var] = 0;
         intf_pea_ctrl.dense_adder_on[idx_var] = 0;
     end
 
@@ -247,10 +247,12 @@ always_comb begin
                     if(obe_on == 1) begin
                         for(int i0 = 0; i0 < extra_ob; i0 = i0 + 1) begin
                             intf_pea_ctrl.shifting_filter[i0][i0] = 1;
+                            intf_pea_ctrl.shifting_bias[i0] = 1;
                         end //for i0
                     end else begin //!obe_on
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
                             intf_pea_ctrl.shifting_filter[i0][i0] = 1;
+                            intf_pea_ctrl.shifting_bias[i0] = 1;
                         end //for i0
                     end //if !obe_on
                 end
@@ -297,7 +299,7 @@ always_comb begin
                 end
             end
 
-            //5. Making dense adder ON (accumulator of values)
+            //6.0 Making dense adder ON (accumulator of values)
             if(mac_now_d[`LAT_MAC-1] == 1) begin
                 if(obe_on == 0) begin
                     for(int i = 0; i < `N_PE ; i = i + 1) begin
@@ -311,7 +313,7 @@ always_comb begin
             end
 
             //6.1 Making bias add ON
-            if(nl_now_d[`LAT_MAC+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1) begin
+            if(nl_now_d[`LAT_MAC+`LAT_DENSE_ADD-1] == 1) begin
                 if(obe_on == 0) begin
                     for(int i = 0; i < `N_PE; i= i + 1) begin
                         intf_pea_ctrl.bias_enable[i] = 1;
@@ -325,7 +327,7 @@ always_comb begin
 
 
             //6.2 Making non linearity ON
-            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1) begin
+            if(nl_now_d[`LAT_MAC+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1) begin
                 if(obe_on == 0) begin
                     for(int i = 0; i < `N_PE; i= i + 1) begin
                         intf_pea_ctrl.nl_enable[i] = 1;
@@ -341,10 +343,10 @@ always_comb begin
             //7. Dense Latch logic: Required because only single write back
             //point for BUF2, thus latching all values then releasing one by
             //one
-            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD] == 1 && ongoing_dense_out == 0) begin
+            if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1 && ongoing_dense_out == 0) begin
                 intf_pea_ctrl.dense_latch = 1;
                 next_state = s_OB;
-            end else if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD] == 1 && ongoing_dense_out == 1) begin
+            end else if(nl_now_d[`LAT_MAC+`LAT_NL+`LAT_DENSE_ADD+`LAT_BIAS_ADD-1] == 1 && ongoing_dense_out == 1) begin
                 intf_pea_ctrl.dense_latch = 0;
                 next_dense_latch_request = 1;
             end else if(ongoing_dense_out_fe == 1 && dense_latch_request == 1) begin
