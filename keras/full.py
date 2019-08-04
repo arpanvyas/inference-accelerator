@@ -23,6 +23,7 @@ hw_dir          = main_directory+'hw_related/'
 # I.    Read the model from Keras trained h5 file
 ##########################################################################
 
+print("I. Starting: Read the model from Keras trained h5 file................\n")
 h5_path = main_directory+'mnist_cnn_model_float16.h5'
 all_layers = rdh5.read_h5(h5_path)
 
@@ -30,15 +31,19 @@ all_layers = rdh5.read_h5(h5_path)
 #    print(l['type'])
 
 
+print("############################################################\n")
 ##########################################################################
 # II.   Get the list of inputs for inference
 ##########################################################################
+print("II. Starting: Get the list of inputs for inference................\n")
+input_file_list =   hw_dir+'inputs/input_list0.txt'
 
 
-
+print("############################################################\n")
 ##########################################################################
 # III.  Create Memory Dumps and Maps for Model and Inputs
 ##########################################################################
+print("III. Starting: Create Memory Dumps and Maps for Model and Inputs................\n")
 
 #i.  Dump Model : Same for one Model
 mem_model_dump  =   hw_dir+'model.dat'
@@ -47,7 +52,6 @@ model_map_dump  =   hw_dir+'model.map'
 model_map       =   dump.model_to_ram(all_layers,mem_model_dump,model_map_dump)
 
 #ii. Dump Input : Same for one set of inputs
-input_file_list =   hw_dir+'inputs/input_list1.txt'
 mem_inp_dump    =   hw_dir+'input.dat'
 inp_map_dump    =   hw_dir+'input.map'
 
@@ -72,6 +76,7 @@ interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,outp
 
 print("--------------------------------------------------------------")
 
+print("############################################################\n")
 ##########################################################################
 #IV.    Create program to be loaded
 ##########################################################################
@@ -85,6 +90,7 @@ print("--------------------------------------------------------------")
 #               vi.   Store final output to RAM
 #
 ##########################################################################
+print("IV. Starting: Create program to be loaded................\n")
 
 regfile = reg.regmap("../utils/register_set.ods")
 
@@ -101,6 +107,10 @@ assembly = prog.prog_all(model_map,model_idx_start,interm_map,interm_idx_start,a
 
 machine_dump = hw_dir+"program.mac"
 machine = asm.assembler(assembly,regfile, machine_dump)
+
+
+print("############################################################\n")
+print("Ending full.py.\n")
 
 
 

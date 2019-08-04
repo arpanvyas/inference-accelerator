@@ -8,7 +8,9 @@ from keras.models import load_model
 from keras.utils import plot_model
 from keras.models import model_from_json
 from mem_param import mem_param as mem
+from model_param import model_param as mod
 import binary as b1
+import numpy as np
 import dump as dump
 
 
@@ -99,6 +101,7 @@ def read_h5(h5_path):
         this_layer['type'] = layer_type
 
         
+        #1. Conv2D layer
         if(layer_type == "Conv2D"):
             filters = config['filters']
             this_layer['use_bias'] = config['use_bias']
@@ -174,11 +177,11 @@ def read_h5(h5_path):
             else:
                 wt_num += 1
                 
+        #2. Dense Layer
         elif(layer_type == "Dense"):
             
             this_layer['use_bias'] = config['use_bias']
             this_layer['activation'] = config['activation']
-            this_layer['weight'] = weights[wt_num]
             if(this_layer['use_bias']):
                 this_layer['bias'] = weights[wt_num+1]
             
@@ -187,6 +190,7 @@ def read_h5(h5_path):
             elif(flag == 1):
                 this_layer['prev_type'] = next_layer['type']
                 if(this_layer['prev_type'] == "Dense"):
+                    this_layer['weight'] = weights[wt_num]
                     this_layer['output_nodes'] = config['units']
                     this_layer['input_nodes'] = next_layer['shape']
                     this_layer['shape'] = [next_layer['shape'],config['units']]
@@ -199,6 +203,18 @@ def read_h5(h5_path):
                     this_layer['output_nodes'] = config['units']
                     this_layer['input_nodes'] = next_layer['shape']
                     this_layer['shape'] = [next_layer['shape'],config['units']]
+                    
+                    if(mod.channel_last == 1):
+                        print("Reading h5 weights after Flatten as channel_last")
+                        #this_layer['weight'] = weights[wt_num]
+
+                        reshaped_wt = weights[wt_num].reshape([next_layer['flat_hei'],next_layer['flat_wid'],next_layer['flat_ch'],this_layer['output_nodes']])
+                        this_layer['weight'] = np.reshape(np.moveaxis(reshaped_wt,2,0),(this_layer['input_nodes'],this_layer['output_nodes']))
+                        
+                    else:
+                        print("Reading h5 weights after Flatten as channel_first")
+                        this_layer['weight'] = weights[wt_num]
+
 
             next_layer = {}
             next_layer['shape'] = this_layer['output_nodes']
@@ -209,6 +225,7 @@ def read_h5(h5_path):
             else:
                 wt_num += 1
             
+        #3. MaxPooling2D Layer
         elif(layer_type == "MaxPooling2D"):
             if(flag == 0):
                 exit("MaxPooling2D as first layer not YET supported")
@@ -234,7 +251,7 @@ def read_h5(h5_path):
             next_layer['wid'] = this_layer['shape'][2]/this_layer['stride_shape'][1]
             next_layer['shape'] = [0,next_layer['hei'],next_layer['wid'],next_layer['channels']]
 
-            
+        #4. Flatten Layer
         elif(layer_type == "Flatten"):
             if(flag == 0):
                 exit("Flatten as first layer not YET supported")
@@ -242,7 +259,7 @@ def read_h5(h5_path):
                 this_layer['prev_type'] = next_layer['type']
                 if(this_layer['prev_type'] == "Conv2D"):
             
-                    exit("Flatten after Dense not YET supported")
+                    exit("Flatten after Conv2D not YET supported")
                 elif(this_layer['prev_type'] == "Dense"):
                     exit("Flatten after Dense not YET supported")
                 elif(this_layer['prev_type'] == "Flatten"):
@@ -256,6 +273,9 @@ def read_h5(h5_path):
             
             next_layer = {}
             next_layer['shape'] = this_layer['output_elements']
+            next_layer['flat_wid'] = inp_wid
+            next_layer['flat_hei'] = inp_hei
+            next_layer['flat_ch'] = inp_ch
 
         
         next_layer['type'] = layer_type
@@ -295,7 +315,7 @@ if __name__ == "__main__":
     #print(this_layer_all[0])
 
     main_directory  = '/home/vonfaust/data/accelerator/keras/'
-    h5_path = main_directory+'mnist_cnn_model_float16.h5'
+    h5_path = main_directory+'mnist_cnn_model_float32_ch_last.h5'
 
     this_layer_all = read_h5(h5_path)    
 

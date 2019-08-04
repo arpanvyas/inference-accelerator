@@ -116,9 +116,10 @@ def doall(img_path, weights, conf):
     
     conv2d_1 = conv2d(img,weights[0],weights[1],'relu','nopool')
     conv2d_2 = conv2d(conv2d_1,weights[2],weights[3],'relu','maxpool')
-    reshape2d_2 = reshape_ch_first_to_last(conv2d_2)
+    #reshape2d_2 = np.moveaxis(conv2d_2,0,-1) #channel_last to channel_first
     #flatten2d_2 = np.reshape(conv2d_2,(9216))
-    flatten2d_2 = np.reshape(reshape2d_2,(9216))
+    #flatten2d_2 = np.reshape(reshape2d_2,(9216))
+    flatten2d_2 = np.reshape(conv2d_2,(9216))
     layer1 = dense(flatten2d_2,weights[4],weights[5])
     layer2 = dense(layer1,weights[6],weights[7])
     
@@ -140,12 +141,13 @@ def doall(img_path, weights, conf):
 
 
 main_directory = '/home/vonfaust/data/accelerator/keras/'
-file = 'mnist_cnn_model_'+dtp+'_ch_first.h5'
+file = 'mnist_cnn_model_'+dtp+'_ch_last.h5'
 path = main_directory + file
 model = load_model(path)
 
 
 weights = model.get_weights()
+weights[4] = np.reshape(np.moveaxis(weights[4].reshape([12,12,64,128]),2,0),(9216,128))
 conf = model.get_config()
 
 #print(weights[0].shape)
@@ -158,7 +160,7 @@ conf = model.get_config()
 #print(weights[7].shape)
 
 
-#doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
+doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
 doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)
 #
 #
