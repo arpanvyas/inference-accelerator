@@ -187,6 +187,7 @@ def model_to_ram(all_layers,mem_model_dump,mem_map_dump):
 
 def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
     ilf = open(input_list_file)
+    print(input_list_file)
     input_list = ilf.read().splitlines()
 
     mem_map_input = []

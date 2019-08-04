@@ -13,6 +13,8 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from datetime import datetime
+from keras.models import load_model
+import numpy as np
 
 batch_size = 128
 num_classes = 10
@@ -45,6 +47,9 @@ else:       #evaluates else as format is 'channels_last'
 list_dtype = ['float32'] #['int8', 'int16', 'float16','float32']
 
 
+#print(K.tensorflow_backend._get_available_gpus())
+#from tensorflow.python.client import device_lib
+#print(device_lib.list_local_devices())
 
 for np_dtype in list_dtype:
 
@@ -52,9 +57,6 @@ for np_dtype in list_dtype:
   x_test = X_test.astype(np_dtype)
   x_train /= 255
   x_test /= 255
-  y_train = keras.utils.to_categorical(Y_train, num_classes).astype(np_dtype)
-  y_test = keras.utils.to_categorical(Y_test, num_classes).astype(np_dtype)
-
   print('x_train shape:', x_train.shape)
   print(x_train.shape[0], 'train samples')
   print(x_test.shape[0], 'test samples')
@@ -65,56 +67,64 @@ for np_dtype in list_dtype:
   #exit()
 
   # convert class vectors to binary class matrices
+  y_train = keras.utils.to_categorical(Y_train, num_classes)
   #cv2.imshow('img',(x_train[16]*255).astype('int8'))
   #cv2.waitKey(0)
   #cv2.destroyAllWindows()
   #print(y_train[16])
+  y_test = keras.utils.to_categorical(Y_test, num_classes)
   #print(y_train[16])
   #exit()
 
-  model = Sequential()
-  model.add(Conv2D(32, kernel_size=(3, 3),
-                   activation='relu',
-                   input_shape=input_shape))
-  model.add(Conv2D(64, (3, 3), activation='relu'))
-  model.add(MaxPooling2D(pool_size=(2, 2)))
+  #model = Sequential()
+  #model.add(Conv2D(32, kernel_size=(3, 3),
+  #                 activation='relu',
+  #                 input_shape=input_shape))
+  #model.add(Conv2D(64, (3, 3), activation='relu'))
+  #model.add(MaxPooling2D(pool_size=(2, 2)))
+  #xt1 = np.zeros([1,1,28,28])
+  #xt1[0,0,:,:] = x_test[0,:,:]
+  #print(model.predict(xt1).shape)
+
   #model.add(Dropout(0.25))
-  model.add(Flatten())
-  model.add(Dense(128, activation='relu'))
-  #model.add(Dropout(0.5))
-  model.add(Dense(num_classes, activation='softmax'))
+  #model.add(Flatten())
+  #model.add(Dense(128, activation='relu'))
+  ##model.add(Dropout(0.5))
+  #model.add(Dense(num_classes, activation='softmax'))
 
-  model.compile(loss=keras.losses.categorical_crossentropy,
-                optimizer=keras.optimizers.Adadelta(),
-                metrics=['accuracy'])
+  #model.compile(loss=keras.losses.categorical_crossentropy,
+  #              optimizer=keras.optimizers.Adadelta(),
+  #              metrics=['accuracy'])
 
-  model.fit(x_train, y_train,
-            batch_size=batch_size,
-            epochs=epochs,
-            verbose=1,
-            validation_data=(x_test, y_test))
+  #model.fit(x_train, y_train,
+  #          batch_size=batch_size,
+  #          epochs=epochs,
+  #          verbose=1,
+  #          validation_data=(x_test, y_test))
 
 
-  tstart = datetime.now()
-  score = model.evaluate(x_test, y_test, verbose=0)
-  tend = datetime.now()
+  #tstart = datetime.now()
+  #score = model.evaluate(x_test, y_test, verbose=0)
+  #tend = datetime.now()
 
-  telap = tend - tstart
-  print("tend: " + str(tend))
-  print("tstart: " + str(tstart))
-  print("telap: " + str(telap))
-  print("tper_img: " + str(telap/1200))
+  #telap = tend - tstart
+  #print("tend: " + str(tend))
+  #print("tstart: " + str(tstart))
+  #print("telap: " + str(telap))
+  #print("tper_img: " + str(telap/1200))
 
 
   
-  model.save('/home/vonfaust/data/accelerator/keras/mnist_cnn_model_'+np_dtype+'.h5')
+  #model.save('/home/vonfaust/data/accelerator/keras/mnist_cnn_model_'+np_dtype+'.h5')
+  model = load_model('/home/vonfaust/data/accelerator/keras/mnist_cnn_model_'+np_dtype+'_ch_first.h5')
+  score = model.evaluate(x_test,y_test,verbose=0)
 
- # loss_accu = open("/home/arpan/Desktop/Inference Accelerator/HDL Model/Keras models/mnist_cnn_accu_loss.txt","a")
-  #loss_accu.write(np_dtype+'; Epochs: 4; '+'Train Images: 12000; '+'Test Images: 1200; ' +'Optimizer: Adadelta; ' )
-#  loss_accu.write("Accuracy: "+str(score[1])+"; ")
-#  loss_accu.write("Categorical Crossentrpy Loss: "+str(score[0]))
-#  loss_accu.write("\n")
-#  loss_accu.close()
+ ## loss_accu = open("/home/arpan/Desktop/Inference Accelerator/HDL Model/Keras models/mnist_cnn_accu_loss.txt","a")
+  ##loss_accu.write(np_dtype+'; Epochs: 4; '+'Train Images: 12000; '+'Test Images: 1200; ' +'Optimizer: Adadelta; ' )
+# # loss_accu.write("Accuracy: "+str(score[1])+"; ")
+# # loss_accu.write("Categorical Crossentrpy Loss: "+str(score[0]))
+# # loss_accu.write("\n")
+# # loss_accu.close()
 
 
   print('Test loss:', score[0])
