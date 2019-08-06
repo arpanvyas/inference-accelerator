@@ -15,10 +15,18 @@ logic		[`ADDR_RAM-1:0]	        m_r_addr    [`N_BUF-1:0];
 logic		[`ADDR_RAM-1:0]	        m_w_addr    [`N_BUF-1:0];
 logic	    [`WID_PE_BITS-1:0]      m_w_data    [`N_BUF-1:0];
 logic       [`WID_PE_BITS-1:0]      m_r_data    [`N_BUF-1:0];
-logic	    [5:0]				    m0_r_en_dec;
+logic	    [`LOG_N_BUF-1:0]	    m0_r_en_dec;
 
 
 integer i1;
+
+logic       [`N_BUF-1:0]        m0_r_en_d;
+
+always_ff@(posedge clk)
+begin
+    m0_r_en_d <= #1 intf_buf.m0_r_en;
+end
+
 always_comb
 begin
     case(intf_buf.mode)
@@ -40,9 +48,9 @@ begin
 
 
             //3. DATA M0
-
             //Put the appropriate read data to the output read word m0_r_data
-            intf_buf.m0_r_data	=  m_r_data[intf_buf.m0_r_en];
+            //  Delayed because read data only comes 1 cycle later
+            intf_buf.m0_r_data	=  m_r_data[m0_r_en_d];
 
             //Put the write date to all buffers, the wr_en will decide where
             //to write to
@@ -75,13 +83,11 @@ begin
             end	
 
             //4. READ DATA M0
-            intf_buf.m0_r_data	= m_r_data[intf_buf.m0_r_en];
-
+            intf_buf.m0_r_data	= m_r_data[m0_r_en_d];
         end
 
     endcase
 end
-
 
 genvar i;
 generate for(i=0 ; i<`N_BUF ; i=i+1)

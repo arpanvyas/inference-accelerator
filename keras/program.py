@@ -625,7 +625,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
     output_idx = 0
 
     for node in range(0,nodes_next):
-        buffer_addr = node%32
+        buffer_addr = 32 #because dense output stored in buffer#32
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_nod"+str(node)): #when not last layer
             ram_start = interm_map[interm_idx][0]

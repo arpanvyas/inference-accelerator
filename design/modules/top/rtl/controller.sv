@@ -128,7 +128,7 @@ ControllerStates next_state;
 
 logic [31:0] mem_load_start;
 logic [31:0] mem_load_words;
-logic [5:0]  mem_load_buffer_addr;
+logic [`LOG_N_BUF-1:0]  mem_load_buffer_addr;
 logic [31:0] mem_load_idx;
 logic [31:0] next_mem_load_idx;
 logic [`ADDR_RAM-1:0]  buf1_wr_addr         [`N_BUF-1:0];
@@ -140,7 +140,7 @@ logic mem_save_buff_1_or_2;
 
 logic [31:0] mem_save_start;
 logic [31:0] mem_save_words;
-logic [5:0]  mem_save_buffer_addr;
+logic [`LOG_N_BUF-1:0]  mem_save_buffer_addr;
 logic [31:0] mem_save_idx;
 logic [31:0] next_mem_save_idx;
 logic [`ADDR_RAM-1:0]  buf1_rd_addr        [`N_BUF-1:0];
@@ -382,7 +382,7 @@ end
 
 assign mem_load_start = {regfile.general__mem_load_start_upper,regfile.general__mem_load_start_lower};
 assign mem_load_words = {regfile.general__mem_load_words_upper,regfile.general__mem_load_words_lower};
-assign mem_load_buffer_addr = regfile.general__mem_load_buffer_addr[5:0];
+assign mem_load_buffer_addr = regfile.general__mem_load_buffer_addr[`LOG_N_BUF-1:0];
 
 assign mem_save_start = {regfile.general__mem_save_start_upper,regfile.general__mem_save_start_lower};
 assign mem_save_words = {regfile.general__mem_save_words_upper,regfile.general__mem_save_words_lower};

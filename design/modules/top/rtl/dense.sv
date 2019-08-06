@@ -174,10 +174,12 @@ always_comb begin
             if(prev_state != s_OB) begin
 
                 if(ob == OBe-1) begin
-                    next_state = IDLE;
-                    next_obe_on = 0;
-                    next_ob = -1;
-                    done = 1;
+                    if(ongoing_dense_out == 0) begin
+                        next_state = IDLE;
+                        next_obe_on = 0;
+                        next_ob = -1;
+                        done = 1;
+                    end //else wait in dense till over
                 end else begin
                     next_ob = ob + 1;
                     next_state = s_OB_I;
@@ -188,7 +190,14 @@ always_comb begin
                     end
                 end
 
-            end 
+            end else begin
+                if(ongoing_dense_out == 0) begin //leave when ongoing over
+                    next_state = IDLE;
+                    next_obe_on = 0;
+                    next_ob = -1;
+                    done = 1;
+                end
+            end
 
         end //s_OB
 
@@ -246,12 +255,12 @@ always_comb begin
                 end else if (input_idx_ff2 == input_neurons) begin //bias, do not shift input only weights
                     if(obe_on == 1) begin
                         for(int i0 = 0; i0 < extra_ob; i0 = i0 + 1) begin
-                            intf_pea_ctrl.shifting_filter[i0][i0] = 1;
+                            intf_pea_ctrl.shifting_filter[i0][i0] = 0;
                             intf_pea_ctrl.shifting_bias[i0] = 1;
                         end //for i0
                     end else begin //!obe_on
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
-                            intf_pea_ctrl.shifting_filter[i0][i0] = 1;
+                            intf_pea_ctrl.shifting_filter[i0][i0] = 0;
                             intf_pea_ctrl.shifting_bias[i0] = 1;
                         end //for i0
                     end //if !obe_on
@@ -446,7 +455,8 @@ logic [`LOG_N_PE-1:0] next_dense_rd_addr;
 logic [`LOG_N_PE-1:0] dense_rd_addr;
 logic [`LOG_N_PE-1:0] dense_rd_addr_d;
 
-logic obe_on_latch, ob_latch;
+logic obe_on_latch;
+logic [15:0] ob_latch;
 //latching logic
 always_comb begin
 
@@ -482,23 +492,24 @@ always_comb begin
         end
     end
 
-    //2. Writing from Latch (to BUF), follows read by 1 cycle
+    //2. Writing from Latch (to BUF), DOES NOT follow read by 1 cycle, SAME
+    //CYCLE because dense latch is a register file
     if(obe_on_latch == 0) begin
-        if((dense_rd_addr_d > 0 || ongoing_dense_out_d[0] == 1) && dense_rd_addr_d < `N_PE-1) begin
+        if((dense_rd_addr > 0 || dense_latch_d[0] == 1) && dense_rd_addr < `N_PE-1) begin
             intf_buf2_m1_ctrl.m1_w_en[`N_PE] = 1;
-            intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr_d; 
-        end else if (dense_rd_addr_d == `N_PE-1) begin
+            intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr; 
+        end else if (dense_rd_addr == `N_PE-1) begin
             intf_buf2_m1_ctrl.m1_w_en[`N_PE] = 1;
-            intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr_d; 
+            intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr; 
         end
     end else begin
-        if( (dense_rd_addr_d > 0 || ongoing_dense_out_d[0] == 1) && dense_rd_addr < extra_ob -1 ) begin
+        if( (dense_rd_addr > 0 || dense_latch_d[0] == 1) && dense_rd_addr < extra_ob -1 ) begin
             intf_buf2_m1_ctrl.m1_w_en[`N_PE] = 1;
-            intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr_d;
-        end else if (dense_rd_addr_d == extra_ob - 1 || dense_latch_d[0] == 1) begin
+            intf_buf2_m1_ctrl.m1_w_addr[`N_PE]   = ob_latch*`N_PE + dense_rd_addr;
+        end else if (dense_rd_addr == extra_ob - 1 || dense_latch_d[0] == 1) begin
             //the || above because extra_ob may be 1 as well
             intf_buf2_m1_ctrl.m1_w_en[`N_PE] = 1;
-            intf_buf2_m1_ctrl.m1_w_addr[`N_PE] = ob_latch*`N_PE + dense_rd_addr_d;
+            intf_buf2_m1_ctrl.m1_w_addr[`N_PE] = ob_latch*`N_PE + dense_rd_addr;
         end
 
     end

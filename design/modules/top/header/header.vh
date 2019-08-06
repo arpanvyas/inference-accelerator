@@ -22,6 +22,8 @@
 `define PC_MAX 73188
 //`define PC_MAX 14628
 
+//Regfile
+
 
 
 //PE Array
@@ -41,6 +43,7 @@
 
 //Buffers
 `define N_BUF `N_PE+1
+`define LOG_N_BUF $clog2(`N_BUF)
 
 //PE
 `define WID_PE_BITS `DATA_WIDTH
