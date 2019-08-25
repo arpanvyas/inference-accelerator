@@ -36,7 +36,7 @@ print("############################################################\n")
 # II.   Get the list of inputs for inference
 ##########################################################################
 print("II. Starting: Get the list of inputs for inference................\n")
-input_file_list =   hw_dir+'inputs/input_list9.txt'
+input_file_list =   hw_dir+'inputs/input_list5.txt'
 
 
 print("############################################################\n")

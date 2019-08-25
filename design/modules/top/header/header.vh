@@ -30,6 +30,7 @@
 `define N_PE 32
 `define LOG_N_PE $clog2(`N_PE)
 
+`define LAT_READ_BUF 1
 `define LAT_MAC 3
 `define LAT_ADD_TREE 5
 `define LAT_FB_ADD 1

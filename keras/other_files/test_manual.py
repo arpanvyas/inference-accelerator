@@ -115,7 +115,23 @@ def doall(img_path, weights, conf):
     
     
     conv2d_1 = conv2d(img,weights[0],weights[1],'relu','nopool')
+    dump_conv1 = 1
+    if(dump_conv1 == 1):
+        #print(conv2d_1)
+        print(conv2d_1.shape)
+        for i1 in range(0,32):
+            im_new = cv2.resize(conv2d_1[i1]*255,(144,144))
+            cv2.imwrite("dump_conv1/"+str(i1)+".png",im_new)
     conv2d_2 = conv2d(conv2d_1,weights[2],weights[3],'relu','maxpool')
+    dump_pooled = 1
+    if(dump_pooled == 1):
+        #print(conv2d_2)
+        print(conv2d_2.shape)
+        for i1 in range(0,64):
+            im_new = cv2.resize(conv2d_2[i1]*255,(144,144))
+            cv2.imwrite("dump_pooled/"+str(i1)+".png",im_new)
+        
+
     #reshape2d_2 = np.moveaxis(conv2d_2,0,-1) #channel_last to channel_first
     #flatten2d_2 = np.reshape(conv2d_2,(9216))
     #flatten2d_2 = np.reshape(reshape2d_2,(9216))
@@ -160,10 +176,11 @@ conf = model.get_config()
 #print(weights[7].shape)
 
 
-doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)
-#
-#
+doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
+#doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)
+##
+##
 #doall(main_directory+"mnist_dataset/testing/0/845.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/6651.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/592.png",weights,conf)
@@ -171,22 +188,22 @@ doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/750.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/9911.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/993.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/0/997.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/0/1692.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/0/1692.png",weights,conf)
-
-doall(main_directory+"mnist_dataset/testing/1/37.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/5943.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/4212.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/2.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/14.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/137.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/154.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/9946.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/7717.png",weights,conf)
-doall(main_directory+"mnist_dataset/testing/1/818.png",weights,conf)
-
-doall(main_directory+"mnist_dataset/testing/1/818.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/0/997.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/0/1692.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/0/1692.png",weights,conf)
+#
+#doall(main_directory+"mnist_dataset/testing/1/37.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/5943.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/4212.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/2.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/14.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/137.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/154.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/9946.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/7717.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/1/818.png",weights,conf)
+#
+#doall(main_directory+"mnist_dataset/testing/1/818.png",weights,conf)
 
 
 #weights[2].shape == (3,3,32,64)

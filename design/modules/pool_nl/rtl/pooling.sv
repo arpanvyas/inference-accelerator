@@ -59,7 +59,7 @@ always@(posedge clk, posedge rst) begin
     end else begin
         if(pool_enable) begin
             max1			<= (out_line_1>out_line_2) ? out_line_1: out_line_2;
-            max2			<= (out_line_3>out_line_4) ? out_line_3: out_line_4;
+            max2			<= (out_line_4>out_line_5) ? out_line_4: out_line_5;
             out_pool_data	<= (max1>max2) ? max1: max2;
         end
     end

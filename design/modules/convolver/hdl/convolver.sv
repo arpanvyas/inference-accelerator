@@ -35,7 +35,6 @@ wire signed [`WID_LINE-1:0] 	out_line_9;
 
 
 
-
 line_buffer line_buffer_module 
 (
     .rst				(rst),

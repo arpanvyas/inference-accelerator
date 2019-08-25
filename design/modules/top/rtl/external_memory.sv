@@ -22,11 +22,16 @@ end
 //Storing Model in RAM
 integer i;
 integer j;
-integer f;
+integer f_pool;
+integer f_conv1;
+integer f_conv2;
 initial
 begin
 
-    f = $fopen("poolout.dat","w");
+    f_conv1 = $fopen("conv1out.dat","w");
+    f_conv2 = $fopen("conv2out.dat","w");
+    f_pool = $fopen("poolout.dat","w");
+    
     for (i = 0; i < 2**`ADDR_EXT_RAM; i ++ )
     begin
         mem[i] = 0;
@@ -37,19 +42,41 @@ begin
 
 
     #1990726; //pooling ends here
+    j = 0;
+    for( i = 7340032; i < 7361664; i++)
+    begin
+        $fwrite(f_conv1, "%b\n", mem[i]);
+        j = j + 1;
+        if(j%676 == 0) begin
+            $fwrite(f_conv1,"----------\n");
+        end
+    end
+
+    j = 0;
+    for( i = 7361664; i < 7398528; i++)
+    begin
+        $fwrite(f_conv2, "%b\n", mem[i]);
+        j = j + 1;
+        if(j%576 == 0) begin
+            $fwrite(f_conv2,"----------\n");
+        end
+    end
+
 
     j = 0;
     for(i = 7398528; i < 7407744; i ++)
     begin
         
-        $fwrite(f,"%b\n", mem[i]);
+        $fwrite(f_pool,"%b\n", mem[i]);
         j = j + 1;
         if(j%144 == 0) begin
-            $fwrite(f,"----------\n");
+            $fwrite(f_pool,"----------\n");
         end
     end
 
-    $fclose(f);
+    $fclose(f_conv1);
+    $fclose(f_conv2);
+    $fclose(f_pool);
 
 end
 

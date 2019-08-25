@@ -12,21 +12,6 @@ module conv (
 );
 
 
-//always_ff@(posedge clk, posedge rst) begin
-//
-//    if(rst) begin
-//        done <= #1 0;
-//    end else begin
-//
-//        done <= #1 0;
-//
-//        if(start) begin
-//            done <= #1 1;
-//        end
-//
-//    end
-//end
-
 logic [`ADDR_RAM-1:0]  buf1_wr_addr         [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  next_buf1_wr_addr    [`N_BUF-1:0];
 logic [`ADDR_RAM-1:0]  buf2_wr_addr         [`N_BUF-1:0];
@@ -489,7 +474,7 @@ always_comb begin
             end
 
             //I.2. Writing logic, follows read logic by 1 cycle
-            if(latency_cnt_1 == 1) begin
+            if(latency_cnt_1 == `LAT_READ_BUF) begin
 
                 if(input_idx_ff2 < input_size ) begin
                     if(fbe_on == 1) begin
@@ -537,9 +522,13 @@ always_comb begin
 
 
             //I.3. MAC enable logic
-            if(latency_cnt_2 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid ) begin
+            if(latency_cnt_2 == `LAT_READ_BUF+(regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid) begin
 
-                if(input_idx_ff3 < input_size - ( (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid) ) begin
+                if(input_idx_ff3 < input_size - ( (regfile.conv__filter_hei-1)*regfile.conv__data_wid + regfile.conv__filter_wid) + `LAT_MAC ) begin
+                    //+LAT_READ_BUF because shifting line starts +LAT_READ_BUF from state start,
+                    //+LAT_MAC because mac should be enable till mac's result is available
+                    //Thus bias and nl will not maintain end latency same as start latency from mac_en
+
                     if(fbe_on == 1) begin
 
                         for(int i0 = 0; i0 < extra_f; i0 = i0 + 1) begin 
@@ -584,7 +573,7 @@ always_comb begin
 
 
             //I.4. Write to BUF2 Logic
-            if(latency_cnt_3 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_BIAS_ADD+`LAT_NL) begin
+            if(latency_cnt_3 == `LAT_READ_BUF+(regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_BIAS_ADD+`LAT_NL) begin
 
                 if(input_idx_ff4 < output_size) begin
 
@@ -640,7 +629,7 @@ always_comb begin
             //II. Feed Back logic
 
             //II.1. Feedback Reads From Buffer2, Read Logic
-            if(latency_cnt_4 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE-1) begin 
+            if(latency_cnt_4 == `LAT_READ_BUF+(regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE-`LAT_READ_BUF) begin 
 
                 if(input_idx_fb1 < output_size) begin
 
@@ -690,7 +679,7 @@ always_comb begin
 
 
             //II.2. Feedback Write to PEA, Write Logic, follows read logic by 1 cycle
-            if(latency_cnt_4_d == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE) begin
+            if(latency_cnt_4_d == `LAT_READ_BUF+(regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE) begin
 
                 if(input_idx_fb2 < output_size) begin
 
@@ -736,7 +725,7 @@ always_comb begin
 
             //II.3. Bias Add: When to do it, lets do it for all filters, we'll
             //only store a few from I.4.
-            if(latency_cnt_5 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD) begin
+            if(latency_cnt_5 == `LAT_READ_BUF+(regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD) begin
                 if(input_idx_fb3 < output_size) begin
                     if(fb3_gate == 1) begin
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
@@ -766,7 +755,7 @@ always_comb begin
             end
 
             //II.4. Non Linear: When to do it
-            if(latency_cnt_6 == (regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_BIAS_ADD) begin
+            if(latency_cnt_6 == `LAT_READ_BUF+(regfile.conv__filter_hei-1)*regfile.conv__data_wid+regfile.conv__filter_wid+`LAT_MAC+`LAT_ADD_TREE+`LAT_FB_ADD+`LAT_BIAS_ADD) begin
                 if(input_idx_fb4 < output_size) begin
                     if(fb4_gate == 1) begin
                         for(int i0 = 0; i0 < `N_PE; i0 = i0 + 1) begin
@@ -836,29 +825,6 @@ end
 //Still just for uniformity this gate logic is put on fb2 and fb3 as well
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

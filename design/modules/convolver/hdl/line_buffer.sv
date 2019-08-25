@@ -20,6 +20,17 @@ module line_buffer(
 wire	[`WID_LINE-1:0]	line_fifo1_out;
 wire	[`WID_LINE-1:0]	line_fifo2_out;
 
+logic   [`ADDR_FIFO-1:0] row_length_corrected;
+always_comb
+begin
+    if(row_length < 3) begin
+        row_length_corrected = 'd0;
+    end else begin
+        row_length_corrected = row_length - 3;
+    end
+
+end
+
 shift_register3 shift_register3_module1 
 (
     .rst	(rst),
@@ -35,7 +46,7 @@ line_fifo line_fifo_module1
 	(
 		.rst			(rst),
 		.clk			(clk),
-		.row_length	(row_length),
+		.row_length	(row_length_corrected),
 		.shifting	(shifting),
 		.fifo_reset	(line_buffer_reset),
 		.wr_data_i	(out3),
@@ -58,7 +69,7 @@ line_fifo line_fifo_module2
 	(
 		.rst			(rst),
 		.clk			(clk),
-		.row_length	(row_length),
+		.row_length	(row_length_corrected),
 		.shifting	(shifting),
 		.fifo_reset	(line_buffer_reset),
 		.wr_data_i	(out6),
