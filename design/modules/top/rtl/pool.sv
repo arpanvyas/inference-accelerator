@@ -257,7 +257,7 @@ always_comb begin
 
 
             //3. Write Back Logic
-            if(latency_cnt_2 == (regfile.pool__pool_vert-1)*regfile.pool__data_wid + regfile.pool__pool_horiz) begin
+            if(latency_cnt_2 == `LAT_READ_BUF+(regfile.pool__pool_vert-1)*regfile.pool__data_wid + regfile.pool__pool_horiz) begin
 
                 if(input_idx_ff3 < output_size) begin
 
@@ -327,7 +327,7 @@ always_comb begin
     next_col_num = col_num;
 
     if(state == s_CB_I) begin
-        if(latency_cnt_2 == (regfile.pool__pool_vert-1)*regfile.pool__data_wid + regfile.pool__pool_horiz ) begin
+        if(latency_cnt_2 == `LAT_READ_BUF+(regfile.pool__pool_vert-1)*regfile.pool__data_wid + regfile.pool__pool_horiz ) begin
 
             if(horiz_cnt < regfile.pool__pool_horiz -1 ) begin
                 next_horiz_cnt = horiz_cnt + 1;
