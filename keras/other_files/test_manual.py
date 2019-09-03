@@ -12,6 +12,21 @@ from keras.utils import plot_model
 import binary as b1
 
 dtp = 'float32'
+dump_data = 1
+prinfo = 1
+
+if(dump_data == 1):
+    dump_pooled = 1
+    dump_conv1 = 1
+    dump_flatten = 1
+    dump_filter = 1
+    dump_input = 1
+else:
+    dump_pooled = 0
+    dump_conv1  = 0
+    dump_flatten = 0
+    dump_filter = 0
+    dump_input = 0
 
 
 def conv2d(image,weights,bias,activation,pooling):
@@ -70,7 +85,7 @@ def conv2d(image,weights,bias,activation,pooling):
 	return output
 
 
-def dense(layer1,weights,bias):
+def dense(layer1,weights,bias,activation):
 	input_neu = weights.shape[0]
 	output_neu = weights.shape[1]
 
@@ -80,6 +95,11 @@ def dense(layer1,weights,bias):
 		for j in range(0,input_neu):
 			output[i] += layer1[j]*weights[j,i]
 		output[i]	+= bias[i]
+
+        if(activation == "relu"):
+            for i in range(0,output_neu):
+                if(output[i]<0):
+                    output[i] = 0
 
 	return output
 
@@ -101,7 +121,6 @@ def reshape_ch_first_to_last(inp):
 
 def doall(img_path, weights, conf):
 
-    prinfo = 0
     print(img_path)
 
     img = cv2.imread(img_path,2)
@@ -116,7 +135,6 @@ def doall(img_path, weights, conf):
     
     
     conv2d_1 = conv2d(img,weights[0],weights[1],'relu','nopool')
-    dump_conv1 = 1
     if(dump_conv1 == 1):
         #print(conv2d_1)
         print(conv2d_1.shape)
@@ -124,7 +142,6 @@ def doall(img_path, weights, conf):
             im_new = cv2.resize(conv2d_1[i1]*255,(144,144))
             cv2.imwrite("dump_conv1/"+str(i1)+".png",im_new)
     conv2d_2 = conv2d(conv2d_1,weights[2],weights[3],'relu','maxpool')
-    dump_pooled = 1
     if(dump_pooled == 1):
         #print(conv2d_2)
         print(conv2d_2.shape)
@@ -137,18 +154,45 @@ def doall(img_path, weights, conf):
     #flatten2d_2 = np.reshape(conv2d_2,(9216))
     #flatten2d_2 = np.reshape(reshape2d_2,(9216))
     flatten2d_2 = np.reshape(conv2d_2,(9216))
-    layer1 = dense(flatten2d_2,weights[4],weights[5])
-    layer2 = dense(layer1,weights[6],weights[7])
+
+    #DUMP POOL RESHUFFLE
+    if(dump_flatten == 1):
+        f1 = open("dump_flatten.dat","w")
+        f1.write("FLATTEN1\n")
+        for i in range(0,9216):
+            v = flatten2d_2[i]
+            f1.write(str(i)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+    
+    layer1 = dense(flatten2d_2,weights[4],weights[5],'relu')
+    
+    if(dump_flatten == 1):
+        f1.write("\n\nFLATTEN2\n")
+        for i in range(0,128):
+            v = layer1[i]
+            f1.write(str(i)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+    
+        f1.close()
+
+
+    #DUMP POOL RESHUFFLE
+
+
+    layer2 = dense(layer1,weights[6],weights[7],'')
     
     if(prinfo == 1):
         #print(img)
         print(img.shape)
         print(conv2d_1.shape)
         print(conv2d_2.shape)
-        print(reshape2d_2.shape)
+        #print(reshape2d_2.shape)
         print(flatten2d_2.shape)
         print(layer1.shape)
         #print(layer1)
+
+    layer1_norm = layer1*256
+    layer1_norm = layer1_norm.astype('int32')
+    if(prinfo == 1):
+        print(layer1_norm)
 
     print(layer2)
     print(np.argmax(layer2))
@@ -164,83 +208,123 @@ model = load_model(path)
 
 
 weights = model.get_weights()
+weights[4] = np.reshape(np.moveaxis(weights[4].reshape([12,12,64,128]),2,0),(9216,128))
+conf = model.get_config()
+
+
+
 ###DUMPING FILTERS
-filterc1 = np.zeros([32,1,3,3])
-biasc1 = np.zeros([32])
-for filt in range(0,32):
-    for ch in range(0,1):
-        for i in range(0,3):
-            for j in range(0,3):
-                filterc1[filt][ch][i][j] = weights[0][i][j][ch][filt]
-    biasc1[filt] = weights[1][filt]
-
-filterc2 = np.zeros([64,32,3,3])
-biasc2 = np.zeros([64])
-for filt in range(0,64):
-    for ch in range(0,32):
-        for i in range(0,3):
-            for j in range(0,3):
-                filterc2[filt][ch][i][j] = weights[2][i][j][ch][filt]
-    biasc2[filt] = weights[3][filt]
-
-print(filterc1[0][0])
-print(biasc1[0])
-
-f1 = open("dump_filt.dat","w")
-f1.write("CONV LAYER 1\n")
-for filt in range(0,32):
-    for ch in range(0,1):
-        f1.write("LAYER1_FILTER"+str(filt)+"_CHANNEL"+str(ch)+"\n")
-        for i in range(0,3):
-            for j in range(0,3):
-                v = filterc1[filt][ch][i][j]
-                f1.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
-        v = biasc1[filt]
+if(dump_filter == 1):
+    filterc1 = np.zeros([32,1,3,3])
+    biasc1 = np.zeros([32])
+    for filt in range(0,32):
+        for ch in range(0,1):
+            for i in range(0,3):
+                for j in range(0,3):
+                    filterc1[filt][ch][i][j] = weights[0][i][j][ch][filt]
+        biasc1[filt] = weights[1][filt]
+    
+    filterc2 = np.zeros([64,32,3,3])
+    biasc2 = np.zeros([64])
+    for filt in range(0,64):
+        for ch in range(0,32):
+            for i in range(0,3):
+                for j in range(0,3):
+                    filterc2[filt][ch][i][j] = weights[2][i][j][ch][filt]
+        biasc2[filt] = weights[3][filt]
+    
+    filterd1 = np.zeros([9216,128])
+    biasd1 = np.zeros([128])
+    filterd2 = np.zeros([128,10])
+    biasd2 = np.zeros([10])
+    
+    for out in range(0,128):
+        for inp in range(0,9216):
+            filterd1[inp][out] = weights[4][inp][out]
+        biasd1[out] = weights[5][out]
+    
+    for out in range(0,10):
+        for inp in range(0,128):
+            filterd2[inp][out] = weights[6][inp][out]
+        biasd2[out] = weights[7][out]
+    
+    if(prinfo == 1):
+        print(filterc1[0][0])
+        print(biasc1[0])
+    
+    f1 = open("dump_filt.dat","w")
+    f1.write("CONV LAYER 1\n")
+    for filt in range(0,32):
+        for ch in range(0,1):
+            f1.write("LAYER1_FILTER"+str(filt)+"_CHANNEL"+str(ch)+"\n")
+            for i in range(0,3):
+                for j in range(0,3):
+                    v = filterc1[filt][ch][i][j]
+                    f1.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+            v = biasc1[filt]
+            f1.write("BIAS: "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n\n")
+    
+    f1.write("\n\nCONV LAYER 2\n")
+    for filt in range(0,64):
+        for ch in range(0,32):
+            f1.write("LAYER2_FILTER"+str(filt)+"_CHANNEL"+str(ch)+"\n")
+            for i in range(0,3):
+                for j in range(0,3):
+                    v = filterc2[filt][ch][i][j]
+                    f1.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+            v = biasc2[filt]
+            f1.write("BIAS: "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n\n")
+    
+    f1.close()
+    
+    f1 = open("dump_dense.dat","w")
+    f1.write("DENSE LATER 1\n")
+    for out in range(0,128):
+        f1.write("LAYER1_DENSE"+str(out)+"\n")
+        for inp in range(0,9216):
+            v = filterd1[inp][out]
+            f1.write(str(out)+","+str(inp)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+        v = biasd1[out]
         f1.write("BIAS: "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n\n")
-
-f1.write("\n\nCONV LAYER 2\n")
-for filt in range(0,64):
-    for ch in range(0,32):
-        f1.write("LAYER2_FILTER"+str(filt)+"_CHANNEL"+str(ch)+"\n")
-        for i in range(0,3):
-            for j in range(0,3):
-                v = filterc2[filt][ch][i][j]
-                f1.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
-        v = biasc2[filt]
+    
+    f1.write("\n\nDENSE LATER 2\n")
+    for out in range(0,10):
+        f1.write("LAYER2_DENSE"+str(out)+"\n")
+        for inp in range(0,128):
+            v = filterd2[inp][out]
+            f1.write(str(out)+","+str(inp)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+        v = biasd2[out]
         f1.write("BIAS: "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n\n")
-
-f1.close()
-
-
+    
+    f1.close()
 
 ##DUMPING FILTERS
 
 ##DUMPING INPUT
-img_path = main_directory+"mnist_dataset/testing/5/1022.png"
-
-img = cv2.imread(img_path,2)
-print(img.shape)
-
-img = img.astype(dtype=dtp)
-img = img/255
-print(img)
-
-f2 = open("dump_img.dat","w")
-for i in range(0,28):
-    for j in range(0,28):
-        v = img[i][j]
-        f2.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
-f2.close() 
+if(dump_input == 1):
+    img_path = main_directory+"mnist_dataset/testing/5/1022.png"
+    
+    img = cv2.imread(img_path,2)
+    if(prinfo == 1):
+        print(img.shape)
+    
+    img = img.astype(dtype=dtp)
+    img = img/255
+    #print(img)
+    
+    f2 = open("dump_img.dat","w")
+    for i in range(0,28):
+        for j in range(0,28):
+            v = img[i][j]
+            f2.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+    f2.close() 
 
 
 
 ##DUMPING INPUT
 
-die
 
 
-weights[4] = np.reshape(np.moveaxis(weights[4].reshape([12,12,64,128]),2,0),(9216,128))
-conf = model.get_config()
 
 #print(weights[0].shape)
 #print(weights[1].shape)

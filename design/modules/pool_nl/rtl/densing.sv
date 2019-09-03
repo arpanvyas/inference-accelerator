@@ -40,14 +40,12 @@ wire signed [`WID_FILTER-1:0]	out_filter_9, out_filter_clean_9;
 
 
 
-line_buffer line_buffer_module 
+filter_buffer line_buffer_module 
 (
     .rst				(rst),
     .clk				(clk),
     .shifting			(shifting_line),
-    .line_buffer_reset	(line_buffer_reset),
     .inp				(input_line),
-    .row_length			(row_length),
     .out1				(out_line_1),
     .out2				(out_line_2),
     .out3				(out_line_3),
