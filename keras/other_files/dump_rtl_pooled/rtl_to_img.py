@@ -38,7 +38,7 @@ for i1 in range(0,64):
 
             k = k/255
             
-            k = pow(k,.2)
+            #k = pow(k,.5)
             k = k*255
     
             img_dec[i1][i2][i3] = k

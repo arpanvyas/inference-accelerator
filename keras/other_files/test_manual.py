@@ -9,6 +9,7 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from keras.models import load_model
 from keras.utils import plot_model
+import binary as b1
 
 dtp = 'float32'
 
@@ -163,6 +164,81 @@ model = load_model(path)
 
 
 weights = model.get_weights()
+###DUMPING FILTERS
+filterc1 = np.zeros([32,1,3,3])
+biasc1 = np.zeros([32])
+for filt in range(0,32):
+    for ch in range(0,1):
+        for i in range(0,3):
+            for j in range(0,3):
+                filterc1[filt][ch][i][j] = weights[0][i][j][ch][filt]
+    biasc1[filt] = weights[1][filt]
+
+filterc2 = np.zeros([64,32,3,3])
+biasc2 = np.zeros([64])
+for filt in range(0,64):
+    for ch in range(0,32):
+        for i in range(0,3):
+            for j in range(0,3):
+                filterc2[filt][ch][i][j] = weights[2][i][j][ch][filt]
+    biasc2[filt] = weights[3][filt]
+
+print(filterc1[0][0])
+print(biasc1[0])
+
+f1 = open("dump_filt.dat","w")
+f1.write("CONV LAYER 1\n")
+for filt in range(0,32):
+    for ch in range(0,1):
+        f1.write("LAYER1_FILTER"+str(filt)+"_CHANNEL"+str(ch)+"\n")
+        for i in range(0,3):
+            for j in range(0,3):
+                v = filterc1[filt][ch][i][j]
+                f1.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+        v = biasc1[filt]
+        f1.write("BIAS: "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n\n")
+
+f1.write("\n\nCONV LAYER 2\n")
+for filt in range(0,64):
+    for ch in range(0,32):
+        f1.write("LAYER2_FILTER"+str(filt)+"_CHANNEL"+str(ch)+"\n")
+        for i in range(0,3):
+            for j in range(0,3):
+                v = filterc2[filt][ch][i][j]
+                f1.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+        v = biasc2[filt]
+        f1.write("BIAS: "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n\n")
+
+f1.close()
+
+
+
+##DUMPING FILTERS
+
+##DUMPING INPUT
+img_path = main_directory+"mnist_dataset/testing/5/1022.png"
+
+img = cv2.imread(img_path,2)
+print(img.shape)
+
+img = img.astype(dtype=dtp)
+img = img/255
+print(img)
+
+f2 = open("dump_img.dat","w")
+for i in range(0,28):
+    for j in range(0,28):
+        v = img[i][j]
+        f2.write(str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
+f2.close() 
+
+
+
+##DUMPING INPUT
+
+die
+
+
 weights[4] = np.reshape(np.moveaxis(weights[4].reshape([12,12,64,128]),2,0),(9216,128))
 conf = model.get_config()
 

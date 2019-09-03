@@ -24,7 +24,9 @@ hw_dir          = main_directory+'hw_related/'
 ##########################################################################
 
 print("I. Starting: Read the model from Keras trained h5 file................\n")
-h5_path = main_directory+'mnist_cnn_model_float16.h5'
+dtp = 'float32'
+h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
+print(h5_path)
 all_layers = rdh5.read_h5(h5_path)
 
 #for l in all_layers:

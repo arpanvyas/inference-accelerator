@@ -38,12 +38,13 @@ for i1 in range(0,32):
 
             k = k/255
             
-            k = pow(k,.2)
+            k = pow(k,1)
             k = k*255
     
             img_dec[i1][i2][i3] = k
             
 roll = 0
+tilt = 0
 for i1 in range(0,32):
     img_this = np.array(img_dec[i1])
     if(roll == 1):
@@ -51,4 +52,7 @@ for i1 in range(0,32):
     if(i1 == -1):
         print(img_this.astype(int))
     img_new = cv2.resize(img_this,(144,144))
-    cv2.imwrite(str(i1)+".png",img_new)
+    if(tilt == 1):
+        cv2.imwrite("tilt/"+str(i1)+".png",img_new)
+    else:
+        cv2.imwrite(str(i1)+".png",img_new)

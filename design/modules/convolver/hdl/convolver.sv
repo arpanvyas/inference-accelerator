@@ -71,6 +71,63 @@ filter_buffer filter_buffer_module
     .out9				(out_filter_9)
 );
 
+//Wrong
+//mac mac_module 
+//(
+//    .rst				(rst),
+//    .clk				(clk),
+//    .enable				(mac_enable),
+//    .input_filter_1		(out_filter_9),
+//    .input_filter_2		(out_filter_6),
+//    .input_filter_3		(out_filter_3),
+//    .input_filter_4		(out_filter_8),
+//    .input_filter_5		(out_filter_5),
+//    .input_filter_6		(out_filter_2),
+//    .input_filter_7		(out_filter_7),
+//    .input_filter_8		(out_filter_4),
+//    .input_filter_9		(out_filter_1),
+//    .input_line_1		(out_line_1),
+//    .input_line_2		(out_line_2),
+//    .input_line_3		(out_line_3),
+//    .input_line_4		(out_line_4),
+//    .input_line_5		(out_line_5),
+//    .input_line_6		(out_line_6),
+//    .input_line_7		(out_line_7),
+//    .input_line_8		(out_line_8),
+//    .input_line_9		(out_line_9),
+//    .output_mac			(output_mac),
+//    .regfile            (regfile)
+//);
+
+//Correct NOT
+//mac mac_module 
+//(
+//    .rst				(rst),
+//    .clk				(clk),
+//    .enable				(mac_enable),
+//    .input_filter_1		(out_filter_9),
+//    .input_filter_2		(out_filter_8),
+//    .input_filter_3		(out_filter_7),
+//    .input_filter_4		(out_filter_6),
+//    .input_filter_5		(out_filter_5),
+//    .input_filter_6		(out_filter_4),
+//    .input_filter_7		(out_filter_3),
+//    .input_filter_8		(out_filter_2),
+//    .input_filter_9		(out_filter_1),
+//    .input_line_1		(out_line_1),
+//    .input_line_2		(out_line_2),
+//    .input_line_3		(out_line_3),
+//    .input_line_4		(out_line_4),
+//    .input_line_5		(out_line_5),
+//    .input_line_6		(out_line_6),
+//    .input_line_7		(out_line_7),
+//    .input_line_8		(out_line_8),
+//    .input_line_9		(out_line_9),
+//    .output_mac			(output_mac),
+//    .regfile            (regfile)
+//);
+
+//Correct
 mac mac_module 
 (
     .rst				(rst),
@@ -97,4 +154,7 @@ mac mac_module
     .output_mac			(output_mac),
     .regfile            (regfile)
 );
+
+
+
 endmodule
