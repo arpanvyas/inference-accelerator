@@ -336,7 +336,7 @@ if(dump_input == 1):
 #print(weights[7].shape)
 
 
-doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
 #doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)
 ##
@@ -345,7 +345,7 @@ doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/6651.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/592.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/6711.png",weights,conf)
-#doall(main_directory+"mnist_dataset/testing/0/750.png",weights,conf)
+doall(main_directory+"mnist_dataset/testing/0/1047.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/9911.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/993.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/0/997.png",weights,conf)

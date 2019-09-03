@@ -38,7 +38,8 @@ print("############################################################\n")
 # II.   Get the list of inputs for inference
 ##########################################################################
 print("II. Starting: Get the list of inputs for inference................\n")
-input_file_list =   hw_dir+'inputs/input_list5.txt'
+input_file_list =   hw_dir+'inputs/input_list0.txt'
+input_index     =   5
 
 
 print("############################################################\n")
@@ -61,13 +62,11 @@ input_map       =   dump.img_to_ram(input_file_list,mem_inp_dump,inp_map_dump)
 
 #iii. Dump map for output : Same for one input, may be combined for multiple inputs
 output_map_dump =   hw_dir+'output.map'
-input_index     =   2
 
 output_map      =   dump.output_to_ram(all_layers,output_map_dump,input_index)
 
 #iv.Dump map for intermediate : Same for one input
 interm_map_dump =   hw_dir+'interm.map'
-input_index     =   2
 
 interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index)
 
