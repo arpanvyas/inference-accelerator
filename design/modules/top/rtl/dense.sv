@@ -275,7 +275,10 @@ always_comb begin
 
             //3. MAC Enable Logic
             if(latency_cnt_2 == 2) begin //at this point data is out of 1'st element
-                if(input_idx_ff3 < input_neurons + 1) begin
+                if(input_idx_ff3 < input_neurons + `LAT_MAC -1) begin
+                    //+LAT_MAC for mac latency else no transfer at last stage
+                    //-1 because already delayed
+
                     next_input_idx_ff3 = input_idx_ff3 + 1;
 
                     //the 0th mac_enable is made high by convention, may be
@@ -389,7 +392,7 @@ always_comb begin
     if(state == s_OB_I && latency_cnt_2 == 2) begin
 
         mac_now = 0;
-        if(input_idx_ff3 < input_neurons) begin
+        if(input_idx_ff3 < input_neurons-1) begin //because already delayed by 2
 
             if(input_idx_ff3_cycle < `DENSE_PER_GO - 1) begin
                 next_input_idx_ff3_cycle = input_idx_ff3_cycle + 1;
@@ -418,27 +421,26 @@ always_comb begin
 
             end //input_idx_ff3_cycle
 
-        end else if(input_idx_ff3 == input_neurons) begin
-            if(input_idx_ff3_cycle != 0) begin //means input_neurons/DENSE_PER_GO has a remainder
-                mac_now = 1;
-                next_input_idx_ff3_cycle = 0;
-                if(IB < IBe && ib == IB - 1) begin
-                    next_ibe_on = 1;
-                    next_ib = ib + 1;
-                    nl_now = 0;
-                end else if(IB < IBe && ib == IBe - 1) begin
-                    next_ibe_on = 0; 
-                    next_ib = 0;
-                    nl_now = 1;
-                end else if(IB == IBe && ib == IBe - 1) begin
-                    next_ibe_on = 0;
-                    next_ib = 0;
-                    nl_now = 1;
-                end else begin
-                    next_ibe_on = 0;
-                    next_ib = ib + 1;
-                    nl_now = 0;
-                end
+        end else if(input_idx_ff3 == input_neurons-1) begin
+            //because here, now does not matter the modulo, just do mac_now
+            mac_now = 1;
+            next_input_idx_ff3_cycle = 0;
+            if(IB < IBe && ib == IB - 1) begin
+                next_ibe_on = 1;
+                next_ib = ib + 1;
+                nl_now = 0;
+            end else if(IB < IBe && ib == IBe - 1) begin
+                next_ibe_on = 0; 
+                next_ib = 0;
+                nl_now = 1;
+            end else if(IB == IBe && ib == IBe - 1) begin
+                next_ibe_on = 0;
+                next_ib = 0;
+                nl_now = 1;
+            end else begin
+                next_ibe_on = 0;
+                next_ib = ib + 1;
+                nl_now = 0;
             end
         end
 
