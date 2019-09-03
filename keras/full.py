@@ -38,8 +38,8 @@ print("############################################################\n")
 # II.   Get the list of inputs for inference
 ##########################################################################
 print("II. Starting: Get the list of inputs for inference................\n")
-input_file_list =   hw_dir+'inputs/input_list0.txt'
-input_index     =   5
+input_file_list =   hw_dir+'inputs/input_list5.txt'
+input_index     =   2
 
 
 print("############################################################\n")

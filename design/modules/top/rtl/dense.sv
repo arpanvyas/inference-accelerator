@@ -124,7 +124,7 @@ always_comb begin
         intf_pea_ctrl.mac_enable[idx_var] = 0;
         intf_pea_ctrl.feedback_enable[idx_var] = 0;
 
-        intf_pea_ctrl.dense_adder_reset[idx_var] = 0;
+        intf_pea_ctrl.dense_adder_reset[idx_var] = 1;
         intf_pea_ctrl.dense_adder_on[idx_var] = 0;
     end
 
@@ -204,6 +204,10 @@ always_comb begin
         s_OB_I : begin
 
             intf_pea_ctrl.line_buffer_reset = 0;
+            for(int idx_var = 0; idx_var < `N_PE; idx_var = idx_var + 1) begin
+                intf_pea_ctrl.dense_adder_reset[idx_var] = 0;
+            end
+
 
             //1. Read Input and Weights logic
 
