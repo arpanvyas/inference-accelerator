@@ -6,7 +6,7 @@ module regfile_general (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_GENERAL,
-	regfile_interface	regfile
+	interface_regfile	regfile
 );
 
 //DECLARATIONS

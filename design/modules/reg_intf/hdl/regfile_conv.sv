@@ -6,7 +6,7 @@ module regfile_conv (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_CONV,
-	regfile_interface	regfile
+	interface_regfile	regfile
 );
 
 //DECLARATIONS
@@ -30,6 +30,7 @@ logic	[15:0]	CONV_0017;
 logic	[15:0]	CONV_0018;
 logic	[15:0]	CONV_0019;
 logic	[15:0]	CONV_0020;
+logic	[15:0]	CONV_0021;
 
 //READ REGISTER
 always@(*)
@@ -55,6 +56,7 @@ begin
 		14'h112 : read_data_CONV = CONV_0018;
 		14'h113 : read_data_CONV = CONV_0019;
 		14'h114 : read_data_CONV = CONV_0020;
+		14'h115 : read_data_CONV = CONV_0021;
 		default : read_data_CONV = 16'h0;
 	endcase
 end
@@ -335,6 +337,24 @@ assign	{CONV_0019[15:0] }	=	{ regfile.conv__out_data_wid };
 
 //REGISTER CONV_0020
 assign	{CONV_0020[15:0] }	=	{ regfile.conv__out_data_hei };
+
+
+
+
+
+//REGISTER CONV_0021
+assign	{regfile.conv__use_bias }	=	{ CONV_0021[0:0] };
+assign	{CONV_0021[15:1] }	=	{ regfile.conv__reserved_1 };
+//RW fields
+always@(posedge clk, posedge rst) begin
+	if (rst) begin
+		{ CONV_0021[0:0] } <= #1 { 1'h1 };
+	end else begin
+		if (wr_en && addr == 14'h115) begin
+			{ CONV_0021[0:0] } <= #1 { write_data[0:0] };
+		end
+	end
+end
 
 
 

@@ -129,6 +129,10 @@ interface interface_regfile;
 	//CONV_0020
 	logic	[15:0]	conv__out_data_hei;
 
+	//CONV_0021
+	logic		conv__use_bias;
+	logic	[14:0]	conv__reserved_1;
+
 	//POOL_0001
 	logic	[15:0]	pool__data_wid;
 
@@ -230,6 +234,10 @@ interface interface_regfile;
 
 	//DENSE_0011
 	logic	[15:0]	dense__hei_weight_matrix;
+
+	//DENSE_0012
+	logic		dense__use_bias;
+	logic	[14:0]	dense__reserved_1;
 
 
 endinterface

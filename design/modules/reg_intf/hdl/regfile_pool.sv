@@ -6,7 +6,7 @@ module regfile_pool (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_POOL,
-	regfile_interface	regfile
+	interface_regfile	regfile
 );
 
 //DECLARATIONS

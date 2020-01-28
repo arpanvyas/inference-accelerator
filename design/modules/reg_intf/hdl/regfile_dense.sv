@@ -6,7 +6,7 @@ module regfile_dense (
 	input	logic	[13:0]	addr,
 	input	logic	[15:0]	write_data,
 	output	logic	[15:0]	read_data_DENSE,
-	regfile_interface	regfile
+	interface_regfile	regfile
 );
 
 //DECLARATIONS
@@ -21,6 +21,7 @@ logic	[15:0]	DENSE_0008;
 logic	[15:0]	DENSE_0009;
 logic	[15:0]	DENSE_0010;
 logic	[15:0]	DENSE_0011;
+logic	[15:0]	DENSE_0012;
 
 //READ REGISTER
 always@(*)
@@ -37,6 +38,7 @@ begin
 		14'h409 : read_data_DENSE = DENSE_0009;
 		14'h40a : read_data_DENSE = DENSE_0010;
 		14'h40b : read_data_DENSE = DENSE_0011;
+		14'h40c : read_data_DENSE = DENSE_0012;
 		default : read_data_DENSE = 16'h0;
 	endcase
 end
@@ -174,6 +176,24 @@ assign	{DENSE_0010[15:0] }	=	{ regfile.dense__wid_weight_matrix };
 
 //REGISTER DENSE_0011
 assign	{DENSE_0011[15:0] }	=	{ regfile.dense__hei_weight_matrix };
+
+
+
+
+
+//REGISTER DENSE_0012
+assign	{regfile.dense__use_bias }	=	{ DENSE_0012[0:0] };
+assign	{DENSE_0012[15:1] }	=	{ regfile.dense__reserved_1 };
+//RW fields
+always@(posedge clk, posedge rst) begin
+	if (rst) begin
+		{ DENSE_0012[0:0] } <= #1 { 1'h1 };
+	end else begin
+		if (wr_en && addr == 14'h40c) begin
+			{ DENSE_0012[0:0] } <= #1 { write_data[0:0] };
+		end
+	end
+end
 
 
 

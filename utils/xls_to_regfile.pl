@@ -148,7 +148,7 @@ push @inout, pad("input\tlogic\t\twr_en,"),pad("input\tlogic\t\trd_en,");
 push @inout, pad("input\tlogic\t[$addr_l:0]\taddr,");
 push @inout, pad("input\tlogic\t[15:0]\twrite_data,");
 push @inout, pad("output\tlogic\t[15:0]\t$read_data,");
-push @inout, pad("regfile_interface\tregfile,");
+push @inout, pad("$interface_class\tregfile,");
 
 
 
