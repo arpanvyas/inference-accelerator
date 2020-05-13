@@ -336,7 +336,8 @@ if(dump_input == 1):
 #print(weights[7].shape)
 
 
-doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
+doall(main_directory+"mnist_dataset/testing/9/108.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
 #doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)
 ##

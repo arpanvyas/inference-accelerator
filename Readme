@@ -1,0 +1,2 @@
+1.  Train a small scale CNN on Keras/TensorFlow.
+    This will generate a model h5 file.
