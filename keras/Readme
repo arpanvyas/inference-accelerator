@@ -1,0 +1,24 @@
+1. To change word size in python, 
+    change    mem_param.word_size
+    change    mem_param.frac_size
+
+2. To change buffer number in python,
+    change    mem_param.buffer_num
+
+
+3. To change word size in rtl,
+    change  header.vh: DATA_WIDTH
+   
+4. To change buffer number in rtl,
+    change  header.vh: N_PE
+ 
+The external_memory.sv will load the input.dat and model.dat file.
+The start address of input.dat is manually coded in the sv file. This number is actually mem_param.ram_input_start
+Start address of model.dat file is 0.
+
+May need to change the 'scale' in RTL regfile if changing word sizes
+
+
+ONE FLAW: the int2frac will convert 16bit float to 16 bits integer but only keep the LSB8 bits valid, so fracbits actually determines the precision
+
+

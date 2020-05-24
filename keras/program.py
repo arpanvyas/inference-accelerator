@@ -258,7 +258,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
     interm_idx = interm_idx_start
     for ch in range(0,channels):
-        buffer_addr      = ch%32
+        buffer_addr      = ch%mem.buffer_num
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx)+"_ch"+str(ch)):
             ram_start   = interm_map[interm_idx][0]
@@ -280,7 +280,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
     for filt in range(0,filters):
         for ch in range(0,channels):
-            buffer_addr = ch%32
+            buffer_addr = ch%mem.buffer_num
 
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_ch"+str(ch)+"_coeff"
             if(model_map[model_idx][2] == str_cmp):
@@ -297,7 +297,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             model_idx += 1
 
         if(use_bias):
-            buffer_addr = 32
+            buffer_addr = mem.buffer_num
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_bias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start   = model_map[model_idx][0]
@@ -312,7 +312,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
             model_idx += 1
         else:
-            buffer_addr = 32
+            buffer_addr = mem.buffer_num
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_nobias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start   = model_map[model_idx][0]
@@ -385,7 +385,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
     output_idx = 0
 
     for ch in range(0,channels_next):
-        buffer_addr      = ch%32
+        buffer_addr      = ch%mem.buffer_num
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_ch"+str(ch)):
             ram_start   = interm_map[interm_idx][0]
@@ -415,7 +415,7 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
 
     interm_idx = interm_idx_start
     for ch in range(0,channels):
-        buffer_addr      = ch%32
+        buffer_addr      = ch%mem.buffer_num
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx)+"_ch"+str(ch)):
             ram_start   = interm_map[interm_idx][0]
@@ -489,7 +489,7 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
     output_idx = 0
 
     for ch in range(0,channels_next):
-        buffer_addr      = ch%32
+        buffer_addr      = ch%mem.buffer_num
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_ch"+str(ch)):
             ram_start   = interm_map[interm_idx][0]
@@ -527,7 +527,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
     interm_idx = interm_idx_start
     for ipnu in range(0,input_nodes):
         #buffer_addr = opnu%32
-        buffer_addr = 32 #input (i.e. vector V stored in buffer 32)
+        buffer_addr = mem.buffer_num #input (i.e. vector V stored in buffer 32)
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx)+"_nod"+str(ipnu)):
             ram_start   = interm_map[interm_idx][0]
@@ -550,7 +550,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
     model_idx = model_idx_start
 
     for opnu in range(0,output_nodes):
-        buffer_addr = opnu%32
+        buffer_addr = opnu%mem.buffer_num
 
         str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)
         if(model_map[model_idx][2] == str_cmp):
@@ -566,7 +566,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
         model_idx += 1
 
         if(use_bias):
-            buffer_addr = opnu%32
+            buffer_addr = opnu%mem.buffer_num
             str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_bias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start  = model_map[model_idx][0]
@@ -580,7 +580,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
 
             model_idx += 1
         else:
-            buffer_addr = opnu%32
+            buffer_addr = opnu%mem.buffer_num
             str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_nobias"
             if(model_map[model_idx][2] == str_cmp):
                 ram_start  = model_map[model_idx][0]
@@ -625,7 +625,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
     output_idx = 0
 
     for node in range(0,nodes_next):
-        buffer_addr = 32 #because dense output stored in buffer#32
+        buffer_addr = mem.buffer_num #because dense output stored in buffer#32
 
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_nod"+str(node)): #when not last layer
             ram_start = interm_map[interm_idx][0]
@@ -659,6 +659,7 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
 
     print("model_idx_start:"+str(model_idx_carry))
     print("interm_idx_start:"+str(interm_idx_carry))
+
 
     for layer in all_layers:
         layer_index = layer['number']

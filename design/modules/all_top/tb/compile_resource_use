@@ -1,0 +1,41 @@
+16 bit word size
+                                 Instances  Unique
+                Modules:             12961      40
+                Interfaces:             14       6
+                Registers:           50337     771
+                Scalar wires:         4808       -
+                Expanded wires:       3104      96
+                Vectored wires:      35459       -
+                Always blocks:       10995     120
+                Initial blocks:       2115       3
+                Cont. assignments:    1625     168
+                Pseudo assignments:  10707     512
+
+8 bit word size
+
+                                 Instances  Unique
+                Modules:             12961      40
+                Interfaces:             14       6
+                Registers:           50337     771
+                Scalar wires:         4808       -
+                Expanded wires:       3104      96
+                Vectored wires:      35459       -
+                Always blocks:       10995     120
+                Initial blocks:       2115       3
+                Cont. assignments:    1625     168
+                Pseudo assignments:  10707     512
+
+
+8 bit word size, 16 conv
+
+                                 Instances  Unique
+                Modules:              3425      40
+                Interfaces:             14       6
+                Registers:           14049     771
+                Scalar wires:         1432       -
+                Expanded wires:        784      48
+                Vectored wires:       9907       -
+                Always blocks:        2995     120
+                Initial blocks:        547       3
+                Cont. assignments:     633     168
+                Pseudo assignments:   3347     320

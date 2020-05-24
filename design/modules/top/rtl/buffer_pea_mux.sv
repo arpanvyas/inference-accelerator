@@ -111,20 +111,20 @@ always_comb begin
             2'b11: begin //AYaZ: dense PING
                 for(int i = 0; i < `N_BUF; i = i + 1) begin
                     intf_pea.input_bus1_PEA[i] = intf_buf1.m1_output_bus[i]; //dense weights
-                    intf_pea.input_bus2_PEA[i] = intf_buf1.m1_output_bus[32]; //dense input
+                    intf_pea.input_bus2_PEA[i] = intf_buf1.m1_output_bus[`N_PE]; //dense input
 
-                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //not relevant
-                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //dense output
+                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[`N_PE]; //not relevant
+                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[`N_PE]; //dense output
                 end
             end
 
             2'b10: begin //BYbZ: dense PONG
                 for(int i = 0; i < `N_BUF; i = i + 1) begin
                     intf_pea.input_bus1_PEA[i] = intf_buf2.m1_output_bus[i]; //dense weights
-                    intf_pea.input_bus2_PEA[i] = intf_buf2.m1_output_bus[32]; //dense input
+                    intf_pea.input_bus2_PEA[i] = intf_buf2.m1_output_bus[`N_PE]; //dense input
 
-                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //dense output
-                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[32]; //not relevant
+                    intf_buf1.m1_input_bus[i] = intf_pea.output_bus1_PEA[`N_PE]; //dense output
+                    intf_buf2.m1_input_bus[i] = intf_pea.output_bus1_PEA[`N_PE]; //not relevant
                 end
             end
 
