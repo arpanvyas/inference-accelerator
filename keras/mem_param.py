@@ -40,15 +40,15 @@ class mem_param:
     
     
     #Byte addressable RAM
-    ram_address_bits    = 32
+    ram_address_bits    = 32                #this is the size of ram word
     ram_memory_start    = 0x00000000
-    ram_memory_end      = 0x007fffff
+    ram_memory_end      = 0x001fffff
     ram_allocation      = ram_memory_end - ram_memory_start + 1
-    model_allocation    = ram_allocation/2
-    input_allocation    = ram_allocation/8
-    output_allocation   = ram_allocation/8
-    buffer_allocation   = ram_allocation/8
-    config_allocation   = ram_allocation/8
+    model_allocation    = ram_allocation/2 + ram_allocation/4
+    input_allocation    = ram_allocation/16
+    output_allocation   = ram_allocation/16
+    buffer_allocation   = ram_allocation/16
+    config_allocation   = ram_allocation/16
     ram_model_start     = ram_memory_start
     ram_model_end       = ram_model_start+model_allocation-1
     ram_input_start     = ram_model_end+1
@@ -57,8 +57,8 @@ class mem_param:
     ram_output_end      = ram_output_start+output_allocation-1
     ram_config_start    = ram_output_end+1
     ram_config_end      = ram_config_start+config_allocation-1
-    ram_buffer_start    = ram_config_end + 1
-    ram_buffer_end      = ram_buffer_start+buffer_allocation-1
+    ram_buffer_start    = ram_config_end + 1                    #buffer is same as interm    
+    ram_buffer_end      = ram_buffer_start+buffer_allocation-1  #buffer is same as interm
 
 
 

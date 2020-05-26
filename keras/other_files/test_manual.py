@@ -138,7 +138,7 @@ def doall(img_path, weights, conf):
     if(dump_conv1 == 1):
         #print(conv2d_1)
         print(conv2d_1.shape)
-        for i1 in range(0,32):
+        for i1 in range(0,64):
             im_new = cv2.resize(conv2d_1[i1]*255,(144,144))
             cv2.imwrite("dump_conv1/"+str(i1)+".png",im_new)
     conv2d_2 = conv2d(conv2d_1,weights[2],weights[3],'relu','maxpool')
@@ -202,7 +202,8 @@ def doall(img_path, weights, conf):
 
 
 main_directory = '/home/vonfaust/data/accelerator/keras/'
-file = 'mnist_cnn_model_'+dtp+'_ch_last.h5'
+#file = 'mnist_cnn_model_'+dtp+'_ch_last.h5'
+file = 'mnist_cnn_model_'+dtp+'_alt_ch_last.h5'
 path = main_directory + file
 model = load_model(path)
 

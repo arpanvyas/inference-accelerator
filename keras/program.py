@@ -278,8 +278,8 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
     model_idx = model_idx_start
 
-    for filt in range(0,filters):
-        for ch in range(0,channels):
+    for ch in range(0,channels):
+        for filt in range(0,filters):
             buffer_addr = ch%mem.buffer_num
 
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_ch"+str(ch)+"_coeff"
@@ -294,8 +294,12 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
             for item in instr1: instr.append(item)
 
-            model_idx += 1
+            #model_idx += 1
+            model_idx += channels+1 #one for also skipping bias
 
+        model_idx -= (channels+1)*filters - 1 #go back to channel+1 but filter0, +1 in bracket for bias, -1 for channels "+1"
+
+    for filt in range(0,filters):
         if(use_bias):
             buffer_addr = mem.buffer_num
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_bias"
@@ -310,7 +314,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
             for item in instr1: instr.append(item)
 
-            model_idx += 1
+            model_idx += channels+1
         else:
             buffer_addr = mem.buffer_num
             str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_nobias"
@@ -325,7 +329,9 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
             for item in instr1: instr.append(item)
 
-            model_idx += 1
+            model_idx += channels+1
+
+    model_idx -= channels #as the last one also jumps which is not required
 
     model_idx_end = model_idx
 

@@ -38,12 +38,15 @@ begin
     end
 
     $readmemb("model.dat",mem,0);
-    $readmemb("input.dat",mem,4194304);
+    //use this from end of model allocated memory
+    $readmemb("input.dat",mem,1572864);
 
 
-    #1990726; //pooling ends here
+    #24000000; //all finished by this time
     j = 0;
-    for( i = 7340032; i < 7361664; i++)
+    //use these ranges from interm.map
+    //for( i = 7340032; i < 7361664; i++) 
+    for( i = 1966080; i < 2009344; i++) 
     begin
         $fwrite(f_conv1, "%b\n", mem[i]);
         j = j + 1;
@@ -53,7 +56,9 @@ begin
     end
 
     j = 0;
-    for( i = 7361664; i < 7398528; i++)
+    //use these ranges from interm.map
+    //for( i = 7361664; i < 7398528; i++)
+    for( i = 2009344; i < 2046208; i++)
     begin
         $fwrite(f_conv2, "%b\n", mem[i]);
         j = j + 1;
@@ -64,7 +69,9 @@ begin
 
 
     j = 0;
-    for(i = 7398528; i < 7407744; i ++)
+    //use these ranges from interm.map
+    //for(i = 7398528; i < 7407744; i ++)
+    for(i = 2046208; i < 2055424; i ++)
     begin
         
         $fwrite(f_pool,"%b\n", mem[i]);

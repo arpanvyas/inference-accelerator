@@ -178,7 +178,7 @@ def model_to_ram(all_layers,mem_model_dump,mem_map_dump):
     print("--------------------------------------------------------------")
     model_mem_size = mem_ptr - mem.ram_model_start 
     print("Model Memory Size: ",str(model_mem_size))
-    print("Model Allocated Memory size: ",str(mem.model_allocation))
+    print("Model Allocated Memory size: ",str(mem.model_allocation) , ", From: ",str(mem.ram_model_start), " To: ",str(mem.ram_model_end),  "\n-- this should be the start memory address of input.dat in external_memory.sv")
     if(model_mem_size > mem.model_allocation):
         print("Model memory consumption more than allocated.")
 
@@ -227,7 +227,7 @@ def img_to_ram(input_list_file,mem_inp_dump,mem_map_dump):
     input_mem_size = mem_ptr - mem.ram_input_start
     print("--------------------------------------------------------------")
     print("Input Memory Size: ",str(input_mem_size))
-    print("Input Allocated Memory Size: ",str(mem.input_allocation))
+    print("Input Allocated Memory Size: ",str(mem.input_allocation),", From: ",str(mem.ram_input_start), " To: ",str(mem.ram_input_end) )
     if(input_mem_size > mem.input_allocation):
         print("Input memory consumption more than allocated.")
 
@@ -399,12 +399,12 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
     interm_map_dump_file.close()
 
 
-    interp_mem_size = mem_ptr - mem.ram_buffer_start
+    interm_mem_size = mem_ptr - mem.ram_buffer_start
     print("--------------------------------------------------------------")
-    print("Interp Memory Size: ",str(interp_mem_size))
-    print("Interp Allocated Memory Size: ",str(mem.buffer_allocation))
-    if(interp_mem_size > mem.buffer_allocation):
-        print("Interp memory consumption more than allocated.")
+    print("Interm Memory Size: ",str(interm_mem_size))
+    print("Interm Allocated Memory Size: ",str(mem.buffer_allocation), ", From: ",str(mem.ram_buffer_start), " To: ",str(mem.ram_buffer_end) )
+    if(interm_mem_size > mem.buffer_allocation):
+        print("Interm memory consumption more than allocated.")
 
 
 
@@ -448,7 +448,7 @@ def output_to_ram(all_layers,output_map_dump,input_index):
     output_mem_size = mem_ptr - mem.ram_output_start
     print("--------------------------------------------------------------")
     print("Output Memory Size: ",str(output_mem_size))
-    print("Output Allocated Memory Size: ",str(mem.output_allocation))
+    print("Output Allocated Memory Size: ",str(mem.output_allocation), ", From: ",str(mem.ram_output_start), " To: ",str(mem.ram_output_end) )
     if(output_mem_size > mem.output_allocation):
         print("Output memory consumption more than allocated.")
 

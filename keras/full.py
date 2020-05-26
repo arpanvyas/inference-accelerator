@@ -25,7 +25,8 @@ hw_dir          = main_directory+'hw_related/'
 
 print("I. Starting: Read the model from Keras trained h5 file................\n")
 dtp = 'float32'
-h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
+#h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
+h5_path = main_directory+'mnist_cnn_model_'+dtp+'_alt_ch_last.h5' #using alt which run feedback of a channel not run ever above
 print(h5_path)
 all_layers = rdh5.read_h5(h5_path)
 
@@ -102,6 +103,7 @@ interm_idx_start = mem.ram_buffer_start
 #IV.i Create Assembly Instruction
 assembly_dump = hw_dir+"program.asm"
 assembly = prog.prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,regfile, assembly_dump)
+print("Number of instructions is "+str(len(assembly) ) + " should be less than PC_MAX\n" )
 
 #IV.ii Create Machine Instructions
 #   Can put some optimizations here

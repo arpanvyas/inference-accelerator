@@ -13,7 +13,7 @@ imgs = []
 
 idx = 0
 
-for i1 in range(0,32):
+for i1 in range(0,64):
     im_this = []
     for i2 in range(0,26):
         row = []
@@ -27,7 +27,7 @@ for i1 in range(0,32):
 
 img_dec = imgs
 
-for i1 in range(0,32):
+for i1 in range(0,64):
     for i2 in range(0,26):
         for i3 in range(0,26):
             k = b1.bin2int(imgs[i1][i2][i3])
@@ -45,7 +45,7 @@ for i1 in range(0,32):
             
 roll = 0
 tilt = 0
-for i1 in range(0,32):
+for i1 in range(0,64):
     img_this = np.array(img_dec[i1])
     if(roll == 1):
         img_this = np.roll(img_this,-3,axis=1)

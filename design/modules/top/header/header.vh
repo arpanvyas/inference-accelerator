@@ -6,7 +6,8 @@
 //GLOBAL FREQUENTLY CHANGED DEFINES
 `define DATA_WIDTH 16
 `define SCALE      8  //usually DATA_WIDTH/2, this is the frac_size
-`define PC_MAX 73188
+//`define PC_MAX 73188
+`define PC_MAX 86244 //alt
 `define ADDR_FIFO 9 //size of the 2 fifos in each convolver
 `define ADDR_RAM 16 //size of each one of `N_BUF memory banks
 //`define NP4
@@ -18,7 +19,7 @@
 
 
 //external memory
-`define ADDR_EXT_RAM 23
+`define ADDR_EXT_RAM 21
 `define WID_EXT_RAM `DATA_WIDTH
 `define DATA_EXT_RAM `DATA_WIDTH
 
