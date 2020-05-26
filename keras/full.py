@@ -25,8 +25,8 @@ hw_dir          = main_directory+'hw_related/'
 
 print("I. Starting: Read the model from Keras trained h5 file................\n")
 dtp = 'float32'
-#h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
-h5_path = main_directory+'mnist_cnn_model_'+dtp+'_alt_ch_last.h5' #using alt which run feedback of a channel not run ever above
+h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
+#h5_path = main_directory+'mnist_cnn_model_'+dtp+'_alt_ch_last.h5' #using alt which run feedback of a channel not run ever above
 print(h5_path)
 all_layers = rdh5.read_h5(h5_path)
 

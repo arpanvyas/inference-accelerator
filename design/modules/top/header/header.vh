@@ -12,8 +12,8 @@
 `define ADDR_RAM 16 //size of each one of `N_BUF memory banks
 //`define NP4
 //`define NP8
-//`define NP16
-`define NP32
+`define NP16
+//`define NP32
 //`define NP64
 //`define NP128
 

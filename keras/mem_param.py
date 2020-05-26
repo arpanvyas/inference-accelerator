@@ -1,7 +1,7 @@
 class mem_param:
     word_size = 16
     frac_size = 8
-    buffer_num = 32
+    buffer_num = 16
 
 
     #word_per_byte = word_size/8
