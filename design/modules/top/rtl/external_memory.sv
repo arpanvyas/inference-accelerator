@@ -46,7 +46,7 @@ begin
     j = 0;
     //use these ranges from interm.map
     //for( i = 7340032; i < 7361664; i++) 
-    for( i = 1966080; i < 2009344; i++) 
+    for( i = 1966080; i < 1987712; i++) 
     begin
         $fwrite(f_conv1, "%b\n", mem[i]);
         j = j + 1;
@@ -58,7 +58,7 @@ begin
     j = 0;
     //use these ranges from interm.map
     //for( i = 7361664; i < 7398528; i++)
-    for( i = 2009344; i < 2046208; i++)
+    for( i = 1987712; i < 2024576; i++)
     begin
         $fwrite(f_conv2, "%b\n", mem[i]);
         j = j + 1;
@@ -71,7 +71,7 @@ begin
     j = 0;
     //use these ranges from interm.map
     //for(i = 7398528; i < 7407744; i ++)
-    for(i = 2046208; i < 2055424; i ++)
+    for(i = 2024576; i < 2033648+144; i ++)
     begin
         
         $fwrite(f_pool,"%b\n", mem[i]);
