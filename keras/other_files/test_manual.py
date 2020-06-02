@@ -12,7 +12,7 @@ from keras.utils import plot_model
 import binary as b1
 
 dtp = 'float32'
-dump_data = 1
+dump_data = 0
 prinfo = 1
 
 if(dump_data == 1):
@@ -153,21 +153,22 @@ def doall(img_path, weights, conf):
     #reshape2d_2 = np.moveaxis(conv2d_2,0,-1) #channel_last to channel_first
     #flatten2d_2 = np.reshape(conv2d_2,(9216))
     #flatten2d_2 = np.reshape(reshape2d_2,(9216))
-    flatten2d_2 = np.reshape(conv2d_2,(9216))
+    flatten2d_2 = np.reshape(conv2d_2,(weights[4].shape[0]))
 
     #DUMP POOL RESHUFFLE
     if(dump_flatten == 1):
         f1 = open("dump_flatten.dat","w")
         f1.write("FLATTEN1\n")
-        for i in range(0,9216):
+        for i in range(0,weights[4].shape[0]):
             v = flatten2d_2[i]
             f1.write(str(i)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
-    
+
+
     layer1 = dense(flatten2d_2,weights[4],weights[5],'relu')
     
     if(dump_flatten == 1):
         f1.write("\n\nFLATTEN2\n")
-        for i in range(0,128):
+        for i in range(0,weights[5].shape[0]):
             v = layer1[i]
             f1.write(str(i)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
     
@@ -203,13 +204,17 @@ def doall(img_path, weights, conf):
 
 main_directory = '/home/vonfaust/data/accelerator/keras/'
 #file = 'mnist_cnn_model_'+dtp+'_ch_last.h5'
-file = 'mnist_cnn_model_'+dtp+'_alt_ch_last.h5'
+#file = 'mnist_cnn_model_'+dtp+'_alt_ch_last.h5'
+file = 'mnist_cnn_model_int8_small.h5'
 path = main_directory + file
 model = load_model(path)
 
 
 weights = model.get_weights()
-weights[4] = np.reshape(np.moveaxis(weights[4].reshape([12,12,64,128]),2,0),(9216,128))
+print(weights[3].shape[0])
+print(weights[4].shape[0])
+print(weights[5].shape[0])
+weights[4] = np.reshape(np.moveaxis(weights[4].reshape([12,12,weights[3].shape[0],weights[5].shape[0]]),2,0),(weights[4].shape[0],weights[5].shape[0]))
 conf = model.get_config()
 
 
@@ -234,18 +239,18 @@ if(dump_filter == 1):
                     filterc2[filt][ch][i][j] = weights[2][i][j][ch][filt]
         biasc2[filt] = weights[3][filt]
     
-    filterd1 = np.zeros([9216,128])
-    biasd1 = np.zeros([128])
-    filterd2 = np.zeros([128,10])
+    filterd1 = np.zeros([weights[4].shape[0],weights[5].shape[0]])
+    biasd1 = np.zeros([weights[5].shape[0]])
+    filterd2 = np.zeros([weights[5].shape[0],10])
     biasd2 = np.zeros([10])
     
-    for out in range(0,128):
-        for inp in range(0,9216):
+    for out in range(0,weights[5].shape[0]):
+        for inp in range(0,weights[4].shape[0]):
             filterd1[inp][out] = weights[4][inp][out]
         biasd1[out] = weights[5][out]
     
     for out in range(0,10):
-        for inp in range(0,128):
+        for inp in range(0,weights[5].shape[0]):
             filterd2[inp][out] = weights[6][inp][out]
         biasd2[out] = weights[7][out]
     
@@ -280,9 +285,9 @@ if(dump_filter == 1):
     
     f1 = open("dump_dense.dat","w")
     f1.write("DENSE LATER 1\n")
-    for out in range(0,128):
+    for out in range(0,weights[5].shape[0]):
         f1.write("LAYER1_DENSE"+str(out)+"\n")
-        for inp in range(0,9216):
+        for inp in range(0,weights[4].shape[0]):
             v = filterd1[inp][out]
             f1.write(str(out)+","+str(inp)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
         v = biasd1[out]
@@ -291,7 +296,7 @@ if(dump_filter == 1):
     f1.write("\n\nDENSE LATER 2\n")
     for out in range(0,10):
         f1.write("LAYER2_DENSE"+str(out)+"\n")
-        for inp in range(0,128):
+        for inp in range(0,weights[5].shape[0]):
             v = filterd2[inp][out]
             f1.write(str(out)+","+str(inp)+": "+str(v)+"\t"+str(v*256)+"\t"+b1.int2bin(v,8,16)+"\n")
         v = biasd2[out]
@@ -337,7 +342,8 @@ if(dump_input == 1):
 #print(weights[7].shape)
 
 
-doall(main_directory+"mnist_dataset/testing/9/108.png",weights,conf)
+#doall(main_directory+"mnist_dataset/testing/9/108.png",weights,conf)
+doall(main_directory+"mnist_dataset/testing/9/1005.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/5/1022.png",weights,conf)
 #doall(main_directory+"mnist_dataset/training/2/12501.png",weights,conf)
 #doall(main_directory+"mnist_dataset/testing/7/4821.png",weights,conf)

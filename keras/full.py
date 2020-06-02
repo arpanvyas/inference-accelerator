@@ -25,8 +25,10 @@ hw_dir          = main_directory+'hw_related/'
 
 print("I. Starting: Read the model from Keras trained h5 file................\n")
 dtp = 'float32'
-h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
+#h5_path = main_directory+'mnist_cnn_model_'+dtp+'_ch_last.h5'
 #h5_path = main_directory+'mnist_cnn_model_'+dtp+'_alt_ch_last.h5' #using alt which run feedback of a channel not run ever above
+#h5_path = main_directory+'mnist_cnn_model_int8_small.h5'
+h5_path = main_directory+'mnist_cnn_model_float32_small.h5'
 print(h5_path)
 all_layers = rdh5.read_h5(h5_path)
 
@@ -40,7 +42,8 @@ print("############################################################\n")
 ##########################################################################
 print("II. Starting: Get the list of inputs for inference................\n")
 input_file_list =   hw_dir+'inputs/input_list9.txt'
-input_index     =   9
+#input_file_list =   hw_dir+'inputs/input_list5.txt'
+input_index     =   1 #pick image 1005.png when 9
 
 
 print("############################################################\n")

@@ -4,19 +4,21 @@
 // Start of include contents
 
 //GLOBAL FREQUENTLY CHANGED DEFINES
-`define DATA_WIDTH 16
-`define SCALE      8  //usually DATA_WIDTH/2, this is the frac_size
-//`define PC_MAX 73188
-`define PC_MAX 86244 //alt
-`define ADDR_FIFO 9 //size of the 2 fifos in each convolver
-`define ADDR_RAM 16 //size of each one of `N_BUF memory banks
+`define DATA_WIDTH 12
+`define SCALE      7  //usually DATA_WIDTH/2, this is the frac_size
 //`define NP4
-//`define NP8
-`define NP16
+`define NP8
+//`define NP16
 //`define NP32
 //`define NP64
 //`define NP128
 
+
+//`define PC_MAX 73188
+//`define PC_MAX 86244 //alt
+`define PC_MAX 10808 //small
+`define ADDR_FIFO 6 //size of the 2 fifos in each convolver
+`define ADDR_RAM 12 //size of each one of `N_BUF memory banks
 
 //external memory
 `define ADDR_EXT_RAM 21
@@ -38,12 +40,24 @@
 
 //PE Array
 
-`ifdef NP4      `define N_PE 4      `endif
-`ifdef NP8      `define N_PE 8      `endif
-`ifdef NP16     `define N_PE 16     `endif
-`ifdef NP32     `define N_PE 32     `endif
-`ifdef NP64     `define N_PE 64     `endif
-`ifdef NP128    `define N_PE 128    `endif
+`ifdef NP4      
+    `define N_PE 4      
+`endif
+`ifdef NP8      
+    `define N_PE 8      
+`endif
+`ifdef NP16     
+    `define N_PE 16     
+`endif
+`ifdef NP32     
+    `define N_PE 32     
+`endif
+`ifdef NP64     
+    `define N_PE 64     
+`endif
+`ifdef NP128    
+    `define N_PE 128    
+`endif
 
 `define LOG_N_PE $clog2(`N_PE)
 

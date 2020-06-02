@@ -243,7 +243,11 @@ def read_h5(h5_path):
                 elif(this_layer['prev_type'] == "Flatten"):
                     exit("MaxPooling2D after Flatten not YET supported")
                 elif(this_layer['prev_type'] == "MaxPooling2D"):
-                    exit("MaxPooling2D after MaxPooling2D not YET supported")
+                    print("WARNING: MAX POOLING AFTER MAX POOLING MAY CAUSE ISSUES, from read_h5.py")                    
+                    this_layer['shape'] = next_layer['shape']
+                    this_layer['stride_shape'] = config['strides']
+                    this_layer['padding'] = [0,0]
+                    this_layer['pool_size'] = config['pool_size']
 
             next_layer = {}
             next_layer['channels'] = this_layer['shape'][3]
