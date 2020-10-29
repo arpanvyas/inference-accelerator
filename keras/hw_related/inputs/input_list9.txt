@@ -1,0 +1,2 @@
+C:\Users\Admin\Desktop\CNN Accelerator\original code\inference-accelerator-master\keras\mnist_png\testing\9\1005.png
+C:\Users\Admin\Desktop\CNN Accelerator\original code\inference-accelerator-master\keras\mnist_png\testing\9\1005.png

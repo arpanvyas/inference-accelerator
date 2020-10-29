@@ -1,0 +1,10 @@
+The following setup is tested to be working with,
+
+Python 3.5
+Keras 2.3.1
+Tensorflow 1.15
+Numpy 1.18.5
+Opencv-python 4.4.0.42
+pyexcel 0.5.15
+
+Not using GPU/CUDA for tensorflow

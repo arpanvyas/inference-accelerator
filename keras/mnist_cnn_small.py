@@ -110,7 +110,7 @@ for np_dtype in list_dtype:
 
 
   
-  model.save('/home/vonfaust/data/accelerator/keras/mnist_cnn_model_'+np_dtype+'_small.h5')
+  model.save('./mnist_cnn_model_'+np_dtype+'_small.h5')
 
  # loss_accu = open("/home/arpan/Desktop/Inference Accelerator/HDL Model/Keras models/mnist_cnn_accu_loss.txt","a")
   #loss_accu.write(np_dtype+'; Epochs: 4; '+'Train Images: 12000; '+'Test Images: 1200; ' +'Optimizer: Adadelta; ' )

@@ -16,7 +16,7 @@ import program as prog
 import assembler as asm
 
 
-main_directory  = '/home/vonfaust/data/accelerator/keras/'
+main_directory  = './'
 hw_dir          = main_directory+'hw_related/'
 
 ##########################################################################
@@ -77,6 +77,9 @@ interm_map      =   dump.interm_to_ram(all_layers,interm_map_dump,input_map,outp
 #v. Create RAM file from model and input dump
 #UNUSED ram_dump        =   hw_dir+'ram.dat'
 #UNUSED dump.ram_dump(mem_model_dump,mem_inp_dump,ram_dump)
+
+print("-----Copy model.dat, input.dat in hw_related to the folder containing external_memory.sv")
+print("-----Copy program.mac in hw_related to the folder containing program_memory.sv")
 
 
 print("--------------------------------------------------------------")

@@ -103,6 +103,7 @@ def write_read_reg(regfile,regdict):
         if(not re.match('^[0-9A-Fa-f]{0,}$',defval)):
             defval_binary = b1.int2bin(0,0,fldsize)
         else:
+            #print(defval, type(defval))
             defval_binary = b1.int2bin(defval,0,fldsize)
 
         write_fld_dict[strtbits] = defval_binary
@@ -260,6 +261,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
     for ch in range(0,channels):
         buffer_addr      = ch%mem.buffer_num
 
+        #print(interm_map[interm_idx][2])
         if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx)+"_ch"+str(ch)):
             ram_start   = interm_map[interm_idx][0]
             ram_number  = interm_map[interm_idx][1]
@@ -520,8 +522,8 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
     this_layer = all_layers[layer_index]
     layer_idx = this_layer['number']
     shape     = this_layer['shape']
-    input_nodes = shape[0]
-    output_nodes = shape[1]
+    input_nodes = int(shape[0])
+    output_nodes = int(shape[1])
     use_bias = this_layer['use_bias']
     #use_bias = False
     activation = this_layer['activation']

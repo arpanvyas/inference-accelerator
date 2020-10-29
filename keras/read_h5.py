@@ -192,7 +192,7 @@ def read_h5(h5_path):
                 if(this_layer['prev_type'] == "Dense"):
                     this_layer['weight'] = weights[wt_num]
                     this_layer['output_nodes'] = config['units']
-                    this_layer['input_nodes'] = next_layer['shape']
+                    this_layer['input_nodes'] = int(next_layer['shape'])
                     this_layer['shape'] = [next_layer['shape'],config['units']]
 
                 elif(this_layer['prev_type'] == "MaxPooling2D"):
@@ -201,14 +201,16 @@ def read_h5(h5_path):
                     exit("Dense after Conv not YET supported")
                 elif(this_layer['prev_type'] == "Flatten"):
                     this_layer['output_nodes'] = config['units']
-                    this_layer['input_nodes'] = next_layer['shape']
+                    this_layer['input_nodes'] = int(next_layer['shape'])
                     this_layer['shape'] = [next_layer['shape'],config['units']]
                     
                     if(mod.channel_last == 1):
                         print("Reading h5 weights after Flatten as channel_last")
                         #this_layer['weight'] = weights[wt_num]
-
+                        #print(this_layer['output_nodes'],type(this_layer['output_nodes']))
                         reshaped_wt = weights[wt_num].reshape([next_layer['flat_hei'],next_layer['flat_wid'],next_layer['flat_ch'],this_layer['output_nodes']])
+                        #print(this_layer['input_nodes'],type(this_layer['input_nodes']))
+                        #print(this_layer['output_nodes'],type(this_layer['output_nodes']))
                         this_layer['weight'] = np.reshape(np.moveaxis(reshaped_wt,2,0),(this_layer['input_nodes'],this_layer['output_nodes']))
                         
                     else:
@@ -277,9 +279,9 @@ def read_h5(h5_path):
             
             next_layer = {}
             next_layer['shape'] = this_layer['output_elements']
-            next_layer['flat_wid'] = inp_wid
-            next_layer['flat_hei'] = inp_hei
-            next_layer['flat_ch'] = inp_ch
+            next_layer['flat_wid'] = int(inp_wid)
+            next_layer['flat_hei'] = int(inp_hei)
+            next_layer['flat_ch'] = int(inp_ch)
 
         
         next_layer['type'] = layer_type

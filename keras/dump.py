@@ -81,8 +81,8 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
     if(use_bias):
         bias = this_layer['bias']
     shape = this_layer['shape']
-    input_nodes = shape[0]
-    output_nodes = shape[1]
+    input_nodes = int(shape[0])
+    output_nodes = int(shape[1])
     use_bias = this_layer['use_bias']
     activation = this_layer['activation']
     mem_ptr = mem_start
@@ -307,7 +307,7 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
 
         elif(layer['type'] == "Dense"):
             shape   = layer['shape']
-            nod_inp = shape[0]
+            nod_inp = int(shape[0])
             nod_otp = shape[1]
 
             last_layer_type = all_layers[l_idx-1]['type']
