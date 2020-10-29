@@ -1,4 +1,4 @@
-module controller (
+module controller_old (
     input logic clk,
     input logic rst,
 
