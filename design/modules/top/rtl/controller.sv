@@ -121,7 +121,7 @@ computation_controller computation_controller_inst (
 ///////////////////////////////////////////////////////
 
 
-typedef enum { IDLE, MEM_LOAD, MEM_SAVE, COMPUTATION} ControllerStates;
+typedef enum { IDLE = 0, MEM_LOAD = 1, MEM_SAVE = 2, COMPUTATION = 3} ControllerStates;
 ControllerStates state;
 ControllerStates prev_state;
 ControllerStates next_state;

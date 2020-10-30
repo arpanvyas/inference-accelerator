@@ -16,9 +16,13 @@
 
 //`define PC_MAX 73188
 //`define PC_MAX 86244 //alt
-`define PC_MAX 10808 //small
+//`define PC_MAX 10808 //small
+`define PC_MAX 2342 //small and optimized
 `define ADDR_FIFO 6 //size of the 2 fifos in each convolver
 `define ADDR_RAM 12 //size of each one of `N_BUF memory banks
+
+//To replicate DDR integration
+`define DDR_SPEED_SIM
 
 //external memory
 `define ADDR_EXT_RAM 21

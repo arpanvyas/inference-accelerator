@@ -9,10 +9,12 @@ from keras.utils import plot_model
 from keras.models import model_from_json
 from mem_param import mem_param as mem
 import binary as b1
-import dump as dump
+#import dump as dump
+import optimized_dump as dump
 import read_h5 as rdh5
 import reg_map as reg
-import program as prog
+#import program as prog
+import optimized_program as prog
 import assembler as asm
 
 
