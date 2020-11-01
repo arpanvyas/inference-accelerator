@@ -370,21 +370,20 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
             #print('conv',hei,wid,hei*wid,hei*wid*2)
             
             #UNOPTIMIZED
-            for c in range(0,ch):
-                mem_idx = 0
-                mem_idx += hei*wid*mem.word_per_byte
-                interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
-                mem_ptr += mem_idx
-
+            #for c in range(0,ch):
+            #    mem_idx = 0
+            #    mem_idx += hei*wid*mem.word_per_byte
+            #    interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+            #    mem_ptr += mem_idx
             #OPTIMIZED
-            #for loop in range(0,mem.buffer_num):
-            #    c = loop
-            #    while(c < ch):
-            #        mem_idx = 0
-            #        mem_idx += hei*wid*mem.word_per_byte
-            #        interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
-            #        mem_ptr += mem_idx
-            #        c += mem.buffer_num
+            for loop in range(0,mem.buffer_num):
+                c = loop
+                while(c < ch):
+                    mem_idx = 0
+                    mem_idx += hei*wid*mem.word_per_byte
+                    interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+                    mem_ptr += mem_idx
+                    c += mem.buffer_num
 
         elif(layer['type'] == "Dense"):
             shape   = layer['shape']
@@ -421,20 +420,20 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
             #print('maxpool',hei,wid,hei*wid,hei*wid*2)
 
             #UNOPTIMIZED
-            for c in range(0,ch):
-                mem_idx = 0
-                mem_idx += hei*wid*mem.word_per_byte
-                interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
-                mem_ptr += mem_idx
+            #for c in range(0,ch):
+            #    mem_idx = 0
+            #    mem_idx += hei*wid*mem.word_per_byte
+            #    interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+            #    mem_ptr += mem_idx
             ##OPTIMIZED
-            #for loop in range(0,mem.buffer_num):
-            #    c = loop
-            #    while(c < ch):
-            #        mem_idx = 0
-            #        mem_idx += hei*wid*mem.word_per_byte
-            #        interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
-            #        mem_ptr += mem_idx
-            #        c += mem.buffer_num
+            for loop in range(0,mem.buffer_num):
+                c = loop
+                while(c < ch):
+                    mem_idx = 0
+                    mem_idx += hei*wid*mem.word_per_byte
+                    interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+                    mem_ptr += mem_idx
+                    c += mem.buffer_num
 
         elif(layer['type'] == "Flatten"):
             shape   = layer['shape']
