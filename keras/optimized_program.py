@@ -240,7 +240,7 @@ def buffer_to_ram_instr(ram_start, ram_number,buffer_block, buffer_addr,regfile)
 
 
 
-def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,layer_index,regfile):
+def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,layer_index,regfile,dump_mem_instr_log,next_flatten):
 
     this_layer = all_layers[layer_index]
     layer_idx = this_layer['number']
@@ -258,6 +258,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
     #i.   Load Input
 
     interm_idx = interm_idx_start
+    #TO be OPTIMIZED
     for ch in range(0,channels):
         buffer_addr      = ch%mem.buffer_num
 
@@ -269,11 +270,45 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             print("program.py: Input parsing error in layer conv")
             return
 
+        dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- LOAD -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
         instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
         for item in instr1: instr.append(item)
 
         interm_idx += 1
 
+    #OPTIMIZED
+    ##interm_idx_latch = interm_idx
+    #for buf_loop in range(0,mem.buffer_num):
+    #    buffer_addr      = buf_loop
+    #    #buffer_addr      = ch%mem.buffer_num
+
+    #    #print(interm_map[interm_idx][2])
+    #    ch = buf_loop
+    #    #interm_idx = interm_idx_latch + buf_loop
+    #
+    #    ram_number = 0
+    #    any_input_at_all = 0
+    #    while(ch < channels):
+    #        if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx)+"_ch"+str(ch)):
+    #            if(ch == buf_loop):
+    #                ram_start   = interm_map[interm_idx][0]
+    #            ram_number  += interm_map[interm_idx][1]
+    #        else:
+    #            print("program.py: Input parsing error in layer conv")
+    #            return
+
+    #        any_input_at_all = 1
+    #        ch += mem.buffer_num
+    #        #interm_idx += mem.buffer_num
+    #        interm_idx += 1
+
+    #    if(any_input_at_all == 1):
+    #        dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- LOAD INPUT -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #        instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #        for item in instr1: instr.append(item)
+
+
+    #interm_idx = interm_idx_latch + channels
     interm_idx_end = interm_idx
 
     #ii.  Load Model
@@ -302,29 +337,63 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
     #    model_idx -= (channels+1)*filters - 1 #go back to channel+1 but filter0, +1 in bracket for bias, -1 for channels "+1"
 
-    ##OPTIMIZED FUNCTION : ERROR! for this RAM also has to be arranged in this manner -> change dump.py
+    ##OPTIMIZED FUNCTION 
     #All filters for a channel are aggregated, there is a little more scope for aggregation of channels as well, i.e. aggregating both the loops
-    for ch in range(0,channels):
-        buffer_addr = ch%mem.buffer_num
+    #for ch in range(0,channels):
+    #    buffer_addr = ch%mem.buffer_num
+    #    ram_number = 0
+    #    for filt in range(0,filters):
+
+    #        str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_ch"+str(ch)+"_coeff"
+    #        if(model_map[model_idx][2] == str_cmp):
+    #            if(filt == 0):
+    #                ram_start   = model_map[model_idx][0]
+    #            ram_number  += model_map[model_idx][1]
+    #        else:
+    #            print("program.py:nb model parsing error in layer conv")
+    #            print(model_map[model_idx][2] + " != "+ str_cmp)
+    #            return
+
+    #        model_idx += 1
+
+    #    dump_mem_instr_log.write("conv, layer:"+str(layer_idx)+" -- load coeff -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #    instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #    for item in instr1: instr.append(item)
+
+    #    #model_idx += 1
+
+    ##EXTRA OPTIMIZED
+    model_idx_latch = model_idx
+    for buf_loop in range(0,mem.buffer_num):
+        buffer_addr = buf_loop
+        ch = buf_loop
         ram_number = 0
-        for filt in range(0,filters):
 
-            str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_ch"+str(ch)+"_coeff"
-            if(model_map[model_idx][2] == str_cmp):
-                if(filt == 0):
-                    ram_start   = model_map[model_idx][0]
-                ram_number  += model_map[model_idx][1]
-            else:
-                print("program.py:nb Model parsing error in layer conv")
-                print(model_map[model_idx][2] + " != "+ str_cmp)
-                return
+        any_input_at_all = 0
+        while(ch < channels):
+            for filt in range(0,filters):
+    
+                str_cmp = "layer"+str(layer_idx)+"_conv_filt"+str(filt)+"_ch"+str(ch)+"_coeff"
+                if(model_map[model_idx][2] == str_cmp):
+                    if(filt == 0 and ch == buf_loop):
+                        ram_start   = model_map[model_idx][0]
+                    ram_number  += model_map[model_idx][1]
+                else:
+                    print("program.py:nb model parsing error in layer conv")
+                    print(model_map[model_idx][2] + " != "+ str_cmp)
+                    return
+                model_idx += 1
+    
+            any_input_at_all = 1
+            ch += mem.buffer_num
 
-            model_idx += 1
+        if(any_input_at_all == 1):
+            dump_mem_instr_log.write("conv, layer:"+str(layer_idx)+" -- load coeff -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+            instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+            for item in instr1: instr.append(item)
 
-        instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
-        for item in instr1: instr.append(item)
 
-        #model_idx += 1
+    #model_idx = model_idx_latch + channels*(filters)
 
     #UnOPTIMIZED
     #for filt in range(0,filters):
@@ -390,6 +459,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
             model_idx += 1
 
+    dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- LOAD BIAS -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
     instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
     for item in instr1: instr.append(item)
 
@@ -450,6 +520,7 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
 
     output_idx = 0
 
+    #TO BE OPTIMIZED
     for ch in range(0,channels_next):
         buffer_addr      = ch%mem.buffer_num
 
@@ -460,14 +531,66 @@ def prog_conv(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,l
             print("program.py: Input parsing error in layer conv")
             return
 
+        dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- SAVE -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
         instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
         for item in instr1: instr.append(item)
 
         interm_idx += 1
 
+    #OPTIMIZED
+    #CANNOT OPTIMIZE WHEN NEXT IS FLATTEN
+    #if(next_flatten == 1): 
+    #    for ch in range(0,channels_next):
+    #        buffer_addr      = ch%mem.buffer_num
+
+    #        if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_ch"+str(ch)):
+    #            ram_start   = interm_map[interm_idx][0]
+    #            ram_number  = interm_map[interm_idx][1]
+    #        else:
+    #            print("program.py: Input parsing error in layer conv")
+    #            return
+
+    #        instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #        for item in instr1: instr.append(item)
+
+    #        interm_idx += 1
+    #else:
+    #    #OPTIMIZED
+    #    for buf_loop in range(0,mem.buffer_num):
+    #        buffer_addr      = buf_loop
+
+    #        ch = buf_loop
+    #        #interm_idx = interm_idx_latch + buf_loop
+
+    #        ram_number = 0
+    #        any_output_at_all = 0
+    #        while(ch < channels):
+    #            if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_ch"+str(ch)):
+    #                if(ch == buf_loop):
+    #                    ram_start   = interm_map[interm_idx][0]
+    #                ram_number  += interm_map[interm_idx][1]
+    #            else:
+    #                print("program.py: Saving Input parsing error in layer conv")
+    #                print("found: "+interm_map[interm_idx][2]+", expected: input_layer"+str(layer_idx+1)+"_ch"+str(ch))
+    #                return
+
+    #            any_output_at_all = 1
+    #            ch += mem.buffer_num
+    #            #interm_idx += mem.buffer_num
+    #            interm_idx += 1
+
+    #        if(any_output_at_all == 1):
+    #            dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- SAVE OUTPUT -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #            instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #            for item in instr1: instr.append(item)
+
+
+
+    #interm_idx += interm_idx_latch + channels
+
     return instr,model_idx_end,interm_idx_end
 
-def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
+def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile,dump_mem_instr_log,next_flatten):
 
     this_layer = all_layers[layer_index]
     layer_idx = this_layer['number']
@@ -480,6 +603,8 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
     #i.   Load Input
 
     interm_idx = interm_idx_start
+
+    #UNOPTIMIZED
     for ch in range(0,channels):
         buffer_addr      = ch%mem.buffer_num
 
@@ -494,6 +619,34 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
         for item in instr1: instr.append(item)
 
         interm_idx += 1
+
+
+    #OPTIMIZED
+    #for buf_loop in range(0,mem.buffer_num):
+    #    buffer_addr = buf_loop
+    #    ch = buf_loop
+
+    #    ram_number = 0
+    #    any_input_at_all = 0
+    #    while(ch < channels):
+
+    #        if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx)+"_ch"+str(ch)):
+    #            if(ch == buf_loop):
+    #                ram_start   = interm_map[interm_idx][0]
+    #            ram_number  += interm_map[interm_idx][1]
+    #        else:
+    #            print("program.py: Input parsing error in layer pool")
+    #            return
+
+    #        any_input_at_all = 1
+    #        ch += mem.buffer_num
+    #        interm_idx +=1
+
+    #    if(any_input_at_all == 1):
+    #        dump_mem_instr_log.write("Pool, layer:"+str(layer_idx)+" -- LOAD -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #        instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #        for item in instr1: instr.append(item)
+
 
     interm_idx_end = interm_idx   
 
@@ -554,6 +707,7 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
 
     output_idx = 0
 
+    #UNOPTIMIZED
     for ch in range(0,channels_next):
         buffer_addr      = ch%mem.buffer_num
 
@@ -569,11 +723,57 @@ def prog_maxpool(interm_map,interm_idx_start,all_layers,layer_index,regfile):
 
         interm_idx += 1
 
+    #OPTIMIZED
+    #CANNOT OPTIMIZE WHEN NEXT ONE IS FLATTEN, ELSE: OPTIMIZE
+    #if(next_flatten == 1):
+    #    for ch in range(0,channels_next):
+    #        buffer_addr      = ch%mem.buffer_num
+
+    #        if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_ch"+str(ch)):
+    #            ram_start   = interm_map[interm_idx][0]
+    #            ram_number  = interm_map[interm_idx][1]
+    #        else:
+    #            print("program.py: Input parsing error in layer pool")
+    #            return
+
+    #        dump_mem_instr_log.write("Pool, layer:"+str(layer_idx)+" -- SAVE -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #        instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #        for item in instr1: instr.append(item)
+
+    #        interm_idx += 1
+    #else:
+    #    for buf_loop in range(0,mem.buffer_num):
+    #        buffer_addr     = buf_loop
+    #        ch              = buf_loop
+
+    #        ram_number = 0
+    #        any_output_at_all = 0
+
+    #        while(ch < channels):
+
+    #            if(interm_map[interm_idx][2] == "input_layer"+str(layer_idx+1)+"_ch"+str(ch)):
+    #                if(ch == buf_loop):
+    #                    ram_start   = interm_map[interm_idx][0]
+    #                ram_number  += interm_map[interm_idx][1]
+    #            else:
+    #                print("program.py: Input parsing error in layer pool")
+    #                return
+    #            
+    #            any_output_at_all = 1
+    #            ch += mem.buffer_num
+    #            interm_idx += 1
+    #        
+    #        if(any_output_at_all == 1):
+    #            dump_mem_instr_log.write("Pool, layer:"+str(layer_idx)+" -- SAVE -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #            instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #            for item in instr1: instr.append(item)
+
+
     return instr,interm_idx_end
 
 
 
-def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers, layer_index, regfile):
+def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers, layer_index, regfile, dump_mem_instr_log):
 
     print("Program Dense, layer_idx :"+str(layer_index))
 
@@ -630,6 +830,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
             return
         interm_idx += 1
 
+    dump_mem_instr_log.write("Dense, layer:"+str(layer_idx)+" -- LOAD Input -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
     instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
     for item in instr1: instr.append(item)
     
@@ -641,51 +842,96 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
 
     model_idx = model_idx_start
 
-    for opnu in range(0,output_nodes):
-        buffer_addr = opnu%mem.buffer_num
+    #UNOPTIMIZED
+    #for opnu in range(0,output_nodes):
+    #    buffer_addr = opnu%mem.buffer_num
 
-        str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)
-        if(model_map[model_idx][2] == str_cmp):
-            ram_start = model_map[model_idx][0]
-            ram_number = model_map[model_idx][1]
-        else:
-            print("program.py: Model parsing error in layer dense")
-            return
+    #    str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)
+    #    if(model_map[model_idx][2] == str_cmp):
+    #        ram_start = model_map[model_idx][0]
+    #        ram_number = model_map[model_idx][1]
+    #    else:
+    #        print("program.py: Model parsing error in layer dense")
+    #        return
 
-        instr1 = ram_to_buffer_instr(ram_start, ram_number, buffer_block,buffer_addr,regfile)
+    #    dump_mem_instr_log.write("Dense, layer:"+str(layer_idx)+" -- LOAD coeff -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #    instr1 = ram_to_buffer_instr(ram_start, ram_number, buffer_block,buffer_addr,regfile)
+    #    for item in instr1: instr.append(item)
+
+    #    model_idx += 1
+
+    #    if(use_bias):
+    #        buffer_addr = opnu%mem.buffer_num
+    #        str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_bias"
+    #        if(model_map[model_idx][2] == str_cmp):
+    #            ram_start  = model_map[model_idx][0]
+    #            ram_number = model_map[model_idx][1]
+    #        else:
+    #            print("program.py: Model parsing error in layer dense")
+    #            return
+
+    #        dump_mem_instr_log.write("Dense, layer:"+str(layer_idx)+" -- LOAD bias -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #        instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #        for item in instr1: instr.append(item)
+
+    #        model_idx += 1
+    #    else:
+    #        buffer_addr = opnu%mem.buffer_num
+    #        str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_nobias"
+    #        if(model_map[model_idx][2] == str_cmp):
+    #            ram_start  = model_map[model_idx][0]
+    #            ram_number = model_map[model_idx][1]
+    #        else:
+    #            print("program.py: Model parsing error in layer dense")
+    #            return
+
+    #        dump_mem_instr_log.write("Dense, layer:"+str(layer_idx)+" -- LOAD nobias -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+    #        instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
+    #        for item in instr1: instr.append(item)
+
+    #        model_idx += 1
+
+    #OPTIMIZED
+    for loop in range(0,mem.buffer_num):
+        opnu = loop
+        ram_number = 0
+        while(opnu < output_nodes):
+            buffer_addr = opnu%mem.buffer_num
+
+            str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)
+            if(model_map[model_idx][2] == str_cmp):
+                if(opnu == loop):
+                    ram_start = model_map[model_idx][0]
+                ram_number += model_map[model_idx][1]
+            else:
+                print("program.py: Model parsing error in layer dense")
+                return
+
+            model_idx += 1
+
+            if(use_bias):
+                str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_bias"
+                if(model_map[model_idx][2] == str_cmp):
+                    ram_number += model_map[model_idx][1]
+                else:
+                    print("program.py: Model parsing error in layer dense")
+                    return
+                model_idx += 1
+            else:
+                str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_nobias"
+                if(model_map[model_idx][2] == str_cmp):
+                    ram_number += model_map[model_idx][1]
+                else:
+                    print("program.py: Model parsing error in layer dense")
+                    return
+                model_idx += 1
+            opnu += mem.buffer_num
+
+        dump_mem_instr_log.write("Dense, layer:"+str(layer_idx)+" -- LOAD coeff_bias -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
+        instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
         for item in instr1: instr.append(item)
 
-        model_idx += 1
 
-        if(use_bias):
-            buffer_addr = opnu%mem.buffer_num
-            str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_bias"
-            if(model_map[model_idx][2] == str_cmp):
-                ram_start  = model_map[model_idx][0]
-                ram_number = model_map[model_idx][1]
-            else:
-                print("program.py: Model parsing error in layer dense")
-                return
-
-            instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
-            for item in instr1: instr.append(item)
-
-            model_idx += 1
-        else:
-            buffer_addr = opnu%mem.buffer_num
-            str_cmp = "layer"+str(layer_idx)+"_dense_outnode"+str(opnu)+"_nobias"
-            if(model_map[model_idx][2] == str_cmp):
-                ram_start  = model_map[model_idx][0]
-                ram_number = model_map[model_idx][1]
-            else:
-                print("program.py: Model parsing error in layer dense")
-                return
-
-            instr1 = ram_to_buffer_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
-            for item in instr1: instr.append(item)
-
-            model_idx += 1
-    
     model_idx_end = model_idx
 
     #iii. Set Configs
@@ -756,6 +1002,7 @@ def prog_dense(model_map,model_idx_start,interm_map,interm_idx_start, all_layers
             return
         interm_idx += 1
 
+    dump_mem_instr_log.write("Dense, layer:"+str(layer_idx)+" -- SAVE output -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
     instr1 = buffer_to_ram_instr(ram_start,ram_number,buffer_block,buffer_addr,regfile)
     for item in instr1: instr.append(item)
 
@@ -778,18 +1025,30 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
     print("model_idx_start:"+str(model_idx_carry))
     print("interm_idx_start:"+str(interm_idx_carry))
 
+    dump_mem_instr_log = open('./mem_instr.txt','w+')
+
+    tot_layers = len(all_layers)
 
     for layer in all_layers:
         layer_index = layer['number']
         layer_type  = layer['type']
 
+        if(layer_index + 1 < tot_layers):
+            if(all_layers[layer_index+1]['type'] == "Flatten"):
+                next_flatten = 1
+            else:
+                next_flatten = 0
+        else:
+            next_flatten = 0
+
         print(layer_type+" "+"layer_number:"+str(layer_index)+" "+"interm_idx_carry:"+str(interm_idx_carry))
+        print("next_flatten: "+str(next_flatten))
 
         if(layer_type == "Conv2D"):
-            instr_this,model_idx_carry,interm_idx_carry = prog_conv(model_map,model_idx_carry,interm_map,interm_idx_carry, all_layers,layer_index,regfile)
+            instr_this,model_idx_carry,interm_idx_carry = prog_conv(model_map,model_idx_carry,interm_map,interm_idx_carry, all_layers,layer_index,regfile,dump_mem_instr_log,next_flatten)
             #instr_this = [] #debug
         elif(layer_type == "MaxPooling2D"):
-            instr_this,interm_idx_carry = prog_maxpool(interm_map,interm_idx_carry,all_layers,layer_index,regfile)
+            instr_this,interm_idx_carry = prog_maxpool(interm_map,interm_idx_carry,all_layers,layer_index,regfile,dump_mem_instr_log,next_flatten)
             #instr_this = [] #debug
         elif(layer_type == "Flatten"):
             a = 0
@@ -800,7 +1059,7 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
                 interm_idx_carry += 1
 
         elif(layer_type == "Dense"):
-            instr_this,model_idx_carry,interm_idx_carry = prog_dense(model_map,model_idx_carry,interm_map,interm_idx_carry,all_layers,layer_index,regfile)
+            instr_this,model_idx_carry,interm_idx_carry = prog_dense(model_map,model_idx_carry,interm_map,interm_idx_carry,all_layers,layer_index,regfile,dump_mem_instr_log)
             #a = 0
         else:
             print("program.py: prog_all(), layer type:"+str(layer_type)+" not found")
@@ -813,6 +1072,8 @@ def prog_all(model_map,model_idx_start,interm_map,interm_idx_start,all_layers,re
         dumpfile.write(item+'\n')
 
     dumpfile.close()
+
+    dump_mem_instr_log.close()
 
     return instr
 
@@ -831,7 +1092,7 @@ if __name__ == "__main__":
     wr_dict['fields']['abrupt_end'] = 1
     wr_dict['fields']['digital_reset'] = 1
     wr_dict['fields']['start_loading_buffer'] = 1
-    wr_dict['fields']['flush_buff1_to_ext_mem'] = 1
+    wr_dict['fields']['flush_bufdump_mem_instr_log_to_ext_mem'] = 1
     wr_dict['sheetname'] = "general"
 
 
@@ -841,11 +1102,13 @@ if __name__ == "__main__":
 
     #instr = write_cmd(addr,data)
 
+    #dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- LOAD -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
     instr = ram_to_buffer_instr(2012,1000,1,14,regfile)
     for ins in instr:   print(ins[0:2],ins[2:16],ins[16:32])
 
     print("HOOO")
 
+    #dump_mem_instr_log.write("Conv, layer:"+str(layer_idx)+" -- SAVE -- ram_number:"+str(ram_number)+" buffer_addr:"+str(buffer_addr)+ " buffer_block:"+str(buffer_block)+"\n")
     instr = buffer_to_ram_instr(2012,1000,1,14,regfile)
     for ins in instr:   print(ins[0:2],ins[2:16],ins[16:32])
 

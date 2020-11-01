@@ -35,18 +35,36 @@ def dump_conv(dumpfile,mem_map,mem_start,this_layer):
     activation = this_layer['activation']
     mem_ptr = mem_start
 
-    for ch in range(0,channels):
-        for filt in range(0,filters):
-            mem_idx = 0
-            for row in range(0,kernel_h):
-                for col in range(0,kernel_w):
-                    dat = wt[row][col][ch][filt]*mem.scale
-                    bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
-                    dumpfile.write(bina+'\n')
-                    mem_idx += mem.word_per_byte
-            memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_ch'+str(ch)+'_coeff'
-            mem_map.append([mem_ptr,mem_idx,memstr])
-            mem_ptr +=mem_idx
+    #OPTIMIZED
+    #for ch in range(0,channels):
+    #    for filt in range(0,filters):
+    #        mem_idx = 0
+    #        for row in range(0,kernel_h):
+    #            for col in range(0,kernel_w):
+    #                dat = wt[row][col][ch][filt]*mem.scale
+    #                bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+    #                dumpfile.write(bina+'\n')
+    #                mem_idx += mem.word_per_byte
+    #        memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_ch'+str(ch)+'_coeff'
+    #        mem_map.append([mem_ptr,mem_idx,memstr])
+    #        mem_ptr +=mem_idx
+
+    #EXTRA OPTIMIZED
+    for loop in range(0,mem.buffer_num):
+        ch = loop
+        while(ch < channels):
+            for filt in range(0,filters):
+                mem_idx = 0
+                for row in range(0,kernel_h):
+                    for col in range(0,kernel_w):
+                        dat = wt[row][col][ch][filt]*mem.scale
+                        bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+                        dumpfile.write(bina+'\n')
+                        mem_idx += mem.word_per_byte
+                memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_ch'+str(ch)+'_coeff'
+                mem_map.append([mem_ptr,mem_idx,memstr])
+                mem_ptr +=mem_idx
+            ch += mem.buffer_num
 
 
     for filt in range(0,filters):
@@ -95,40 +113,80 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
     #    print("innodes in layer4:" + str(input_nodes))
     #debug
 
-    for out in range(0,output_nodes):
-        mem_idx0 = 0
-        mem_idx = 0
-        for inp in range(0,input_nodes):
-            dat = wt[inp][out]*mem.scale
-            bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
-            #debug
-            #if(layer_num == 4 and out == 3):
-            #    f1a.write(str(out)+" dat: "+str(int(dat*256))+"\n")
-            #    #f1a.write("bina: "+ bina+"\n")
-            ##debug
-            dumpfile.write(bina+'\n')
-            mem_idx += mem.word_per_byte
+    #UNOPTIMIZED 
+    #for out in range(0,output_nodes):
+    #    mem_idx0 = 0
+    #    mem_idx = 0
+    #    for inp in range(0,input_nodes):
+    #        dat = wt[inp][out]*mem.scale
+    #        bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+    #        #debug
+    #        #if(layer_num == 4 and out == 3):
+    #        #    f1a.write(str(out)+" dat: "+str(int(dat*256))+"\n")
+    #        #    #f1a.write("bina: "+ bina+"\n")
+    #        ##debug
+    #        dumpfile.write(bina+'\n')
+    #        mem_idx += mem.word_per_byte
 
-        memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)
-        mem_map.append([mem_ptr,mem_idx,memstr])
-        mem_ptr += mem_idx
+    #    memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)
+    #    mem_map.append([mem_ptr,mem_idx,memstr])
+    #    mem_ptr += mem_idx
 
-        if(use_bias):
-            dat = bias[out]*mem.scale
-            bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
-            dumpfile.write(bina+'\n')
-            mem_idx0 += mem.word_per_byte
-            memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)+'_bias'
-            mem_map.append([mem_ptr,mem_idx0,memstr])
-            mem_ptr +=mem_idx0
-        else:
-            dat = 0*mem.scale
-            bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
-            dumpfile.write(bina+'\n')
-            mem_idx0 += mem.word_per_byte
-            memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_nobias'
-            mem_map.append([mem_ptr,mem_idx0,memstr])
-            mem_ptr += mem_idx0
+    #    if(use_bias):
+    #        dat = bias[out]*mem.scale
+    #        bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+    #        dumpfile.write(bina+'\n')
+    #        mem_idx0 += mem.word_per_byte
+    #        memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)+'_bias'
+    #        mem_map.append([mem_ptr,mem_idx0,memstr])
+    #        mem_ptr +=mem_idx0
+    #    else:
+    #        dat = 0*mem.scale
+    #        bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+    #        dumpfile.write(bina+'\n')
+    #        mem_idx0 += mem.word_per_byte
+    #        memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_nobias'
+    #        mem_map.append([mem_ptr,mem_idx0,memstr])
+    #        mem_ptr += mem_idx0
+
+    #OPTIMIZED
+    for loop in range(0,mem.buffer_num):
+        out = loop
+        while(out < output_nodes):
+            mem_idx0 = 0
+            mem_idx = 0
+            for inp in range(0,input_nodes):
+                dat = wt[inp][out]*mem.scale
+                bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+                #debug
+                #if(layer_num == 4 and out == 3):
+                #    f1a.write(str(out)+" dat: "+str(int(dat*256))+"\n")
+                #    #f1a.write("bina: "+ bina+"\n")
+                ##debug
+                dumpfile.write(bina+'\n')
+                mem_idx += mem.word_per_byte
+
+            memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)
+            mem_map.append([mem_ptr,mem_idx,memstr])
+            mem_ptr += mem_idx
+
+            if(use_bias):
+                dat = bias[out]*mem.scale
+                bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+                dumpfile.write(bina+'\n')
+                mem_idx0 += mem.word_per_byte
+                memstr = 'layer'+str(layer_num)+'_dense_outnode'+str(out)+'_bias'
+                mem_map.append([mem_ptr,mem_idx0,memstr])
+                mem_ptr +=mem_idx0
+            else:
+                dat = 0*mem.scale
+                bina = b1.int2bin(dat,mem.frac_size,mem.word_size)
+                dumpfile.write(bina+'\n')
+                mem_idx0 += mem.word_per_byte
+                memstr = 'layer'+str(layer_num)+'_conv_filt'+str(filt)+'_nobias'
+                mem_map.append([mem_ptr,mem_idx0,memstr])
+                mem_ptr += mem_idx0
+            out += mem.buffer_num
 
     ##debug
     #if(layer_num == 4):
@@ -270,15 +328,23 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
 
     interm_map = []
 
+    tot_layers = len(all_layers)
+
     first_layer = all_layers[0]
+
     if(first_layer['type'] == "Conv2D"):
+
         ch_first    = first_layer['shape'][3]
         size_first  = first_layer['shape'][1]*first_layer['shape'][2]
         mem_ptr     = mem_input
-        for c in range(0,ch_first):
-            mem_idx     = size_first*mem.word_per_byte
-            interm_map.append([mem_ptr, mem_idx, 'input_layer0_ch'+str(c)])
-            mem_ptr    += mem_idx
+
+        for loop in range(0,mem.buffer_num):
+            ch = loop
+            while(ch < ch_first):
+                mem_idx     = size_first*mem.word_per_byte
+                interm_map.append([mem_ptr, mem_idx, 'input_layer0_ch'+str(ch)])
+                mem_ptr    += mem_idx
+                ch += mem.buffer_num
     else:
         print("Conv2D as not first layer not supported.")
         return
@@ -289,8 +355,11 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
     l_idx = 1
     last_map = []
 
+    print("first layer_num: "+str(first_layer['number']))
+
     for layer in all_layers[1:]:
         #print(layer['type'])
+        layer_index = layer['number']
 
         if(layer['type'] == "Conv2D"):
             shape   = layer['shape']
@@ -299,12 +368,23 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
             wid     = shape[2]
 
             #print('conv',hei,wid,hei*wid,hei*wid*2)
-
+            
+            #UNOPTIMIZED
             for c in range(0,ch):
                 mem_idx = 0
                 mem_idx += hei*wid*mem.word_per_byte
                 interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
                 mem_ptr += mem_idx
+
+            #OPTIMIZED
+            #for loop in range(0,mem.buffer_num):
+            #    c = loop
+            #    while(c < ch):
+            #        mem_idx = 0
+            #        mem_idx += hei*wid*mem.word_per_byte
+            #        interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+            #        mem_ptr += mem_idx
+            #        c += mem.buffer_num
 
         elif(layer['type'] == "Dense"):
             shape   = layer['shape']
@@ -340,11 +420,21 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
 
             #print('maxpool',hei,wid,hei*wid,hei*wid*2)
 
+            #UNOPTIMIZED
             for c in range(0,ch):
                 mem_idx = 0
                 mem_idx += hei*wid*mem.word_per_byte
                 interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
                 mem_ptr += mem_idx
+            ##OPTIMIZED
+            #for loop in range(0,mem.buffer_num):
+            #    c = loop
+            #    while(c < ch):
+            #        mem_idx = 0
+            #        mem_idx += hei*wid*mem.word_per_byte
+            #        interm_map.append([mem_ptr,mem_idx,'input_layer'+str(l_idx)+"_ch"+str(c)])
+            #        mem_ptr += mem_idx
+            #        c += mem.buffer_num
 
         elif(layer['type'] == "Flatten"):
             shape   = layer['shape']
@@ -356,8 +446,8 @@ def interm_to_ram(all_layers,interm_map_dump,input_map,output_map,input_index):
 
             mem_flat_start  = mem_ptr
             mem_idx_flat    = 0
-
-
+    
+            #Flatten cannot be optimized because dense is taken sequentially
             for c in range(0,ch):
                 mem_idx = 0
                 mem_idx += hei*wid*mem.word_per_byte
