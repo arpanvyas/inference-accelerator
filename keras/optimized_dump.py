@@ -188,6 +188,8 @@ def dump_dense(dumpfile,mem_map,mem_start,this_layer):
                 mem_ptr += mem_idx0
             out += mem.buffer_num
 
+
+
     ##debug
     #if(layer_num == 4):
     #    f1a.close()

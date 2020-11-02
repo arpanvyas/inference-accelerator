@@ -23,10 +23,10 @@ always@(state) begin
 	//if(state == 2'b00 || state == 2'b01 || state == 2'b10) begin
 	if( state == 2'b01 || state == 2'b10) begin
 		high_speed_clk = 1;
-		half_clock = memory_clock_period/2;
+		half_clock = (memory_clock_period*1000)/2;
 	end else begin
 		high_speed_clk = 0;
-		half_clock = 5;
+		half_clock = (5)*1000;
 	end
 end
 

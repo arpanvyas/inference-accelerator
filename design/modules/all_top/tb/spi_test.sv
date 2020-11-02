@@ -108,7 +108,7 @@ endtask
 
 
 
-
+integer itime;
 initial begin
 
     fork 
@@ -132,7 +132,13 @@ initial begin
             #20;
             #100;
             //#(1872856-(20+100+43)); //after conv
+	    `ifndef DDR_SPEED_SIM
             #25000000;
+    	    `else
+	    for (itime = 0; itime < 10; itime += 1) begin
+            	#500000000;
+    	    end
+    	    `endif
             //#10000000;
             
 
