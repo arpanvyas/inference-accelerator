@@ -6,5 +6,6 @@ Tensorflow 1.15
 Numpy 1.18.5
 Opencv-python 4.4.0.42
 pyexcel 0.5.15
+pyexcel-ods 0.5.6
 
 Not using GPU/CUDA for tensorflow
