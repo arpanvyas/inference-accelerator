@@ -1,0 +1,128 @@
+Conv, layer:0 -- LOAD INPUT -- ram_number:784 buffer_addr:0 buffer_block:0
+conv, layer:0 -- load coeff -- ram_number:288 buffer_addr:0 buffer_block:0
+Conv, layer:0 -- LOAD BIAS -- ram_number:32 buffer_addr:8 buffer_block:0
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:0 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:1 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:2 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:3 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:4 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:5 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:6 buffer_block:1
+Conv, layer:0 -- SAVE OUTPUT -- ram_number:2704.0 buffer_addr:7 buffer_block:1
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:0 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:1 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:2 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:3 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:4 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:5 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:6 buffer_block:0
+Conv, layer:1 -- LOAD INPUT -- ram_number:2704.0 buffer_addr:7 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:0 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:1 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:2 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:3 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:4 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:5 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:6 buffer_block:0
+conv, layer:1 -- load coeff -- ram_number:1152 buffer_addr:7 buffer_block:0
+Conv, layer:1 -- LOAD BIAS -- ram_number:32 buffer_addr:8 buffer_block:0
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:0 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:1 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:2 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:3 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:4 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:5 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:6 buffer_block:1
+Conv, layer:1 -- SAVE OUTPUT -- ram_number:2304.0 buffer_addr:7 buffer_block:1
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:0 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:1 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:2 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:3 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:4 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:5 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:6 buffer_block:0
+Pool, layer:2 -- LOAD -- ram_number:2304.0 buffer_addr:7 buffer_block:0
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:0 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:1 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:2 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:3 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:4 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:5 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:6 buffer_block:1
+Pool, layer:2 -- SAVE -- ram_number:576.0 buffer_addr:7 buffer_block:1
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:0 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:1 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:2 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:3 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:4 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:5 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:6 buffer_block:0
+Pool, layer:3 -- LOAD -- ram_number:576.0 buffer_addr:7 buffer_block:0
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:0 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:1 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:2 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:3 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:4 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:5 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:6 buffer_block:1
+Pool, layer:3 -- SAVE -- ram_number:144.0 buffer_addr:7 buffer_block:1
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:0 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:1 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:2 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:3 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:4 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:5 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:6 buffer_block:0
+Pool, layer:4 -- LOAD -- ram_number:144.0 buffer_addr:7 buffer_block:0
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:0 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:1 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:2 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:3 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:4 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:5 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:6 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:7 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:0 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:1 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:2 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:3 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:4 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:5 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:6 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:7 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:0 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:1 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:2 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:3 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:4 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:5 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:6 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:7 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:0 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:1 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:2 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:3 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:4 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:5 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:6 buffer_block:1
+Pool, layer:4 -- SAVE -- ram_number:9.0 buffer_addr:7 buffer_block:1
+Dense, layer:6 -- LOAD Input -- ram_number:288 buffer_addr:8 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:0 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:1 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:2 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:3 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:4 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:5 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:6 buffer_block:0
+Dense, layer:6 -- LOAD coeff_bias -- ram_number:578 buffer_addr:7 buffer_block:0
+Dense, layer:6 -- SAVE output -- ram_number:16 buffer_addr:8 buffer_block:1
+Dense, layer:7 -- LOAD Input -- ram_number:16 buffer_addr:8 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:34 buffer_addr:0 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:34 buffer_addr:1 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:17 buffer_addr:2 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:17 buffer_addr:3 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:17 buffer_addr:4 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:17 buffer_addr:5 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:17 buffer_addr:6 buffer_block:0
+Dense, layer:7 -- LOAD coeff_bias -- ram_number:17 buffer_addr:7 buffer_block:0
+Dense, layer:7 -- SAVE output -- ram_number:10 buffer_addr:8 buffer_block:1
