@@ -3,7 +3,7 @@ A Scalable and Adaptive Convolutional Neural Network Accelerator, 2022 32nd Inte
 https://ieeexplore.ieee.org/document/9764951
 
 
-
+Iteratively run keras/full.py to train, load and run inference on the synthesized hardware.
 
 
 Contact me if you would like to add DDR support.
