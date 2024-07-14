@@ -6,10 +6,10 @@ https://ieeexplore.ieee.org/document/9764951
 
 <img src="https://github.com/user-attachments/assets/3fed2894-618a-4c92-b10b-0a1c6f970d6a"  width="500" >
 
-(uses Simulated External Memory)
+
 
 Iteratively run keras/full.py to train, load and run inference on the synthesized hardware.
 
 
-
+Uses simulation model for External Memory
 Contact me if you would like to add DDR support.
