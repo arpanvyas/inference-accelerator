@@ -5,6 +5,7 @@ https://ieeexplore.ieee.org/document/9764951
 ![Software Stack](https://github.com/user-attachments/assets/4100e1c1-5b74-40a7-bcf5-5a9bb88b7338)
 
 ![Hardware Accelerator](https://github.com/user-attachments/assets/3fed2894-618a-4c92-b10b-0a1c6f970d6a)
+
 (uses Simulated External Memory)
 
 Iteratively run keras/full.py to train, load and run inference on the synthesized hardware.
