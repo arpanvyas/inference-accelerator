@@ -5,7 +5,7 @@ https://ieeexplore.ieee.org/document/9764951
 
 Iteratively run keras/full.py to train, load and run inference on the synthesized hardware.
 
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1") 
 
 
 Contact me if you would like to add DDR support.
