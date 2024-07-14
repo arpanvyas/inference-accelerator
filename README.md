@@ -11,5 +11,6 @@ https://ieeexplore.ieee.org/document/9764951
 Iteratively run keras/full.py to train, load and run inference on the synthesized hardware.
 
 
-Uses simulation model for External Memory
+Uses simulation model for External Memory.
+
 Contact me if you would like to add DDR support.
